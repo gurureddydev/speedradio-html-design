@@ -339,17 +339,24 @@
 
     /* Profile Area */
     .profile-area {
-      padding: clamp(8px, 1.5vh, 12px) 16px;
+      padding: clamp(8px, 1.5vh, 12px) 0 clamp(8px, 1.2vh, 10px);
       display: flex;
-      align-items: center;
-      gap: 12px;
+      flex-direction: column;
+      gap: clamp(6px, 1vh, 8px);
       flex-shrink: 0;
       position: relative;
       z-index: 10;
-      overflow: hidden;
       background: var(--card-bg);
       isolation: isolate;
       border-top: 1px solid #00000033;
+    }
+
+    .profile-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 0 16px;
+      width: 100%;
     }
 
     .avatar-wrapper {
@@ -511,22 +518,53 @@
       background: rgba(255, 255, 255, 0.2);
     }
 
-    /* Audio Progress Bar — anchored to bottom of profile-area */
+    /* Audio Progress Bar — in-flow at bottom of profile-area */
     .audio-bar {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
+      position: relative;
+      width: 100%;
       height: 4px;
-      background: rgba(255, 255, 255, 0.3);
+      background: rgba(255, 255, 255, 0.28);
       cursor: pointer;
       z-index: 2;
+      border-radius: 0;
+      flex-shrink: 0;
+      transition: height 0.18s ease;
+    }
+
+    .audio-bar.is-dragging {
+      height: 7px;
     }
 
     .audio-bar-fill {
       height: 100%;
       background: #fff;
-      border-radius: 0 2px 2px 0;
+      border-radius: 2px;
+      position: relative;
+    }
+
+    .audio-bar-thumb {
+      position: absolute;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 1px 6px rgba(0, 0, 0, 0.45);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease, width 0.15s ease, height 0.15s ease;
+      z-index: 3;
+    }
+
+    .audio-bar:hover .audio-bar-thumb,
+    .audio-bar.is-dragging .audio-bar-thumb {
+      opacity: 1;
+    }
+
+    .audio-bar.is-dragging .audio-bar-thumb {
+      width: 18px;
+      height: 18px;
     }
 
     /* Seek Timer Overlay */
@@ -568,7 +606,7 @@
     .audio-bar::before {
       content: '';
       position: absolute;
-      top: -10px;
+      top: -12px;
       left: 0;
       right: 0;
       bottom: -10px;
@@ -845,23 +883,26 @@
       </div>
 
       <div class="profile-area">
-        <div class="avatar-wrapper">
-          <svg viewBox="0 0 100 100">
-            <circle cx="50" cy="50" r="50" fill="#e0e0e0" />
-            <circle cx="50" cy="40" r="15" fill="#bdbdbd" />
-            <path d="M25 85 C25 65 75 65 75 85 Z" fill="#bdbdbd" />
-            <path d="M30 40 C30 20 70 20 70 40 L75 55 C75 40 25 40 25 55 Z" fill="#e2c285" />
-          </svg>
+        <div class="profile-row">
+          <div class="avatar-wrapper">
+            <svg viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="50" fill="#e0e0e0" />
+              <circle cx="50" cy="40" r="15" fill="#bdbdbd" />
+              <path d="M25 85 C25 65 75 65 75 85 Z" fill="#bdbdbd" />
+              <path d="M30 40 C30 20 70 20 70 40 L75 55 C75 40 25 40 25 55 Z" fill="#e2c285" />
+            </svg>
+          </div>
+          <div class="profile-info">
+            <div class="name">John Smith</div>
+            <div class="handle">@john_smith</div>
+          </div>
+          <button class="add-btn">
+            <img src="/assets/follow_ic.png" alt="Follow" />
+          </button>
         </div>
-        <div class="profile-info">
-          <div class="name">John Smith</div>
-          <div class="handle">@john_smith</div>
-        </div>
-        <button class="add-btn">
-          <img src="/assets/follow_ic.png" alt="Follow" />
-        </button>
         <div class="audio-bar">
           <div class="audio-bar-fill" style="width: 38%;"></div>
+          <div class="audio-bar-thumb" style="left: 38%;"></div>
         </div>
       </div>
     </div>
@@ -945,23 +986,26 @@
       </div>
 
       <div class="profile-area">
-        <div class="avatar-wrapper">
-          <svg viewBox="0 0 100 100">
-            <circle cx="50" cy="50" r="50" fill="#e0e0e0" />
-            <circle cx="50" cy="40" r="15" fill="#bdbdbd" />
-            <path d="M25 85 C25 65 75 65 75 85 Z" fill="#bdbdbd" />
-            <path d="M30 40 C30 20 70 20 70 40 L75 55 C75 40 25 40 25 55 Z" fill="#e2c285" />
-          </svg>
+        <div class="profile-row">
+          <div class="avatar-wrapper">
+            <svg viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="50" fill="#e0e0e0" />
+              <circle cx="50" cy="40" r="15" fill="#bdbdbd" />
+              <path d="M25 85 C25 65 75 65 75 85 Z" fill="#bdbdbd" />
+              <path d="M30 40 C30 20 70 20 70 40 L75 55 C75 40 25 40 25 55 Z" fill="#e2c285" />
+            </svg>
+          </div>
+          <div class="profile-info">
+            <div class="name">John Smith</div>
+            <div class="handle">@john_smith</div>
+          </div>
+          <button class="add-btn">
+            <img src="/assets/follow_ic.png" alt="Follow" />
+          </button>
         </div>
-        <div class="profile-info">
-          <div class="name">John Smith</div>
-          <div class="handle">@john_smith</div>
-        </div>
-        <button class="add-btn">
-          <img src="/assets/follow_ic.png" alt="Follow" />
-        </button>
         <div class="audio-bar">
           <div class="audio-bar-fill" style="width: 38%;"></div>
+          <div class="audio-bar-thumb" style="left: 38%;"></div>
         </div>
       </div>
     </div>
@@ -1045,23 +1089,26 @@
       </div>
 
       <div class="profile-area">
-        <div class="avatar-wrapper">
-          <svg viewBox="0 0 100 100">
-            <circle cx="50" cy="50" r="50" fill="#e0e0e0" />
-            <circle cx="50" cy="40" r="15" fill="#bdbdbd" />
-            <path d="M25 85 C25 65 75 65 75 85 Z" fill="#bdbdbd" />
-            <path d="M30 40 C30 20 70 20 70 40 L75 55 C75 40 25 40 25 55 Z" fill="#c8a0d0" />
-          </svg>
+        <div class="profile-row">
+          <div class="avatar-wrapper">
+            <svg viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="50" fill="#e0e0e0" />
+              <circle cx="50" cy="40" r="15" fill="#bdbdbd" />
+              <path d="M25 85 C25 65 75 65 75 85 Z" fill="#bdbdbd" />
+              <path d="M30 40 C30 20 70 20 70 40 L75 55 C75 40 25 40 25 55 Z" fill="#c8a0d0" />
+            </svg>
+          </div>
+          <div class="profile-info">
+            <div class="name">Sarah Chen</div>
+            <div class="handle">@sarah_wellness</div>
+          </div>
+          <button class="add-btn">
+            <img src="/assets/follow_ic.png" alt="Follow" />
+          </button>
         </div>
-        <div class="profile-info">
-          <div class="name">Sarah Chen</div>
-          <div class="handle">@sarah_wellness</div>
-        </div>
-        <button class="add-btn">
-          <img src="/assets/follow_ic.png" alt="Follow" />
-        </button>
         <div class="audio-bar">
           <div class="audio-bar-fill" style="width: 55%;"></div>
+          <div class="audio-bar-thumb" style="left: 55%;"></div>
         </div>
       </div>
     </div>
@@ -1145,23 +1192,26 @@
       </div>
 
       <div class="profile-area">
-        <div class="avatar-wrapper">
-          <svg viewBox="0 0 100 100">
-            <circle cx="50" cy="50" r="50" fill="#e0e0e0" />
-            <circle cx="50" cy="40" r="15" fill="#bdbdbd" />
-            <path d="M25 85 C25 65 75 65 75 85 Z" fill="#bdbdbd" />
-            <path d="M30 40 C30 20 70 20 70 40 L75 55 C75 40 25 40 25 55 Z" fill="#a0b8d0" />
-          </svg>
+        <div class="profile-row">
+          <div class="avatar-wrapper">
+            <svg viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="50" fill="#e0e0e0" />
+              <circle cx="50" cy="40" r="15" fill="#bdbdbd" />
+              <path d="M25 85 C25 65 75 65 75 85 Z" fill="#bdbdbd" />
+              <path d="M30 40 C30 20 70 20 70 40 L75 55 C75 40 25 40 25 55 Z" fill="#a0b8d0" />
+            </svg>
+          </div>
+          <div class="profile-info">
+            <div class="name">Mindful Moments</div>
+            <div class="handle">@mindful_moments</div>
+          </div>
+          <button class="add-btn">
+            <img src="/assets/follow_ic.png" alt="Follow" />
+          </button>
         </div>
-        <div class="profile-info">
-          <div class="name">Mindful Moments</div>
-          <div class="handle">@mindful_moments</div>
-        </div>
-        <button class="add-btn">
-          <img src="/assets/follow_ic.png" alt="Follow" />
-        </button>
         <div class="audio-bar">
           <div class="audio-bar-fill" style="width: 22%;"></div>
+          <div class="audio-bar-thumb" style="left: 22%;"></div>
         </div>
       </div>
     </div>
@@ -1540,11 +1590,14 @@
           const timer = videoArea.querySelector('.seek-timer');
           let isDragging = false;
 
+          const thumb = bar.querySelector('.audio-bar-thumb');
+
           function updateSeek(e) {
             const rect = bar.getBoundingClientRect();
             const clientX = e.touches ? e.touches[0].clientX : e.clientX;
             let pos = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
             fill.style.width = (pos * 100) + '%';
+            if (thumb) thumb.style.left = (pos * 100) + '%';
             const totalSeconds = 59;
             const cur = Math.floor(pos * totalSeconds);
             const fmt = s => String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0');
@@ -1553,6 +1606,7 @@
 
           const startDragging = (e) => {
             isDragging = true;
+            bar.classList.add('is-dragging');
             videoArea.classList.add('is-seeking');
             updateSeek(e);
             if (e.type === 'touchstart') e.preventDefault();
@@ -1560,6 +1614,7 @@
           const stopDragging = () => {
             if (!isDragging) return;
             isDragging = false;
+            bar.classList.remove('is-dragging');
             videoArea.classList.remove('is-seeking');
           };
 
