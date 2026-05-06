@@ -267,6 +267,81 @@
       color: rgba(255, 255, 255, 0.6);
       line-height: 1.2;
     }
+
+    /* ── BOTTOM SHEET (PLAYLIST POPUP) ── */
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      visibility: hidden;
+      opacity: 0;
+      transition: all 0.3s ease;
+      z-index: 100;
+    }
+
+    .overlay.active {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    .bottom-sheet {
+      position: fixed;
+      bottom: -100%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 390px;
+      height: 164px;
+      background: #242424;
+      border-radius: 25px 25px 0 0;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      transition: bottom 0.3s ease;
+      z-index: 101;
+    }
+
+    .bottom-sheet.active {
+      bottom: -2px;
+    }
+
+    .sheet-handle {
+      width: 72px;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+
+    .sheet-options {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      padding: 10px 8px;
+    }
+
+    .sheet-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      color: #fff;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .sheet-item svg {
+      width: 24px;
+      height: 24px;
+      flex-shrink: 0;
+    }
   </style>
 </head>
 
@@ -468,7 +543,192 @@
       </div>
     </div>
 
+    <!-- INACTIVE 7 -->
+    <div class="inactive-card">
+      <div class="thumb t-brown">
+        <img src="assets/profile_3.jpg" alt="Profile">
+      </div>
+      <div class="i-info">
+        <div class="i-title">The echoes of the past are never truly gone</div>
+        <div class="i-author">Sarah Jenkins</div>
+        <div class="i-time">01:45</div>
+      </div>
+      <div class="btns">
+        <button class="btn-outline">
+          <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+            <path d="M3.5 2L11 6.5L3.5 11V2Z" fill="white" />
+          </svg>
+        </button>
+        <button class="btn-ghost">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+            <circle cx="11" cy="4" r="1.8" fill="white" />
+            <circle cx="11" cy="11" r="1.8" fill="white" />
+            <circle cx="11" cy="18" r="1.8" fill="white" />
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- INACTIVE 8 -->
+    <div class="inactive-card">
+      <div class="thumb t-purple">
+        <img src="assets/profile_1.png" alt="Profile">
+      </div>
+      <div class="i-info">
+        <div class="i-title">Finding light in the shadows of doubt</div>
+        <div class="i-author">Michael Brown</div>
+        <div class="i-time">02:30</div>
+      </div>
+      <div class="btns">
+        <button class="btn-outline">
+          <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+            <path d="M3.5 2L11 6.5L3.5 11V2Z" fill="white" />
+          </svg>
+        </button>
+        <button class="btn-ghost">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+            <circle cx="11" cy="4" r="1.8" fill="white" />
+            <circle cx="11" cy="11" r="1.8" fill="white" />
+            <circle cx="11" cy="18" r="1.8" fill="white" />
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- INACTIVE 9 -->
+    <div class="inactive-card">
+      <div class="thumb t-teal">
+        <img src="assets/poster_img.png" alt="Poster">
+      </div>
+      <div class="i-info">
+        <div class="i-title">The journey of a thousand miles begins with a step</div>
+        <div class="i-author">Lao Tzu</div>
+        <div class="i-time">00:45</div>
+      </div>
+      <div class="btns">
+        <button class="btn-outline">
+          <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+            <path d="M3.5 2L11 6.5L3.5 11V2Z" fill="white" />
+          </svg>
+        </button>
+        <button class="btn-ghost">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+            <circle cx="11" cy="4" r="1.8" fill="white" />
+            <circle cx="11" cy="11" r="1.8" fill="white" />
+            <circle cx="11" cy="18" r="1.8" fill="white" />
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- INACTIVE 10 -->
+    <div class="inactive-card">
+      <div class="thumb t-blue">
+        <img src="assets/profile_2.jpg" alt="Profile">
+      </div>
+      <div class="i-info">
+        <div class="i-title">Whispers in the wind carry secrets untold</div>
+        <div class="i-author">Emily White</div>
+        <div class="i-time">01:20</div>
+      </div>
+      <div class="btns">
+        <button class="btn-outline">
+          <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+            <path d="M3.5 2L11 6.5L3.5 11V2Z" fill="white" />
+          </svg>
+        </button>
+        <button class="btn-ghost">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+            <circle cx="11" cy="4" r="1.8" fill="white" />
+            <circle cx="11" cy="11" r="1.8" fill="white" />
+            <circle cx="11" cy="18" r="1.8" fill="white" />
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- INACTIVE 11 -->
+    <div class="inactive-card">
+      <div class="thumb t-green">
+        <img src="assets/profile_3.jpg" alt="Profile">
+      </div>
+      <div class="i-info">
+        <div class="i-title">Beneath the surface lies a world of wonder</div>
+        <div class="i-author">James Wilson</div>
+        <div class="i-time">03:10</div>
+      </div>
+      <div class="btns">
+        <button class="btn-outline">
+          <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+            <path d="M3.5 2L11 6.5L3.5 11V2Z" fill="white" />
+          </svg>
+        </button>
+        <button class="btn-ghost">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+            <circle cx="11" cy="4" r="1.8" fill="white" />
+            <circle cx="11" cy="11" r="1.8" fill="white" />
+            <circle cx="11" cy="18" r="1.8" fill="white" />
+          </svg>
+        </button>
+      </div>
+    </div>
+
   </div>
+
+  <div class="overlay" id="sheetOverlay"></div>
+
+  <div class="bottom-sheet" id="playlistSheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-options">
+      <div class="sheet-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="18" cy="5" r="3"></circle>
+          <circle cx="6" cy="12" r="3"></circle>
+          <circle cx="18" cy="19" r="3"></circle>
+          <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+          <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+        </svg>
+        <span>Share</span>
+      </div>
+      <div class="sheet-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="16"></line>
+          <line x1="8" y1="12" x2="16" y2="12"></line>
+        </svg>
+        <span>Add to playlist</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const overlay = document.getElementById('sheetOverlay');
+    const sheet = document.getElementById('playlistSheet');
+    const menuButtons = document.querySelectorAll('.btn-ghost');
+
+    function openSheet() {
+      overlay.classList.add('active');
+      sheet.classList.add('active');
+    }
+
+    function closeSheet() {
+      overlay.classList.remove('active');
+      sheet.classList.remove('active');
+    }
+
+    menuButtons.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        openSheet();
+      });
+    });
+
+    overlay.addEventListener('click', closeSheet);
+    
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeSheet();
+    });
+  </script>
 
 </body>
 </html>
