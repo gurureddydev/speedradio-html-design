@@ -323,6 +323,14 @@
       font-size: clamp(9px, 1.5vh, 13px);
     }
 
+    .v-action.small.speed-btn {
+      transition: transform 0.15s ease;
+    }
+
+    .v-action.small.speed-btn:active {
+      transform: scale(0.85);
+    }
+
     .video-caption {
       position: absolute;
       bottom: clamp(14px, 2.5vh, 25px);
@@ -335,6 +343,7 @@
       text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8), -1px -1px 3px rgba(0, 0, 0, 0.8);
       padding: 0 60px;
       z-index: 5;
+      pointer-events: none;
     }
 
     /* Profile Area */
@@ -876,7 +885,7 @@
               <polygon points="17 10 23 15 17 20" fill="#fff" stroke="none" />
             </svg>
           </div>
-          <div class="v-action small"><span>1x</span></div>
+          <div class="v-action small speed-btn"><span>1x</span></div>
         </div>
         <div class="video-caption">Honor yourself now.</div>
         <div class="seek-timer">00:00 / 00:00</div>
@@ -979,7 +988,7 @@
               <polygon points="17 10 23 15 17 20" fill="#fff" stroke="none" />
             </svg>
           </div>
-          <div class="v-action small"><span>1x</span></div>
+          <div class="v-action small speed-btn"><span>1x</span></div>
         </div>
         <div class="video-caption">Honor yourself now.</div>
         <div class="seek-timer">00:00 / 00:00</div>
@@ -1082,7 +1091,7 @@
               <polygon points="17 10 23 15 17 20" fill="#fff" stroke="none" />
             </svg>
           </div>
-          <div class="v-action small"><span>1x</span></div>
+          <div class="v-action small speed-btn"><span>1x</span></div>
         </div>
         <div class="video-caption">Rise and shine.</div>
         <div class="seek-timer">00:00 / 00:00</div>
@@ -1185,7 +1194,7 @@
               <polygon points="17 10 23 15 17 20" fill="#fff" stroke="none" />
             </svg>
           </div>
-          <div class="v-action small"><span>1x</span></div>
+          <div class="v-action small speed-btn"><span>1x</span></div>
         </div>
         <div class="video-caption">Rest deeply now.</div>
         <div class="seek-timer">00:00 / 00:00</div>
@@ -1650,6 +1659,20 @@
             action.style.cursor = 'pointer';
             action.addEventListener('click', openAudioList);
           }
+        });
+
+        // Speed toggle button (1x → 1.5x → 2x → 1x)
+        const speedSteps = ['1x', '1.5x', '2x'];
+        item.querySelectorAll('.speed-btn').forEach(btn => {
+          btn.style.cursor = 'pointer';
+          btn.addEventListener('click', () => {
+            const span = btn.querySelector('span');
+            if (!span) return;
+            const current = span.textContent.trim();
+            const idx = speedSteps.indexOf(current);
+            const next = speedSteps[(idx + 1) % speedSteps.length];
+            span.textContent = next;
+          });
         });
 
         // Follow / Following toggle
