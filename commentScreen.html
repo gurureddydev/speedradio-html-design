@@ -1,0 +1,1348 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Comments Screen</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html,
+    body {
+      height: 100%;
+      overflow: hidden;
+      background: #202020;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+    }
+
+    .phone {
+      width: 100%;
+      max-width: 420px;
+      height: 100%;
+      background: #202020;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* Now playing */
+    .now-playing {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 0 0 5px 5px;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      position: fixed;
+      width: 100vw;
+      max-width: 420px;
+      height: 72px;
+      left: 50%;
+      top: 0;
+      transform: translateX(-50%);
+      z-index: 20;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12);
+    }
+
+    .np-thumb {
+      width: 48px;
+      height: 48px;
+      border-radius: 8px;
+      background: #333;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .np-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .np-info {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .np-title {
+      color: #CF4339;
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .np-author {
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .np-play-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #EA1C25;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+
+    .np-progress {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.4);
+      border-radius: 0 0 5px 5px;
+    }
+
+    .np-progress-fill {
+      height: 100%;
+      width: 55%;
+      background: rgba(207, 67, 57, 0.9);
+      border-radius: 0 0 0 5px;
+    }
+
+    /* Comment modal */
+    .comment-modal {
+      background: #1C1C1E;
+      border-radius: 12px 12px 0 0;
+      width: 100%;
+      max-width: 420px;
+      height: calc(100dvh - 72px);
+      position: fixed;
+      left: 50%;
+      top: 72px;
+      transform: translateX(-50%);
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .drag-handle {
+      width: 40px;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 2px;
+      margin: 10px auto 0;
+      flex-shrink: 0;
+    }
+
+
+
+    /* Scrollable list */
+    .comment-list {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .comment-list::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* Empty state */
+    .empty-state {
+      flex: 1;
+      margin: 16px;
+      /* spacing from edges */
+
+      background: #1C1C1E;
+      /* exact bottom sheet color */
+      border: 1px solid #FFFFFF1A;
+      /* exact Figma border (10% white) */
+      border-radius: 16px;
+
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .empty-title {
+      font-weight: 600;
+      font-size: 16px;
+      color: #fff;
+    }
+
+    .empty-sub {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    /* Comment item */
+    .comment-item {
+      display: flex;
+      align-items: flex-start;
+      padding: 14px 14px 0;
+      gap: 12px;
+      position: relative;
+    }
+
+    .c-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 700;
+      color: #fff;
+      user-select: none;
+    }
+
+    .c-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding-bottom: 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      min-width: 0;
+    }
+
+    .c-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .c-left {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 0;
+    }
+
+    .c-header {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .c-name {
+      color: #fff;
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 21px;
+    }
+
+    .c-time {
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 12px;
+    }
+
+    .c-text {
+      color: #fff;
+      font-size: 14px;
+      line-height: 21px;
+      margin-bottom: 8px;
+      word-break: break-word;
+    }
+
+    .c-mention {
+      color: #EA1C25;
+      font-weight: 700;
+    }
+
+    .c-actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .c-action-btn {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 12px;
+      font-weight: 500;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    .c-replies-label {
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .c-right {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      min-width: 43px;
+    }
+
+    .c-like-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .c-like-icon {
+      display: inline-block;
+      background-color: rgba(255, 255, 255, 0.7);
+      mask: url('assets/like_ic.png') no-repeat center / contain;
+      -webkit-mask: url('assets/like_ic.png') no-repeat center / contain;
+      transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), background-color 0.2s;
+    }
+
+    .c-like-btn.liked .c-like-icon {
+      background-color: #fff;
+      transform: scale(1.15);
+    }
+
+    @keyframes likePop {
+      0% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.4);
+      }
+
+      100% {
+        transform: scale(1.15);
+      }
+    }
+
+    .c-like-btn.animating .c-like-icon {
+      animation: likePop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .c-like-count {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 12px;
+      font-weight: 500;
+      text-align: center;
+    }
+
+    /* Reply thread — one level only */
+    .reply-thread {
+      display: flex;
+      flex-direction: column;
+      margin-top: 8px;
+    }
+
+    .reply-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 0 0;
+      position: relative;
+    }
+
+    .reply-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      color: #fff;
+      user-select: none;
+    }
+
+    .reply-body {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .reply-header {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 2px;
+    }
+
+    .reply-name {
+      color: #fff;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .reply-time {
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 11px;
+    }
+
+    .reply-text {
+      color: #fff;
+      font-size: 13px;
+      line-height: 20px;
+      margin-bottom: 6px;
+      word-break: break-word;
+    }
+
+    .reply-actions {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .reply-right {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      min-width: 43px;
+    }
+
+    .reply-like-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .reply-like-count {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 11px;
+      font-weight: 500;
+      text-align: center;
+    }
+
+    /* Replying-to bar */
+    .replying-bar {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      padding: 7px 16px;
+      background: rgba(234, 28, 37, 0.08);
+      border-top: 1px solid rgba(234, 28, 37, 0.18);
+      flex-shrink: 0;
+    }
+
+    .replying-bar.show {
+      display: flex;
+    }
+
+    .replying-bar-text {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 12px;
+    }
+
+    .replying-bar-text b {
+      color: #EA1C25;
+      font-weight: 600;
+    }
+
+    .replying-cancel {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Context menu */
+    .ctx-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+    }
+
+    .ctx-menu {
+      position: fixed;
+      background: #2C2C2E;
+      border-radius: 12px;
+      overflow: hidden;
+      z-index: 201;
+      min-width: 160px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    }
+
+    .ctx-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 18px;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: left;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    .ctx-item+.ctx-item {
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .ctx-item.danger {
+      color: #EA1C25;
+    }
+
+    /* Mention popup */
+    .mention-popup {
+      position: fixed;
+      background: #2C2C2E;
+      border-radius: 12px;
+      overflow: hidden;
+      z-index: 150;
+      width: calc(100% - 40px);
+      max-width: 380px;
+      left: 50%;
+      transform: translateX(-50%);
+      box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.3);
+      display: none;
+    }
+
+    .mention-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      cursor: pointer;
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: left;
+    }
+
+    .mention-item+.mention-item {
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .mention-item:active {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .mention-av {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: #fff;
+      flex-shrink: 0;
+    }
+
+    .mention-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .mention-name {
+      color: #fff;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .mention-uname {
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 12px;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      top: 108px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-12px);
+      background: #2C2C2E;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 500;
+      padding: 12px 20px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      z-index: 300;
+      opacity: 0;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* Emoji bar */
+    .emoji-bar {
+      background: #242424;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 8px 24px;
+      height: 48px;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    .emoji-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      background: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: transform 0.15s ease;
+      overflow: hidden;
+    }
+
+    .emoji-btn img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .emoji-btn:active {
+      transform: scale(0.88);
+    }
+
+    /* Input bar */
+    .input-bar {
+      background: #242424;
+      padding: 13px 20px calc(16px + env(safe-area-inset-bottom, 0px));
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+
+    .input-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #4A4A6A;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 700;
+      user-select: none;
+    }
+
+    .input-box {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      background: #242424;
+      border: 1px solid #696969;
+      border-radius: 15px;
+      padding: 8px 12px;
+      min-height: 49px;
+      gap: 8px;
+    }
+
+    .editor {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #fff;
+      font-size: 14px;
+      font-family: 'DM Sans', sans-serif;
+      line-height: 1.5;
+      max-height: 72px;
+      overflow-y: auto;
+      word-break: break-word;
+      scrollbar-width: none;
+      cursor: text;
+    }
+
+    .editor::-webkit-scrollbar {
+      display: none;
+    }
+
+    .editor:empty::before {
+      content: attr(data-placeholder);
+      color: rgba(255, 255, 255, 0.5);
+      pointer-events: none;
+    }
+
+    .inline-emoji {
+      width: 20px;
+      height: 20px;
+      vertical-align: -4px;
+      object-fit: contain;
+      display: inline-block;
+    }
+
+    .send-btn {
+      width: 36px;
+      height: 36px;
+      border: none;
+      background: none;
+      padding: 0;
+      cursor: pointer;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transform: scale(0.7);
+      transition: opacity 0.18s ease, transform 0.18s ease;
+    }
+
+    .send-btn.visible {
+      opacity: 1;
+      pointer-events: all;
+      transform: scale(1);
+    }
+
+    .send-btn img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      pointer-events: none;
+    }
+
+    .send-btn:active {
+      transform: scale(0.88);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="phone">
+
+    <!-- Now Playing -->
+    <div class="now-playing">
+      <div class="np-thumb">
+        <img src="assets/poster_img.png" alt="Poster" />
+      </div>
+      <div class="np-info">
+        <div class="np-title">Affirmation For Confidence And Mag...</div>
+        <div class="np-author">John Smith</div>
+      </div>
+      <button class="np-play-btn">
+        <svg width="12" height="14" viewBox="0 0 12 14" fill="none">
+          <rect x="0" y="0" width="4" height="14" rx="1" fill="#fff" />
+          <rect x="8" y="0" width="4" height="14" rx="1" fill="#fff" />
+        </svg>
+      </button>
+      <div class="np-progress">
+        <div class="np-progress-fill"></div>
+      </div>
+    </div>
+
+    <!-- Comment modal -->
+    <div class="comment-modal">
+      <div class="drag-handle"></div>
+
+
+      <div class="comment-list" id="commentList">
+        <div class="empty-state" id="emptyState">
+          <img src="assets/message_empty.png" alt="" style="width:121px;height:100px;opacity:0.8;" />
+          <div class="empty-title">Responses</div>
+          <div class="empty-sub">Leave a response</div>
+        </div>
+      </div>
+
+      <!-- Replying-to indicator -->
+      <div class="replying-bar" id="replyingBar">
+        <div class="replying-bar-text">Replying to <b id="replyTarget"></b></div>
+        <button class="replying-cancel" onclick="cancelReply()">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M4 4l8 8M12 4l-8 8" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" stroke-linecap="round" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Emoji bar -->
+      <div class="emoji-bar">
+        <button class="emoji-btn" onclick="insertEmoji('😍','assets/emoji_1.png')"><img src="assets/emoji_1.png"
+            alt="😍" /></button>
+        <button class="emoji-btn" onclick="insertEmoji('🎧','assets/emoji_2.png')"><img src="assets/emoji_2.png"
+            alt="🎧" /></button>
+        <button class="emoji-btn" onclick="insertEmoji('😆','assets/emoji_3.png')"><img src="assets/emoji_3.png"
+            alt="😆" /></button>
+        <button class="emoji-btn" onclick="insertEmoji('🔥','assets/emoji_4.png')"><img src="assets/emoji_4.png"
+            alt="🔥" /></button>
+        <button class="emoji-btn" onclick="insertEmoji('👏','assets/emoji_5.png')"><img src="assets/emoji_5.png"
+            alt="👏" /></button>
+      </div>
+
+      <!-- Input bar -->
+      <div class="input-bar">
+        <div class="input-avatar">DM</div>
+        <div class="input-box">
+          <div id="commentInput" class="editor" contenteditable="true" role="textbox"
+            data-placeholder="Add a response..." spellcheck="true"></div>
+          <button class="send-btn" id="sendBtn" onclick="submitComment()">
+            <img src="assets/comment_send_img.png" alt="Send" />
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mention popup (outside modal so it can overlap freely) -->
+  <div class="mention-popup" id="mentionPopup"></div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast">
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+      <circle cx="10" cy="10" r="9" stroke="rgba(255,255,255,0.4)" stroke-width="1.5" />
+      <path d="M6 10l3 3 5-5" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+    </svg>
+    <span id="toastMsg">Response deleted</span>
+  </div>
+
+  <script>
+    'use strict';
+
+    // ── Constants ──────────────────────────────────────────────────────────────
+    const ME = { name: 'David Martinez', initials: 'DM', color: '#4A4A6A' };
+    const COLORS = ['#5B7FA6', '#6E5A3A', '#5A7355', '#7A4A6B', '#6B4E3D', '#8B5E3C'];
+    const MENTION_USERS = [
+      { name: 'David Martinez', username: 'David_Martinez', initials: 'DM', color: '#4A4A6A' },
+      { name: 'David M', username: 'David_M', initials: 'DM', color: '#5B7FA6' },
+      { name: 'David R', username: 'David_RR', initials: 'DR', color: '#5A7355' },
+      { name: 'Sarah Johnson', username: 'Sarah_J', initials: 'SJ', color: '#7A4A6B' },
+      { name: 'Mike Chen', username: 'Mike_C', initials: 'MC', color: '#6B4E3D' },
+    ];
+
+    // ── DOM refs ───────────────────────────────────────────────────────────────
+    const editor = document.getElementById('commentInput');
+    const commentList = document.getElementById('commentList');
+    const emptyState = document.getElementById('emptyState');
+    const sendBtn = document.getElementById('sendBtn');
+    const replyingBar = document.getElementById('replyingBar');
+    const replyTarget = document.getElementById('replyTarget');
+    const mentionPopup = document.getElementById('mentionPopup');
+    const toast = document.getElementById('toast');
+    const toastMsg = document.getElementById('toastMsg');
+
+    // ── State ──────────────────────────────────────────────────────────────────
+    let replyingTo = null;   // { commentEl }
+    let editingTextEl = null; // <div class="c-text"> or <div class="reply-text"> being edited
+    let idSeq = 0;
+
+    // ── Toast ──────────────────────────────────────────────────────────────────
+    let toastTimer = null;
+    function showToast(msg) {
+      toastMsg.textContent = msg;
+      toast.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove('show'), 2500);
+    }
+
+    // ── Send button ────────────────────────────────────────────────────────────
+    function syncSendBtn() {
+      const has = editor.innerText.trim().length > 0 || !!editor.querySelector('img.inline-emoji');
+      sendBtn.classList.toggle('visible', has);
+    }
+
+    // ── Emoji insertion ────────────────────────────────────────────────────────
+    function insertEmoji(alt, src) {
+      editor.focus();
+      const img = document.createElement('img');
+      img.src = src; img.alt = alt; img.className = 'inline-emoji';
+      const sel = window.getSelection();
+      if (sel && sel.rangeCount > 0) {
+        const range = sel.getRangeAt(0);
+        if (editor.contains(range.commonAncestorContainer)) {
+          range.deleteContents();
+          range.insertNode(img);
+          range.setStartAfter(img);
+          range.collapse(true);
+          sel.removeAllRanges();
+          sel.addRange(range);
+          syncSendBtn();
+          return;
+        }
+      }
+      editor.appendChild(img);
+      syncSendBtn();
+    }
+
+    // ── Sanitise editor content ────────────────────────────────────────────────
+    function sanitize(node) {
+      const frag = document.createDocumentFragment();
+      node.childNodes.forEach(child => {
+        if (child.nodeType === Node.TEXT_NODE) {
+          frag.appendChild(document.createTextNode(child.textContent));
+        } else if (child.nodeType === Node.ELEMENT_NODE) {
+          if (child.tagName === 'IMG' && child.classList.contains('inline-emoji')) {
+            const i = document.createElement('img');
+            i.src = child.src; i.alt = child.alt; i.className = 'inline-emoji';
+            frag.appendChild(i);
+          } else if (child.tagName === 'BR') {
+            frag.appendChild(document.createElement('br'));
+          } else if (child.classList && child.classList.contains('c-mention')) {
+            const sp = document.createElement('span');
+            sp.className = 'c-mention';
+            sp.textContent = child.textContent;
+            frag.appendChild(sp);
+          } else {
+            frag.appendChild(sanitize(child));
+          }
+        }
+      });
+      const w = document.createElement('div');
+      w.appendChild(frag);
+      return w;
+    }
+
+    // Highlight @mentions in plain text nodes
+    function highlightMentions(html) {
+      const div = document.createElement('div');
+      div.innerHTML = html;
+      (function walk(node) {
+        if (node.nodeType === Node.TEXT_NODE) {
+          if (node.textContent.includes('@')) {
+            const span = document.createElement('span');
+            span.innerHTML = node.textContent.replace(/@(\w+)/g, '<span class="c-mention">@$1</span>');
+            node.replaceWith(span);
+          }
+        } else {
+          Array.from(node.childNodes).forEach(walk);
+        }
+      })(div);
+      return div.innerHTML;
+    }
+
+    // ── Build SVG icons ────────────────────────────────────────────────────────
+    const SVG_REPLY = `<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="1.33"><path d="M2.67 2.67H9.33a4 4 0 0 1 0 8H6"/><path d="M4 8.67L2 10.67l2 2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+    const SVG_EDIT = `<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="1.33"><path d="M11.33 2.67a1.88 1.88 0 0 1 2.67 2.67L4.67 14.67l-3.34.67.67-3.34z" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+    // ── Build Like icon ───────────────────────────────────────────────────────
+    const IC_LIKE = (size) => `<span class="c-like-icon" style="width:${size}px; height:${size}px;"></span>`;
+
+    // ── Build a reply element ──────────────────────────────────────────────────
+    function buildReplyEl(html, isOwn) {
+      const id = 'ri' + (++idSeq);
+      const el = document.createElement('div');
+      el.className = 'reply-item';
+      el.dataset.id = id;
+      el.dataset.own = isOwn ? '1' : '0';
+      el.innerHTML = `
+    <div class="reply-avatar" style="background:${isOwn ? ME.color : COLORS[idSeq % COLORS.length]}">${isOwn ? ME.initials : 'U'}</div>
+    <div class="reply-body">
+      <div class="reply-header">
+        <span class="reply-name">${isOwn ? ME.name : 'User'}</span>
+        <span class="reply-time">1s</span>
+      </div>
+      <div class="reply-text">${highlightMentions(html)}</div>
+      <div class="reply-actions">
+        <button class="c-action-btn" onclick="startReply(this, true)">${SVG_REPLY} Reply</button>
+        ${isOwn ? `<button class="c-action-btn" onclick="startEdit(this, true)">${SVG_EDIT} Edit</button>` : ''}
+      </div>
+    </div>
+    <div class="reply-right">
+      <button class="reply-like-btn c-like-btn" onclick="toggleLike(this)">${IC_LIKE(18)}</button>
+      <span class="reply-like-count" data-count="0">0</span>
+    </div>`;
+      bindLongPress(el);
+      return el;
+    }
+
+    // ── Build a top-level comment element ─────────────────────────────────────
+    function buildCommentEl(html, isOwn) {
+      const id = 'ci' + (++idSeq);
+      const el = document.createElement('div');
+      el.className = 'comment-item';
+      el.dataset.id = id;
+      el.dataset.own = isOwn ? '1' : '0';
+      el.innerHTML = `
+    <div class="c-avatar" style="background:${isOwn ? ME.color : COLORS[idSeq % COLORS.length]}">${isOwn ? ME.initials : 'U'}</div>
+    <div class="c-body">
+      <div class="c-row">
+        <div class="c-left">
+          <div class="c-header">
+            <span class="c-name">${isOwn ? ME.name : 'User'}</span>
+            <span class="c-time">1s</span>
+          </div>
+          <div class="c-text">${highlightMentions(html)}</div>
+          <div class="c-actions">
+            <button class="c-action-btn" onclick="startReply(this, false)">${SVG_REPLY} Reply</button>
+            ${isOwn ? `<button class="c-action-btn" onclick="startEdit(this, false)">${SVG_EDIT} Edit</button>` : ''}
+            <span class="c-replies-label" style="display:none"></span>
+          </div>
+        </div>
+        <div class="c-right">
+          <button class="c-like-btn" onclick="toggleLike(this)">${IC_LIKE(22)}</button>
+          <span class="c-like-count" data-count="0">0</span>
+        </div>
+      </div>
+      <div class="reply-thread"></div>
+    </div>`;
+      bindLongPress(el);
+      return el;
+    }
+
+    // ── Reply ──────────────────────────────────────────────────────────────────
+    function startReply(btn, fromReply) {
+      // For replies-to-replies: target is still the parent comment (1 level only)
+      const commentEl = btn.closest('.comment-item');
+      const nameSrc = fromReply
+        ? btn.closest('.reply-item').querySelector('.reply-name').textContent
+        : commentEl.querySelector('.c-name').textContent;
+
+      replyingTo = { commentEl };
+      replyTarget.textContent = '@' + nameSrc.replace(/\s+/g, '');
+      replyingBar.classList.add('show');
+      editor.dataset.placeholder = 'Add a comment...';
+      editor.setAttribute('data-placeholder', 'Add a comment...');
+      editor.focus();
+
+      // Pre-fill @mention if replying to someone else's reply
+      if (fromReply) {
+        const mention = document.createElement('span');
+        mention.className = 'c-mention';
+        mention.contentEditable = 'false';
+        mention.textContent = '@' + nameSrc.replace(/\s+/g, '');
+        editor.innerHTML = '';
+        editor.appendChild(mention);
+        editor.appendChild(document.createTextNode(' '));
+        // move cursor to end
+        const range = document.createRange();
+        range.selectNodeContents(editor);
+        range.collapse(false);
+        const sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+        syncSendBtn();
+      }
+    }
+
+    function cancelReply() {
+      replyingTo = null;
+      replyingBar.classList.remove('show');
+      editor.setAttribute('data-placeholder', 'Add a response...');
+    }
+
+    // ── Edit ───────────────────────────────────────────────────────────────────
+    function startEdit(btn, isReply) {
+      const item = btn.closest(isReply ? '.reply-item' : '.comment-item');
+      const textEl = item.querySelector(isReply ? '.reply-text' : '.c-text');
+      editingTextEl = textEl;
+      editor.innerHTML = textEl.innerHTML;
+      editor.setAttribute('data-placeholder', 'Edit response...');
+      editor.focus();
+      // move cursor to end
+      const range = document.createRange();
+      range.selectNodeContents(editor);
+      range.collapse(false);
+      const sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+      syncSendBtn();
+    }
+
+    // ── Submit ─────────────────────────────────────────────────────────────────
+    function submitComment() {
+      const hasText = editor.innerText.trim().length > 0;
+      const hasEmoji = !!editor.querySelector('img.inline-emoji');
+      if (!hasText && !hasEmoji) return;
+
+      const clean = sanitize(editor).innerHTML;
+
+      // Edit mode: update existing text in place
+      if (editingTextEl) {
+        editingTextEl.innerHTML = highlightMentions(clean);
+        editingTextEl = null;
+        editor.innerHTML = '';
+        editor.setAttribute('data-placeholder', 'Add a response...');
+        syncSendBtn();
+        cancelReply();
+        return;
+      }
+
+      // Reply mode
+      if (replyingTo) {
+        const { commentEl } = replyingTo;
+        const thread = commentEl.querySelector('.reply-thread');
+        const replyEl = buildReplyEl(clean, true);
+        thread.appendChild(replyEl);
+
+        const label = commentEl.querySelector('.c-replies-label');
+        const cnt = thread.querySelectorAll('.reply-item').length;
+        label.style.display = '';
+        label.textContent = cnt + (cnt === 1 ? ' Reply' : ' Replies');
+
+        cancelReply();
+        replyEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      } else {
+        // New top-level comment
+        emptyState.style.display = 'none';
+        const el = buildCommentEl(clean, true);
+        commentList.appendChild(el);
+        el.scrollIntoView({ behavior: 'smooth', block: 'end' });
+      }
+
+      editor.innerHTML = '';
+      editor.setAttribute('data-placeholder', 'Add a response...');
+      syncSendBtn();
+      editor.focus();
+    }
+
+    // ── Like toggle ────────────────────────────────────────────────────────────
+    function toggleLike(btn) {
+      const isLiked = btn.classList.toggle('liked');
+      const isReply = !!btn.closest('.reply-item');
+      const parent = btn.closest(isReply ? '.reply-right' : '.c-right');
+      const countEl = parent.querySelector(isReply ? '.reply-like-count' : '.c-like-count');
+      let count = parseInt(countEl.dataset.count, 10);
+
+      if (isLiked) {
+        count++;
+        btn.classList.add('animating');
+        setTimeout(() => btn.classList.remove('animating'), 300);
+      } else {
+        count--;
+      }
+
+      countEl.dataset.count = count;
+      countEl.textContent = count;
+    }
+
+    // ── Context menu (long press / right-click) ────────────────────────────────
+    function bindLongPress(el) {
+      let timer = null;
+
+      function onStart(e) {
+        timer = setTimeout(() => showCtxMenu(e, el), 420);
+      }
+      function onEnd() { clearTimeout(timer); timer = null; }
+
+      el.addEventListener('touchstart', onStart, { passive: true });
+      el.addEventListener('touchend', onEnd);
+      el.addEventListener('touchcancel', onEnd);
+      el.addEventListener('touchmove', onEnd);
+      el.addEventListener('contextmenu', e => { e.preventDefault(); showCtxMenu(e, el); });
+    }
+
+    function showCtxMenu(e, el) {
+      closeCtxMenu();
+      const isOwn = el.dataset.own === '1';
+      const isReply = el.classList.contains('reply-item');
+      const id = el.dataset.id;
+
+      // Overlay to catch dismiss taps
+      const overlay = document.createElement('div');
+      overlay.className = 'ctx-overlay';
+      overlay.onclick = closeCtxMenu;
+
+      const menu = document.createElement('div');
+      menu.className = 'ctx-menu';
+      menu.id = 'ctxMenu';
+
+      if (isOwn) {
+        const del = document.createElement('button');
+        del.className = 'ctx-item danger';
+        del.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#EA1C25" stroke-width="1.5"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" stroke-linecap="round" stroke-linejoin="round"/></svg> Delete`;
+        del.onclick = () => deleteItem(id, isReply);
+        menu.appendChild(del);
+      }
+
+      const rep = document.createElement('button');
+      rep.className = 'ctx-item';
+      rep.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#EA1C25" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01" stroke-linecap="round"/></svg> <span style="color:#EA1C25">Report</span>`;
+      rep.onclick = () => { closeCtxMenu(); showToast('Response reported'); };
+      menu.appendChild(rep);
+
+      document.body.appendChild(overlay);
+      document.body.appendChild(menu);
+
+      // Position near touch/click
+      const cx = e.touches ? e.touches[0].clientX : e.clientX;
+      const cy = e.touches ? e.touches[0].clientY : e.clientY;
+      const mw = menu.offsetWidth || 180;
+      const mh = menu.offsetHeight || 112;
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      menu.style.left = Math.min(cx, vw - mw - 16) + 'px';
+      menu.style.top = Math.min(cy, vh - mh - 16) + 'px';
+    }
+
+    function closeCtxMenu() {
+      document.getElementById('ctxMenu')?.remove();
+      document.querySelectorAll('.ctx-overlay').forEach(o => o.remove());
+    }
+
+    function deleteItem(id, isReply) {
+      closeCtxMenu();
+      if (isReply) {
+        const el = document.querySelector(`.reply-item[data-id="${id}"]`);
+        if (!el) return;
+        const commentEl = el.closest('.comment-item');
+        el.remove();
+        // Update reply count on parent
+        const thread = commentEl.querySelector('.reply-thread');
+        const label = commentEl.querySelector('.c-replies-label');
+        const cnt = thread.querySelectorAll('.reply-item').length;
+        label.style.display = cnt ? '' : 'none';
+        if (cnt) label.textContent = cnt + (cnt === 1 ? ' Reply' : ' Replies');
+      } else {
+        document.querySelector(`.comment-item[data-id="${id}"]`)?.remove();
+        if (!commentList.querySelector('.comment-item')) {
+          emptyState.style.display = '';
+        }
+      }
+      showToast('Response deleted');
+    }
+
+    // ── @mention autocomplete ──────────────────────────────────────────────────
+    function getMentionQuery() {
+      const sel = window.getSelection();
+      if (!sel || sel.rangeCount === 0) return null;
+      const range = sel.getRangeAt(0);
+      const node = range.startContainer;
+      if (node.nodeType !== Node.TEXT_NODE) return null;
+      const text = node.textContent.slice(0, range.startOffset);
+      const match = text.match(/@(\w*)$/);
+      return match ? match[1] : null;
+    }
+
+    function positionMentionPopup() {
+      const emojiBar = document.querySelector('.emoji-bar');
+      const rect = emojiBar.getBoundingClientRect();
+      mentionPopup.style.bottom = (window.innerHeight - rect.top + 6) + 'px';
+    }
+
+    function showMentionPopup(query) {
+      const list = MENTION_USERS.filter(u =>
+        u.name.toLowerCase().includes(query.toLowerCase()) ||
+        u.username.toLowerCase().includes(query.toLowerCase())
+      );
+      if (!list.length) { hideMentionPopup(); return; }
+
+      positionMentionPopup();
+      mentionPopup.innerHTML = list.map(u => `
+    <button class="mention-item" onclick="insertMention('${u.name.replace(/'/g, "\\'")}','${u.username}')">
+      <div class="mention-av" style="background:${u.color}">${u.initials}</div>
+      <div class="mention-info">
+        <span class="mention-name">${u.name}</span>
+        <span class="mention-uname">${u.username}</span>
+      </div>
+    </button>`).join('');
+      mentionPopup.style.display = 'block';
+    }
+
+    function hideMentionPopup() {
+      mentionPopup.style.display = 'none';
+    }
+
+    function insertMention(name, username) {
+      const sel = window.getSelection();
+      if (!sel || sel.rangeCount === 0) { hideMentionPopup(); return; }
+      const range = sel.getRangeAt(0);
+      const node = range.startContainer;
+      if (node.nodeType !== Node.TEXT_NODE) { hideMentionPopup(); return; }
+
+      const offset = range.startOffset;
+      const text = node.textContent;
+      const atIdx = text.slice(0, offset).lastIndexOf('@');
+
+      // Build mention span (non-editable so cursor exits cleanly)
+      const mention = document.createElement('span');
+      mention.className = 'c-mention';
+      mention.contentEditable = 'false';
+      mention.textContent = '@' + username;
+
+      const before = document.createTextNode(text.slice(0, atIdx));
+      const after = document.createTextNode(' ' + text.slice(offset));
+      node.parentNode.insertBefore(before, node);
+      node.parentNode.insertBefore(mention, node);
+      node.parentNode.insertBefore(after, node);
+      node.remove();
+
+      // Move cursor after the non-breaking space
+      const nr = document.createRange();
+      nr.setStart(after, 1);
+      nr.collapse(true);
+      sel.removeAllRanges();
+      sel.addRange(nr);
+
+      hideMentionPopup();
+      syncSendBtn();
+    }
+
+    // ── Editor events ──────────────────────────────────────────────────────────
+    editor.addEventListener('input', () => {
+      syncSendBtn();
+      const q = getMentionQuery();
+      q !== null ? showMentionPopup(q) : hideMentionPopup();
+    });
+
+    editor.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        if (mentionPopup.style.display === 'block') {
+          mentionPopup.querySelector('.mention-item')?.click();
+          return;
+        }
+        submitComment();
+      }
+      if (e.key === 'Escape') { hideMentionPopup(); cancelReply(); }
+    });
+
+    editor.addEventListener('blur', () => setTimeout(hideMentionPopup, 150));
+
+    // Dismiss context menu on scroll
+    commentList.addEventListener('scroll', closeCtxMenu);
+  </script>
+</body>
+
+</html>

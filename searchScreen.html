@@ -1,0 +1,1644 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Discover - Search</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;0,9..40,900&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent
+        }
+
+        body {
+            background: #111;
+            display: flex;
+            justify-content: center;
+            font-family: 'DM Sans', sans-serif;
+            min-height: 100vh
+        }
+
+        .screen {
+            position: relative;
+            width: 100%;
+            max-width: 420px;
+            height: 100dvh;
+            background: #1A1A1A;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            margin-top: 24px; /* Added top margin for visual gap */
+        }
+
+        /* STATUS BAR */
+        .sbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 16px;
+            height: 44px;
+            flex-shrink: 0
+        }
+
+        .stime {
+            font-weight: 400;
+            font-size: 16px;
+            line-height: 24px;
+            color: #fff
+        }
+
+        .sicons {
+            display: flex;
+            align-items: center;
+            gap: 5px
+        }
+
+        /* SEARCH HEADER */
+        .shdr {
+            display: flex;
+            flex-direction: column;
+            padding: 14px 16px 0;
+            gap: 16px;
+            flex-shrink: 0
+        }
+
+        .srow {
+            display: flex;
+            align-items: center;
+            height: 40px
+        }
+
+        .sbk {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 40px;
+            padding: 8px 12px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            flex-shrink: 0
+        }
+
+        .sbox {
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            gap: 8px;
+            flex: 1;
+            height: 37px;
+            background: #313131;
+            border-radius: 8px
+        }
+
+        .sbox input {
+            flex: 1;
+            background: none;
+            border: none;
+            outline: none;
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 400;
+            font-size: 14px;
+            line-height: 18px;
+            color: rgba(255, 255, 255, 0.9)
+        }
+
+        .sbox input::placeholder {
+            color: rgba(255, 255, 255, 0.5)
+        }
+
+        .sclr {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            width: 16px;
+            height: 16px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            cursor: pointer;
+            flex-shrink: 0
+        }
+
+        .sclr.on {
+            display: flex
+        }
+
+        .tabs {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            height: 29px;
+            border-bottom: 1.11px solid rgba(255, 255, 255, 0.2)
+        }
+
+        .tb {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4px;
+            height: 29px;
+            background: none;
+            border: none;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -1.11px;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 600;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+            white-space: nowrap
+        }
+
+        .tb.on {
+            color: #fff;
+            border-bottom: 2px solid #fff
+        }
+
+        /* SCREENS */
+        .tc {
+            display: none;
+            flex: 1;
+            overflow-y: auto
+        }
+
+        .tc::-webkit-scrollbar {
+            display: none
+        }
+
+        .tc.on {
+            display: flex;
+            flex-direction: column
+        }
+
+        /* RECENT */
+        .rbox {
+            margin: 8px 16px 0;
+            background: #242424;
+            border-radius: 12px;
+            padding: 16px 0 8px
+        }
+
+        .rhdr {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 16px 12px
+        }
+
+        .rtit {
+            font-weight: 700;
+            font-size: 11px;
+            letter-spacing: .05em;
+            text-transform: uppercase;
+            color: #fff
+        }
+
+        .rclr {
+            font-weight: 500;
+            font-size: 14px;
+            color: #EA1C25;
+            cursor: pointer
+        }
+
+        .ri {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            gap: 12px;
+            cursor: pointer
+        }
+
+        .rit {
+            flex: 1;
+            font-weight: 400;
+            font-size: 16px;
+            line-height: 22px;
+            color: #fff
+        }
+
+        .rix {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: .5;
+            flex-shrink: 0
+        }
+
+        /* SUGGESTIONS */
+        .sgbox {
+            margin: 4px 16px 0;
+            background: #242424;
+            border-radius: 12px;
+            overflow: hidden
+        }
+
+        .sgi {
+            display: flex;
+            align-items: center;
+            padding: 14px 16px;
+            gap: 12px;
+            cursor: pointer;
+            border-bottom: 1px solid rgba(255, 255, 255, .06)
+        }
+
+        .sgi:last-child {
+            border-bottom: none
+        }
+
+        .sgt {
+            font-size: 14px;
+            line-height: 18px;
+            color: #fff
+        }
+
+        .sgt b {
+            font-weight: 700
+        }
+
+        /* PROFILES */
+        .plist {
+            display: flex;
+            flex-direction: column;
+            padding: 0 16px
+        }
+
+        .pc {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, .12);
+            gap: 8px
+        }
+
+        .plft {
+            display: flex;
+            flex-direction: row;
+            align-items: flex-start;
+            gap: 12px;
+            flex: 1;
+            min-width: 0
+        }
+
+        .pav {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            overflow: hidden
+        }
+
+        .av1 {
+            background: linear-gradient(135deg, #6B4E3D, #C9A87C)
+        }
+
+        .av2 {
+            background: linear-gradient(135deg, #5A6B4A, #A8C97C)
+        }
+
+        .av3 {
+            background: linear-gradient(135deg, #4A5A7A, #7CA8C9)
+        }
+
+        .av4 {
+            background: linear-gradient(135deg, #7A4A6B, #C97CA8)
+        }
+
+        .av5 {
+            background: linear-gradient(135deg, #7A3A3A, #C97A7A)
+        }
+
+        .pin {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            flex: 1;
+            min-width: 0
+        }
+
+        .pnm {
+            font-weight: 500;
+            font-size: 14px;
+            line-height: 21px;
+            color: #fff
+        }
+
+        .phd {
+            font-weight: 400;
+            font-size: 12px;
+            line-height: 18px;
+            color: rgba(255, 255, 255, .7)
+        }
+
+        .pbi {
+            font-weight: 400;
+            font-size: 12px;
+            line-height: 18px;
+            color: rgba(255, 255, 255, .7)
+        }
+
+        .pmt {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 4px;
+            flex-wrap: wrap
+        }
+
+        .pfl {
+            font-size: 12px;
+            color: rgba(255, 255, 255, .5)
+        }
+
+        .mavs {
+            display: flex;
+            align-items: center
+        }
+
+        .mavs span {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            display: inline-block;
+            border: 1.5px solid #1A1A1A;
+            margin-left: -4px
+        }
+
+        .mavs span:first-child {
+            margin-left: 0
+        }
+
+        .ma1 {
+            background: linear-gradient(135deg, #c97, #a75)
+        }
+
+        .ma2 {
+            background: linear-gradient(135deg, #79c, #579)
+        }
+
+        .ma3 {
+            background: linear-gradient(135deg, #c79, #a57)
+        }
+
+        .mut {
+            font-size: 12px;
+            color: rgba(255, 255, 255, .5)
+        }
+
+        .fbtn {
+            width: 40px;
+            height: 40px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0
+        }
+
+        .fbtn.red {
+            background: #EA1C25
+        }
+
+        .fbtn.grey {
+            background: #2C2C2C;
+            border: 1px solid rgba(255, 255, 255, .2)
+        }
+
+        /* ══ CLIPS — Figma exact ══
+   Active:   box-sizing:border-box; padding:8px; gap:12px; height:111px; bg:rgba(255,255,255,0.1); border-radius:5px; isolation:isolate
+   Progress: position:absolute; width:100%; height:4px; bottom:0; bg:rgba(255,255,255,0.6); fill:rgba(207,67,57,0.9)
+   Inactive: padding:4px 9px; gap:12px; min-height:77px; border-radius:5px
+*/
+        .clips {
+            display: flex;
+            flex-direction: column
+        }
+
+        /* Active card */
+        .ca {
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            padding: 8px;
+            gap: 12px;
+            isolation: isolate;
+            width: auto;
+            align-self: stretch;
+            height: 111px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            margin: 0 16px 4px
+        }
+
+        .cap {
+            position: absolute;
+            width: 100%;
+            height: 4px;
+            left: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.6);
+            z-index: 2
+        }
+
+        .capf {
+            height: 100%;
+            width: 51.6%;
+            background: rgba(207, 67, 57, 0.9)
+        }
+
+        .cal {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+            min-width: 0;
+            z-index: 0
+        }
+
+        .cth {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            flex-shrink: 0;
+            overflow: hidden;
+            background: #3a3a3a
+        }
+
+        .cth img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block
+        }
+
+        .cai {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 8px;
+            flex: 1;
+            min-width: 0
+        }
+
+        .cnr {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: flex-end;
+            gap: 4px;
+            width: 100%
+        }
+
+        .eq {
+            display: flex;
+            align-items: flex-end;
+            gap: 2px;
+            height: 18px;
+            width: 18px;
+            flex-shrink: 0
+        }
+
+        .eqb {
+            width: 3px;
+            border-radius: 1px;
+            background: #fff;
+            animation: eq .7s ease-in-out infinite alternate
+        }
+
+        .eqb:nth-child(1) {
+            height: 10px;
+            animation-delay: 0s
+        }
+
+        .eqb:nth-child(2) {
+            height: 16px;
+            animation-delay: .2s
+        }
+
+        .eqb:nth-child(3) {
+            height: 8px;
+            animation-delay: .4s
+        }
+
+        .eqb:nth-child(4) {
+            height: 14px;
+            animation-delay: .1s
+        }
+
+        @keyframes eq {
+            to {
+                height: 3px
+            }
+        }
+
+        .cnl {
+            font-weight: 500;
+            font-size: 12px;
+            line-height: 14px;
+            color: #fff;
+            flex: 1
+        }
+
+        .cat {
+            font-weight: 600;
+            font-size: 12px;
+            line-height: 16px;
+            color: #CF4339;
+            align-self: stretch
+        }
+
+        .caa {
+            font-weight: 500;
+            font-size: 12px;
+            line-height: 14px;
+            color: rgba(255, 255, 255, .6)
+        }
+
+        .cad {
+            font-weight: 500;
+            font-size: 12px;
+            line-height: 14px;
+            color: rgba(255, 255, 255, .6)
+        }
+
+        .car {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+            z-index: 1
+        }
+
+        .bpause {
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            background: #EA1C25;
+            border: 1.11px solid #EA1C25;
+            border-radius: 50%;
+            cursor: pointer
+        }
+
+        .bmore {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: none;
+            border: none;
+            cursor: pointer
+        }
+
+        /* Inactive */
+        .ci {
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            padding: 4px 9px;
+            gap: 12px;
+            width: auto;
+            align-self: stretch;
+            min-height: 77px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 0 16px
+        }
+
+        .ci:active {
+            background: rgba(255, 255, 255, .04)
+        }
+
+        .cil {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+            min-width: 0
+        }
+
+        .cii {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 8px;
+            flex: 1;
+            min-width: 0
+        }
+
+        .citb {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 0 8px 0 0;
+            gap: 4px;
+            align-self: stretch
+        }
+
+        .cit {
+            font-weight: 500;
+            font-size: 12px;
+            line-height: 16px;
+            color: #fff;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            align-self: stretch
+        }
+
+        .cia {
+            font-weight: 500;
+            font-size: 12px;
+            line-height: 14px;
+            color: rgba(255, 255, 255, .6)
+        }
+
+        .cid {
+            font-weight: 500;
+            font-size: 12px;
+            line-height: 14px;
+            color: rgba(255, 255, 255, .6)
+        }
+
+        .cir {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0
+        }
+
+        .bplay {
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border: 1.11px solid rgba(255, 255, 255, .2);
+            border-radius: 50%;
+            background: none;
+            cursor: pointer;
+            padding-left: 2px
+        }
+
+        /* ══ PLAYLISTS — Figma exact ══
+   Card:   background:#242424; border-radius:15px
+   Banner: padding:8px; gap:4px (for badge)
+   Body:   padding:8px 8px 8px 12px  (justify-content:space-between)
+   Footer: padding:4px 8px 8px 12px; gap:8px (Frame 305 / Frame 1000002720)
+*/
+        .pls {
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            padding: 8px 16px;
+            gap: 8px
+        }
+
+        .plc {
+            width: 100%;
+            background: #242424;
+            border-radius: 15px;
+            overflow: hidden;
+            flex-shrink: 0
+        }
+
+        /* Banner */
+        .plb {
+            width: 100%;
+            padding: 8px;
+            gap: 4px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            position: relative;
+            overflow: hidden
+        }
+
+
+
+        /* Banner colors — from screenshots */
+        .plb,
+        .plb.warm,
+        .plb.green,
+        .plb.dark,
+        .plb.blue {
+            background: #242424;
+            position: relative;
+        }
+        .plb::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            background: url('assets/playlist_bg.png') no-repeat right bottom;
+            background-size: cover;
+            opacity: 0.18;
+            pointer-events: none;
+        }
+
+        /* Badge */
+        .plbg {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            padding: 4px 8px;
+            gap: 4px;
+            background: rgba(255, 255, 255, .25);
+            border-radius: 5px;
+            width: fit-content
+        }
+
+        .plbt {
+            font-weight: 900;
+            font-size: 10px;
+            line-height: 13px;
+            letter-spacing: .04em;
+            text-transform: uppercase;
+            color: #fff
+        }
+
+        /* Body row */
+        .plbd {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0px;
+            width: 100%;
+        }
+
+        .pllft {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+            min-width: 0
+        }
+
+        .plic {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 46px;
+            height: 46px;
+            border-radius: 10px;
+            padding: 8px;
+            flex-shrink: 0
+        }
+
+        .pldt {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 4px;
+            flex: 1;
+            min-width: 0
+        }
+
+        .plnm {
+            font-weight: 500;
+            font-size: 14px;
+            line-height: 18px;
+            color: #fff
+        }
+
+        .plmr {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            align-items: center;
+            align-content: flex-start;
+            gap: 4px;
+            width: 100%
+        }
+
+        .plmi {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 4px
+        }
+
+        .plmd {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, .7);
+            flex-shrink: 0
+        }
+
+        .plmt {
+            font-weight: 500;
+            font-size: 12px;
+            line-height: 14px;
+            color: rgba(255, 255, 255, .7);
+            white-space: nowrap
+        }
+
+        .plac {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 4px;
+            flex-shrink: 0
+        }
+
+        .plab {
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 12px;
+            height: 28px;
+            background: rgba(36, 36, 36, .2);
+            border: 1px solid rgba(255, 255, 255, .5);
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 800;
+            font-size: 10px;
+            line-height: 13px;
+            letter-spacing: .04em;
+            text-transform: uppercase;
+            color: #fff;
+            white-space: nowrap
+        }
+
+        .plmb {
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px;
+            width: 32px;
+            height: 32px;
+            background: rgba(36, 36, 36, .2);
+            border-radius: 5px;
+            border: none;
+            cursor: pointer
+        }
+
+        /* Footer — Frame 1000002720 / Frame 305 */
+        .plft2 {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            padding: 4px 8px 8px 12px;
+            gap: 8px;
+            width: 100%
+        }
+
+        .plavs {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            flex-shrink: 0
+        }
+
+        .plav {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 2px solid rgba(0, 0, 0, .5);
+            margin-left: -8px;
+            flex-shrink: 0
+        }
+
+        .plav:first-child {
+            margin-left: 0
+        }
+
+        .fa1 {
+            background: linear-gradient(135deg, #8B7355, #C4A882)
+        }
+
+        .fa2 {
+            background: linear-gradient(135deg, #5A7355, #A8C490)
+        }
+
+        .fa3 {
+            background: linear-gradient(135deg, #4A5A7A, #7CA8C9)
+        }
+
+        .pltx {
+            font-weight: 500;
+            font-size: 14px;
+            line-height: 140%;
+            letter-spacing: .2px;
+            color: #fff;
+            flex: 1;
+            min-width: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis
+        }
+
+        .plsav {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 2px solid rgba(0, 0, 0, .5);
+            flex-shrink: 0;
+            background: linear-gradient(135deg, #4A5A7A, #7CA8C9)
+        }
+
+        /* ══ PLAYLIST DETAIL ══
+   Figma Frame 304: display:flex; flex-direction:row; align-items:center; padding:8px; gap:12px; width:358px; height:70px; background:#4E4E4E
+   Back icon: 40×40 border-radius:15px
+   Info: flex-direction:column; justify-content:center; gap:4px; width:278px (flex:1)
+*/
+        .pldhdr {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            padding: 8px;
+            gap: 12px;
+            width: 100%;
+            height: 70px;
+            background: #4E4E4E;
+            flex-shrink: 0
+        }
+
+        .pldbk {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 15px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            flex-shrink: 0
+        }
+
+        .pldin {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 4px;
+            flex: 1;
+            min-width: 0
+        }
+
+        .pldnm {
+            font-weight: 500;
+            font-size: 14px;
+            line-height: 18px;
+            color: #fff;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden
+        }
+
+        .pldmt {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            padding: 0;
+            gap: 4px;
+            flex-wrap: wrap
+        }
+
+        .pldd {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, .7);
+            flex-shrink: 0
+        }
+
+        .pldtx {
+            font-weight: 500;
+            font-size: 12px;
+            line-height: 14px;
+            color: rgba(255, 255, 255, .7)
+        }
+
+        /* clips container in detail — Frame 1000002676: background:#242424; gap:4px (between items) */
+        .pldclips {
+            flex: 1;
+            overflow-y: auto;
+            background: #242424;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            padding-bottom: 64px
+        }
+
+        .pldclips::-webkit-scrollbar {
+            display: none
+        }
+
+        /* BOTTOM NAV */
+        .nav-bar {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 420px;
+            background: #1A1A1A;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: clamp(10px, 1.8vh, 14px) 16px calc(clamp(14px, 2.2vh, 20px) + env(safe-area-inset-bottom, 0px));
+            z-index: 50;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0.6;
+            text-decoration: none;
+        }
+
+        .nav-item.active {
+            opacity: 1;
+        }
+
+        .nav-item svg {
+            width: clamp(22px, 3.2vh, 26px);
+            height: clamp(22px, 3.2vh, 26px);
+            fill: none;
+            stroke: #fff;
+            stroke-width: 1.8;
+        }
+
+        .nav-item.active svg.icon-fill {
+            fill: #fff;
+            stroke: none;
+        }
+        
+        .nav-item.active svg.icon-stroke {
+            stroke-width: 2.8;
+        }
+
+        .nav-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 1.5px solid #fff;
+            background: #fff;
+        }
+
+        .nav-avatar svg {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="screen">
+
+        <!-- SEARCH HEADER -->
+        <div class="shdr">
+            <div class="srow">
+                <button class="sbk" onclick="goBack()">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <path d="M20 11H7.83l5.59-5.59L12 4 4 12l8 8 1.41-1.41L7.83 13H20v-2Z" fill="white" />
+                    </svg>
+                </button>
+                <div class="sbox" onclick="document.getElementById('si').focus()">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path
+                            d="M6.5 11a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9Zm7.5 2.59-3.26-3.26A5.97 5.97 0 0 1 6.5 12 6 6 0 1 1 12 6.5c0 1.24-.4 2.39-1.07 3.33L14.09 13 14 13.59Z"
+                            fill="rgba(255,255,255,0.5)" />
+                    </svg>
+                    <input id="si" placeholder="Search" oninput="onInput(this.value)" onfocus="onFocus()" />
+                    <div class="sclr" id="sc" onclick="clearS()">
+                        <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                            <path d="M9 1 1 9M1 1l8 8" stroke="rgba(255,255,255,0.6)" stroke-width="1.5"
+                                stroke-linecap="round" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            <div class="tabs" id="tbr" style="display:none">
+                <button class="tb on" onclick="swTab('profiles',this)">Profiles</button>
+                <button class="tb" onclick="swTab('clips',this)">Clips</button>
+                <button class="tb" onclick="swTab('playlists',this)">Playlists</button>
+            </div>
+        </div>
+
+        <!-- RECENT -->
+        <div id="sr" class="tc" style="padding-bottom:64px;">
+            <div class="rbox">
+                <div class="rhdr"><span class="rtit">Recent Searches</span><span class="rclr" onclick="clrAll()">Clear
+                        All</span></div>
+                <div id="rl"></div>
+            </div>
+        </div>
+
+        <!-- SUGGESTIONS -->
+        <div id="ss" class="tc" style="padding-bottom:64px;">
+            <div class="sgbox" id="sl"></div>
+        </div>
+
+        <!-- RESULTS -->
+        <div id="sres" class="tc" style="overflow:hidden;">
+
+            <!-- PROFILES -->
+            <div class="tc on" id="tab-profiles" style="overflow-y:auto;padding-bottom:64px;">
+                <div class="plist">
+                    <div class="pc">
+                        <div class="plft">
+                            <div class="pav av1"></div>
+                            <div class="pin"><span class="pnm">Portuguese emma</span><span
+                                    class="phd">@emmawilson</span><span class="pbi">Portuguese Singer • Songwriter •
+                                    Music Producer</span></div>
+                        </div><button class="fbtn grey"><svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                <path
+                                    d="M16 11c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3Zm-8 0c1.66 0 3-1.34 3-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3Zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5Zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5Z"
+                                    fill="white" />
+                                <path d="M20 8V6h-2V4h-2v2h-2v2h2v2h2V8h2Z" fill="white" />
+                            </svg></button>
+                    </div>
+                    <div class="pc">
+                        <div class="plft">
+                            <div class="pav av2"></div>
+                            <div class="pin"><span class="pnm">Portuguese woman luca</span><span
+                                    class="phd">@lucasoliveira</span><span class="pbi">Portuguese Chef • Culinary Expert
+                                    • TV Personality</span></div>
+                        </div><button class="fbtn grey"><svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                <path
+                                    d="M16 11c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3Zm-8 0c1.66 0 3-1.34 3-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3Zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5Zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5Z"
+                                    fill="white" />
+                                <path d="M20 8V6h-2V4h-2v2h-2v2h2v2h2V8h2Z" fill="white" />
+                            </svg></button>
+                    </div>
+                    <div class="pc">
+                        <div class="plft">
+                            <div class="pav av3"></div>
+                            <div class="pin"><span class="pnm">Portuguese woman em</span><span
+                                    class="phd">@emmawilson</span><span class="pbi">Portuguese Singer • Songwriter •
+                                    Music Producer</span>
+                                <div class="pmt"><span class="pfl">24.5K followers</span><span
+                                        style="color:rgba(255,255,255,.4)">•</span>
+                                    <div class="mavs"><span class="ma1"></span><span class="ma2"></span><span
+                                            class="ma3"></span></div><span class="mut">12 mutual</span>
+                                </div>
+                            </div>
+                        </div><button class="fbtn red"><svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2Z" fill="#E6E6E6" />
+                            </svg></button>
+                    </div>
+                    <div class="pc">
+                        <div class="plft">
+                            <div class="pav av4"></div>
+                            <div class="pin"><span class="pnm">woman peace</span><span
+                                    class="phd">@sofia.santos</span><span class="pbi">Portuguese Fashion Designer •
+                                    Entrepreneur • Stylist</span>
+                                <div class="pmt"><span class="pfl">30.1K followers</span><span
+                                        style="color:rgba(255,255,255,.4)">•</span>
+                                    <div class="mavs"><span class="ma1"></span><span class="ma2"></span><span
+                                            class="ma3"></span></div><span class="mut">8 mutual</span>
+                                </div>
+                            </div>
+                        </div><button class="fbtn red"><svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2Z" fill="#E6E6E6" />
+                            </svg></button>
+                    </div>
+                    <div class="pc">
+                        <div class="plft">
+                            <div class="pav av5"></div>
+                            <div class="pin"><span class="pnm">Portuguese woman peace</span><span
+                                    class="phd">@miguel.ferreira</span><span class="pbi">Portuguese Photographer •
+                                    Visual Artist • Influencer</span>
+                                <div class="pmt"><span class="pfl">15.7K followers</span><span
+                                        style="color:rgba(255,255,255,.4)">•</span>
+                                    <div class="mavs"><span class="ma1"></span><span class="ma2"></span><span
+                                            class="ma3"></span></div><span class="mut">10 mutual</span>
+                                </div>
+                            </div>
+                        </div><button class="fbtn red"><svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2Z" fill="#E6E6E6" />
+                            </svg></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CLIPS -->
+            <div class="tc" id="tab-clips" style="overflow-y:auto;padding-bottom:64px;">
+                <div class="clips" style="padding-top:0;">
+                    <!-- Active now-playing card (hidden by default) -->
+                    <div class="ca" id="npCard" style="display:none;">
+                        <div class="cal">
+                            <div class="cth"><img id="npImg"
+                                    src="https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=120&h=120&fit=crop&crop=face"
+                                    alt="" onerror="this.style.display='none'" /></div>
+                            <div class="cai">
+                                <div class="cnr">
+                                    <div class="eq">
+                                        <div class="eqb"></div>
+                                        <div class="eqb"></div>
+                                        <div class="eqb"></div>
+                                        <div class="eqb"></div>
+                                    </div>
+                                    <span class="cnl">Now playing</span>
+                                </div>
+                                <span class="cat">Portuguese woman peace</span>
+                                <span class="caa">Marcus Chen</span>
+                                <span class="cad">00:51</span>
+                            </div>
+                        </div>
+                        <div class="car">
+                            <button class="bpause"><svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                                    <rect x="2" y="1" width="3.5" height="12" rx="1" fill="white" />
+                                    <rect x="8.5" y="1" width="3.5" height="12" rx="1" fill="white" />
+                                </svg></button>
+                            <button class="bmore"><svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                    <circle cx="12" cy="5" r="2" fill="white" />
+                                    <circle cx="12" cy="12" r="2" fill="white" />
+                                    <circle cx="12" cy="19" r="2" fill="white" />
+                                </svg></button>
+                        </div>
+                        <div class="cap">
+                            <div class="capf"></div>
+                        </div>
+                    </div>
+                    <div id="inactClips"></div>
+                </div>
+            </div>
+
+            <!-- PLAYLISTS -->
+            <div class="tc" id="tab-playlists" style="overflow-y:auto;padding-bottom:64px;">
+                <div id="plView">
+                    <!-- List -->
+                    <div class="pls" id="plList">
+
+                        <!-- Card 1: PRIVATE · Portuguese woman peace · JOIN -->
+                        <div class="plc">
+                            <div class="plb h98 warm">
+                                <div class="plbg"><svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                        <path
+                                            d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2Zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2Zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2Z"
+                                            fill="white" />
+                                    </svg><span class="plbt">Private</span></div>
+                            </div>
+                            <div class="plbd">
+                                <div class="pllft">
+                                    <div class="plic"><svg width="30" height="30" viewBox="0 0 24 24" fill="none">
+                                            <path
+                                                d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"
+                                                fill="white" />
+                                        </svg></div>
+                                    <div class="pldt"><span class="plnm">Portuguese woman peace</span>
+                                        <div class="plmr">
+                                            <div class="plmi">
+                                                <div class="plmd"></div><span class="plmt">132 new clips</span>
+                                            </div>
+                                            <div class="plmi">
+                                                <div class="plmd"></div><span class="plmt">7h 12m</span>
+                                            </div>
+                                            <div class="plmi">
+                                                <div class="plmd"></div><span class="plmt">1140 followers</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="plac"><button class="plab">Join</button><button class="plmb"><svg width="16"
+                                            height="16" viewBox="0 0 24 24" fill="none">
+                                            <circle cx="12" cy="5" r="2" fill="white" />
+                                            <circle cx="12" cy="12" r="2" fill="white" />
+                                            <circle cx="12" cy="19" r="2" fill="white" />
+                                        </svg></button></div>
+                            </div>
+                            <div class="plft2">
+                                <div class="plavs">
+                                    <div class="plav fa1"></div>
+                                    <div class="plav fa2"></div>
+                                    <div class="plav fa3"></div>
+                                </div><span class="pltx">Satish and 46 others vibe with this play...</span>
+                            </div>
+                        </div>
+
+                        <!-- Card 2: PUBLIC · Energetic workout tunes · LEAVE (→ detail) -->
+                        <div class="plc" style="cursor:pointer" onclick="openDet()">
+                            <div class="plb h116 green">
+                                <div class="plbg"><svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                        <path
+                                            d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2Zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93Zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"
+                                            fill="white" />
+                                    </svg><span class="plbt">Public</span></div>
+                            </div>
+                            <div class="plbd tall">
+                                <div class="pllft tall">
+                                    <div class="plic"><svg width="30" height="30" viewBox="0 0 24 24" fill="none">
+                                            <path
+                                                d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"
+                                                fill="white" />
+                                        </svg></div>
+                                    <div class="pldt"><span class="plnm">Energetic workout tunes,Perfect for your
+                                            fitness groove!</span>
+                                        <div class="plmr">
+                                            <div class="plmi">
+                                                <div class="plmd"></div><span class="plmt">12 new clips</span>
+                                            </div>
+                                            <div class="plmi">
+                                                <div class="plmd"></div><span class="plmt">3h 5m</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="plac" style="align-self:flex-start;margin-top:2px;"><button class="plab"
+                                        onclick="event.stopPropagation()">Leave</button><button class="plmb"
+                                        onclick="event.stopPropagation()"><svg width="16" height="16"
+                                            viewBox="0 0 24 24" fill="none">
+                                            <circle cx="12" cy="5" r="2" fill="white" />
+                                            <circle cx="12" cy="12" r="2" fill="white" />
+                                            <circle cx="12" cy="19" r="2" fill="white" />
+                                        </svg></button></div>
+                            </div>
+                            <div class="plft2">
+                                <div class="plsav"></div><span class="pltx">Satish created this playlist.</span>
+                            </div>
+                        </div>
+
+                        <!-- Card 3: PRIVATE · Workout Beats · REQUESTED -->
+                        <div class="plc">
+                            <div class="plb h98 dark">
+                                <div class="plbg"><svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                        <path
+                                            d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2Zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2Zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2Z"
+                                            fill="white" />
+                                    </svg><span class="plbt">Private</span></div>
+                            </div>
+                            <div class="plbd">
+                                <div class="pllft">
+                                    <div class="plic"><svg width="30" height="30" viewBox="0 0 24 24" fill="none">
+                                            <path
+                                                d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"
+                                                fill="white" />
+                                        </svg></div>
+                                    <div class="pldt"><span class="plnm">Workout Beats</span>
+                                        <div class="plmr">
+                                            <div class="plmi">
+                                                <div class="plmd"></div><span class="plmt">132 new clips</span>
+                                            </div>
+                                            <div class="plmi">
+                                                <div class="plmd"></div><span class="plmt">7h 12m</span>
+                                            </div>
+                                            <div class="plmi">
+                                                <div class="plmd"></div><span class="plmt">1140 followers</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="plac"><button class="plab">Requested</button><button class="plmb"><svg
+                                            width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                            <circle cx="12" cy="5" r="2" fill="white" />
+                                            <circle cx="12" cy="12" r="2" fill="white" />
+                                            <circle cx="12" cy="19" r="2" fill="white" />
+                                        </svg></button></div>
+                            </div>
+                            <div class="plft2">
+                                <div class="plavs">
+                                    <div class="plav fa1"></div>
+                                    <div class="plav fa2"></div>
+                                    <div class="plav fa3"></div>
+                                </div><span class="pltx">Satish and 46 others vibe with this playl...</span>
+                            </div>
+                        </div>
+
+                        <!-- Card 4: PRIVATE · Pumping Workout Beats · REQUESTED -->
+                        <div class="plc">
+                            <div class="plb h98 warm">
+                                <div class="plbg"><svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                        <path
+                                            d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2Zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2Zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2Z"
+                                            fill="white" />
+                                    </svg><span class="plbt">Private</span></div>
+                            </div>
+                            <div class="plbd">
+                                <div class="pllft">
+                                    <div class="plic"><svg width="30" height="30" viewBox="0 0 24 24" fill="none">
+                                            <path
+                                                d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"
+                                                fill="white" />
+                                        </svg></div>
+                                    <div class="pldt"><span class="plnm">Pumping Workout Beats</span>
+                                        <div class="plmr">
+                                            <div class="plmi">
+                                                <div class="plmd"></div><span class="plmt">132 new clips</span>
+                                            </div>
+                                            <div class="plmi">
+                                                <div class="plmd"></div><span class="plmt">7h 12m</span>
+                                            </div>
+                                            <div class="plmi">
+                                                <div class="plmd"></div><span class="plmt">1140 followers</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="plac"><button class="plab">Requested</button><button class="plmb"><svg
+                                            width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                            <circle cx="12" cy="5" r="2" fill="white" />
+                                            <circle cx="12" cy="12" r="2" fill="white" />
+                                            <circle cx="12" cy="19" r="2" fill="white" />
+                                        </svg></button></div>
+                            </div>
+                            <div class="plft2">
+                                <div class="plavs">
+                                    <div class="plav fa1"></div>
+                                    <div class="plav fa2"></div>
+                                    <div class="plav fa3"></div>
+                                </div><span class="pltx">Satish and 46 others vibe with this playl...</span>
+                            </div>
+                        </div>
+
+                        <!-- Card 5: PUBLIC · Energising… · JOIN -->
+                        <div class="plc">
+                            <div class="plb h134 blue">
+                                <div class="plbg"><svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                        <path
+                                            d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2Zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93Zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"
+                                            fill="white" />
+                                    </svg><span class="plbt">Public</span></div>
+                            </div>
+                            <div class="plbd tall">
+                                <div class="pllft tall">
+                                    <div class="plic"><svg width="30" height="30" viewBox="0 0 24 24" fill="none">
+                                            <path
+                                                d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"
+                                                fill="white" />
+                                        </svg></div>
+                                    <div class="pldt"><span class="plnm">Energising workout tunes,Perfect for your
+                                            fitness groove!</span>
+                                        <div class="plmr">
+                                            <div class="plmi">
+                                                <div class="plmd"></div><span class="plmt">132 new clips</span>
+                                            </div>
+                                            <div class="plmi">
+                                                <div class="plmd"></div><span class="plmt">7h 12m</span>
+                                            </div>
+                                            <div class="plmi">
+                                                <div class="plmd"></div><span class="plmt">Be the first to join</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="plac" style="align-self:center;"><button class="plab">Join</button><button
+                                        class="plmb"><svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                            <circle cx="12" cy="5" r="2" fill="white" />
+                                            <circle cx="12" cy="12" r="2" fill="white" />
+                                            <circle cx="12" cy="19" r="2" fill="white" />
+                                        </svg></button></div>
+                            </div>
+                            <div class="plft2">
+                                <div class="plavs">
+                                    <div class="plav fa1"></div>
+                                    <div class="plav fa2"></div>
+                                    <div class="plav fa3"></div>
+                                </div><span class="pltx">Satish and 46 others vibe with this playl...</span>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Detail view -->
+                    <div id="plDet" style="display:none;flex-direction:column;flex:1;">
+                        <!-- Figma Frame 304: height:70px; bg:#4E4E4E; padding:8px; gap:12px -->
+                        <div class="pldhdr">
+                            <button class="pldbk" onclick="closeDet()">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                    <path d="M20 11H7.83l5.59-5.59L12 4 4 12l8 8 1.41-1.41L7.83 13H20v-2Z"
+                                        fill="white" />
+                                </svg>
+                            </button>
+                            <div class="pldin">
+                                <span class="pldnm">Energetic workout tunes,Perfect for your fitness groove!</span>
+                                <div class="pldmt">
+                                    <span class="pldtx">12 new clips</span>
+                                    <div class="pldd"></div>
+                                    <span class="pldtx">3h 5m</span>
+                                    <div class="pldd"></div>
+                                    <span class="pldtx">47 members</span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Clips in detail — bg:#242424 -->
+                        <div class="pldclips" id="pdClips"></div>
+                    </div>
+                </div>
+            </div>
+
+        </div><!-- /sres -->
+
+        <!-- BOTTOM NAV -->
+        <div class="nav-bar">
+            <a href="homeScreen.html" class="nav-item">
+                <svg viewBox="0 0 24 24">
+                    <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
+                </svg>
+            </a>
+            <div class="nav-item active">
+                <svg class="icon-stroke" viewBox="0 0 24 24">
+                    <circle cx="11" cy="11" r="8" />
+                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                </svg>
+            </div>
+            <div class="nav-item">
+                <svg viewBox="0 0 24 24">
+                    <rect x="3" y="3" width="18" height="18" rx="4" />
+                    <line x1="12" y1="8" x2="12" y2="16" />
+                    <line x1="8" y1="12" x2="16" y2="12" />
+                </svg>
+            </div>
+            <div class="nav-item">
+                <div class="nav-avatar">
+                    <svg viewBox="0 0 100 100">
+                        <circle cx="50" cy="50" r="50" fill="#e0e0e0" />
+                        <circle cx="50" cy="40" r="15" fill="#bdbdbd" />
+                        <path d="M25 85 C25 65 75 65 75 85 Z" fill="#bdbdbd" />
+                        <path d="M30 40 C30 20 70 20 70 40 L75 55 C75 40 25 40 25 55 Z" fill="#e2c285" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <script>
+        const IMG = 'https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=120&h=120&fit=crop&crop=face';
+        const TI = "That silence did more damage than anything he could've said";
+        const TA = 'Portuguese woman peace';
+        const recent = ['Emma Wilson', 'Portugeuse songs', 'Portugeuse woman peace', 'Newyork woman peace', 'Newyork woman peace'];
+        const suggs = ['brazil language learning is good or bad', 'woman peace', 'songs', 'song trend', 'woman peace'];
+        let st = 'empty';
+
+        buildInact(false); buildDetClips(true); renderR(); show('empty');
+
+        function show(s) {
+            st = s;
+            ['sr', 'ss', 'sres'].forEach(id => { document.getElementById(id).classList.remove('on') });
+            document.getElementById('tbr').style.display = 'none';
+            if (s === 'recent') document.getElementById('sr').classList.add('on');
+            if (s === 'typing') document.getElementById('ss').classList.add('on');
+            if (s === 'results') { document.getElementById('sres').classList.add('on'); document.getElementById('tbr').style.display = 'flex'; }
+        }
+        function renderR() { document.getElementById('rl').innerHTML = recent.map((t, i) => `<div class="ri" onclick="selR('${t}')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="rgba(255,255,255,.45)" stroke-width="2"/><path d="M12 7v5l3 3" stroke="rgba(255,255,255,.45)" stroke-width="2" stroke-linecap="round"/></svg><span class="rit">${t}</span><div class="rix" onclick="event.stopPropagation();rmR(${i})"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M11 1 1 11M1 1l10 10" stroke="rgba(255,255,255,.5)" stroke-width="1.5" stroke-linecap="round"/></svg></div></div>`).join(''); }
+        function rmR(i) { recent.splice(i, 1); renderR(); }
+        function clrAll() { recent.length = 0; renderR(); }
+        function selR(t) { document.getElementById('si').value = t; document.getElementById('sc').classList.add('on'); show('results'); }
+        function renderSg(q) { document.getElementById('sl').innerHTML = suggs.map(s => `<div class="sgi" onclick="selS('${q} ${s}')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5Zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14Z" fill="rgba(255,255,255,.5)"/></svg><span class="sgt"><b>${q}</b> ${s}</span></div>`).join(''); }
+        function selS(t) { document.getElementById('si').value = t; document.getElementById('sc').classList.add('on'); show('results'); }
+        function onFocus() { const v = document.getElementById('si').value; show(v ? 'typing' : 'recent'); }
+        function onInput(v) { document.getElementById('sc').classList.toggle('on', !!v); if (v) { renderSg(v); show('typing'); } else show('recent'); }
+        function clearS() { document.getElementById('si').value = ''; document.getElementById('sc').classList.remove('on'); show('recent'); }
+        function goBack() { document.getElementById('si').value = ''; document.getElementById('sc').classList.remove('on'); show('empty'); }
+        function swTab(id, btn) { document.querySelectorAll('.tb').forEach(b => b.classList.remove('on')); document.querySelectorAll('#sres .tc').forEach(t => t.classList.remove('on')); btn.classList.add('on'); document.getElementById('tab-' + id).classList.add('on'); }
+        function mkClip(title, isFirst) { return `<div class="ci" onclick="playClip()"><div class="cil"><div class="cth"><img src="${IMG}" alt="" onerror="this.style.display='none'"/></div><div class="cii"><div class="citb"><span class="cit">${title}</span><span class="cia">Marcus Chen</span></div><span class="cid">00:51</span></div></div><div class="cir"><button class="bplay"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 1.5 12 7 3 12.5V1.5Z" fill="white"/></svg></button><button class="bmore"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="2" fill="white"/><circle cx="12" cy="12" r="2" fill="white"/><circle cx="12" cy="19" r="2" fill="white"/></svg></button></div></div>`; }
+        function buildInact(hasAct) { const c = hasAct ? 6 : 7; let h = ''; for (let i = 0; i < c; i++)h += mkClip((!hasAct && i < 2) ? TA : TI, i === 0); document.getElementById('inactClips').innerHTML = h; }
+        function playClip() { document.getElementById('npCard').style.display = 'flex'; buildInact(true); }
+        function mkDetClip(title) { return `<div class="ci" style="margin:0 16px;"><div class="cil"><div class="cth"><img src="${IMG}" alt="" onerror="this.style.display='none'"/></div><div class="cii"><div class="citb"><span class="cit">${title}</span><span class="cia">Marcus Chen</span></div><span class="cid">00:51</span></div></div><div class="cir"><button class="bplay"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 1.5 12 7 3 12.5V1.5Z" fill="white"/></svg></button><button class="bmore"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="2" fill="white"/><circle cx="12" cy="12" r="2" fill="white"/><circle cx="12" cy="19" r="2" fill="white"/></svg></button></div></div>`; }
+        function buildDetClips(withAct) {
+            let h = '';
+            if (withAct) h += `<div class="ca" style="margin:0 16px 0;"><div class="cal"><div class="cth"><img src="${IMG}" alt="" onerror="this.style.display='none'"/></div><div class="cai"><div class="cnr"><div class="eq"><div class="eqb"></div><div class="eqb"></div><div class="eqb"></div><div class="eqb"></div></div><span class="cnl">Now playing</span></div><span class="cat">${TI}</span><span class="caa">Marcus Chen</span><span class="cad">00:51</span></div></div><div class="car"><button class="bpause"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="2" y="1" width="3.5" height="12" rx="1" fill="white"/><rect x="8.5" y="1" width="3.5" height="12" rx="1" fill="white"/></svg></button><button class="bmore"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="2" fill="white"/><circle cx="12" cy="12" r="2" fill="white"/><circle cx="12" cy="19" r="2" fill="white"/></svg></button></div><div class="cap"><div class="capf"></div></div></div>`;
+            for (let i = 0; i < 5; i++)h += mkDetClip(TI);
+            document.getElementById('pdClips').innerHTML = h;
+        }
+        function openDet() { document.getElementById('plList').style.display = 'none'; document.getElementById('plDet').style.display = 'flex'; }
+        function closeDet() { document.getElementById('plDet').style.display = 'none'; document.getElementById('plList').style.display = 'flex'; }
+    </script>
+</body>
+
+</html>
