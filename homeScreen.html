@@ -178,6 +178,37 @@
       white-space: nowrap;
     }
 
+    /* ── Per-card badge & tag colors ── */
+    .feed-item[style*='#EA1C25'] .badge,
+    .feed-item[style*='#EA1C25'] .tag {
+      background: #ED3E45;
+      border: 1px solid rgba(0, 0, 0, 0.10);
+    }
+
+    .feed-item[style*='#FEDD01'] .badge,
+    .feed-item[style*='#FEDD01'] .tag {
+      background: #FEE432;
+      border: 1px solid rgba(0, 0, 0, 0.10);
+    }
+
+    .feed-item[style*='#09D1C7'] .badge {
+      background: #39DAD2;
+      border: 1px solid rgba(0, 0, 0, 0.10);
+    }
+
+    .feed-item[style*='#09D1C7'] .tag {
+      background: #47DDD5;
+    }
+
+    .feed-item[style*='#EFE2D5'] .badge {
+      background: #DCD1C6;
+    }
+
+    .feed-item[style*='#EFE2D5'] .tag {
+      background: #F2E7DD;
+      border: 1px solid rgba(0, 0, 0, 0.10);
+    }
+
     /* Video Area */
     .video-area {
       flex: 1;
@@ -351,21 +382,19 @@
     .add-btn {
       width: 36px;
       height: 36px;
-      background: #242424;
+      background: transparent;
       border: none;
       border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      padding: 0;
+      overflow: hidden;
       cursor: pointer;
       flex-shrink: 0;
     }
 
-    .add-btn svg {
-      stroke: #fff;
-      width: 20px;
-      height: 20px;
-      stroke-width: 2;
+    .add-btn img {
+      width: 100%;
+      height: 100%;
+      display: block;
     }
 
     /* Nav Bar — fixed, centered over the app */
@@ -806,10 +835,7 @@
           <div class="handle">@john_smith</div>
         </div>
         <button class="add-btn">
-          <svg viewBox="0 0 24 24" fill="none">
-            <line x1="12" y1="5" x2="12" y2="19" />
-            <line x1="5" y1="12" x2="19" y2="12" />
-          </svg>
+          <img src="/assets/follow_ic.png" alt="Follow" />
         </button>
         <div class="audio-bar">
           <div class="audio-bar-fill" style="width: 38%;"></div>
@@ -908,10 +934,7 @@
           <div class="handle">@john_smith</div>
         </div>
         <button class="add-btn">
-          <svg viewBox="0 0 24 24" fill="none">
-            <line x1="12" y1="5" x2="12" y2="19" />
-            <line x1="5" y1="12" x2="19" y2="12" />
-          </svg>
+          <img src="/assets/follow_ic.png" alt="Follow" />
         </button>
         <div class="audio-bar">
           <div class="audio-bar-fill" style="width: 38%;"></div>
@@ -1010,10 +1033,7 @@
           <div class="handle">@sarah_wellness</div>
         </div>
         <button class="add-btn">
-          <svg viewBox="0 0 24 24" fill="none">
-            <line x1="12" y1="5" x2="12" y2="19" />
-            <line x1="5" y1="12" x2="19" y2="12" />
-          </svg>
+          <img src="/assets/follow_ic.png" alt="Follow" />
         </button>
         <div class="audio-bar">
           <div class="audio-bar-fill" style="width: 55%;"></div>
@@ -1112,10 +1132,7 @@
           <div class="handle">@mindful_moments</div>
         </div>
         <button class="add-btn">
-          <svg viewBox="0 0 24 24" fill="none">
-            <line x1="12" y1="5" x2="12" y2="19" />
-            <line x1="5" y1="12" x2="19" y2="12" />
-          </svg>
+          <img src="/assets/follow_ic.png" alt="Follow" />
         </button>
         <div class="audio-bar">
           <div class="audio-bar-fill" style="width: 22%;"></div>
@@ -1164,6 +1181,24 @@
     </div>
   </div>
 
+  <!-- Audio List Sheet Overlay -->
+  <div class="comment-overlay" id="audioListOverlay">
+    <div class="comment-backdrop" onclick="closeAudioList()"></div>
+    <div class="comment-sheet" id="audioListSheet">
+      <div class="sheet-drag-zone" id="audioListDragZone"></div>
+      <iframe id="audioListFrame" src="" title="Audio List"></iframe>
+    </div>
+  </div>
+
+  <!-- Save Playlist Sheet Overlay -->
+  <div class="comment-overlay" id="saveOverlay">
+    <div class="comment-backdrop" onclick="closeSavePlaylist()"></div>
+    <div class="comment-sheet" id="saveSheet">
+      <div class="sheet-drag-zone" id="saveDragZone"></div>
+      <iframe id="saveFrame" src="" title="Save Playlist"></iframe>
+    </div>
+  </div>
+
   <script>
     function openComments() {
       const frame = document.getElementById('commentFrame');
@@ -1181,6 +1216,156 @@
       sheet.style.transition = '';
       document.getElementById('commentOverlay').classList.remove('open');
     }
+
+    function openAudioList() {
+      const frame = document.getElementById('audioListFrame');
+      if (!frame.src || !frame.src.includes('audiolistScreen.html')) {
+        frame.src = 'audiolistScreen.html';
+      }
+      const sheet = document.getElementById('audioListSheet');
+      sheet.style.transform = '';
+      sheet.style.transition = '';
+      document.getElementById('audioListOverlay').classList.add('open');
+    }
+    function closeAudioList() {
+      const sheet = document.getElementById('audioListSheet');
+      sheet.style.transform = '';
+      sheet.style.transition = '';
+      document.getElementById('audioListOverlay').classList.remove('open');
+    }
+
+    function openSavePlaylist() {
+      const frame = document.getElementById('saveFrame');
+      if (!frame.src || !frame.src.includes('savePlaylistScreen.html')) {
+        frame.src = 'savePlaylistScreen.html';
+      }
+      const sheet = document.getElementById('saveSheet');
+      sheet.style.transform = '';
+      sheet.style.transition = '';
+      document.getElementById('saveOverlay').classList.add('open');
+    }
+    function closeSavePlaylist() {
+      const sheet = document.getElementById('saveSheet');
+      sheet.style.transform = '';
+      sheet.style.transition = '';
+      document.getElementById('saveOverlay').classList.remove('open');
+    }
+
+    /* ── Swipe-down to close save playlist sheet ── */
+    (function () {
+      const overlay = document.getElementById('saveOverlay');
+      const sheet  = document.getElementById('saveSheet');
+      const zone   = document.getElementById('saveDragZone');
+
+      let startY = 0, prevY = 0, prevT = 0, dy = 0, dragging = false;
+
+      function onStart(e) {
+        dragging = true;
+        startY = prevY = e.touches ? e.touches[0].clientY : e.clientY;
+        prevT  = Date.now();
+        dy     = 0;
+        sheet.style.transition = 'none';
+        if (e.cancelable) e.preventDefault();
+      }
+      function onMove(e) {
+        if (!dragging) return;
+        const y = e.touches ? e.touches[0].clientY : e.clientY;
+        dy = Math.max(0, y - startY);
+        sheet.style.transform = `translateY(${dy}px)`;
+        prevY = y;
+        prevT = Date.now();
+        if (e.cancelable) e.preventDefault();
+      }
+      function onEnd() {
+        if (!dragging) return;
+        dragging = false;
+        const elapsed  = Date.now() - prevT;
+        const velocity = elapsed > 0 ? (prevY - startY) / elapsed : 0;
+        const dismiss  = dy > 100 || (dy > 30 && velocity > 0.3);
+        if (dismiss) {
+          sheet.style.transition = 'transform 0.28s ease-in';
+          sheet.style.transform  = 'translateY(110%)';
+          setTimeout(() => {
+            overlay.classList.remove('open');
+            sheet.style.transform  = '';
+            sheet.style.transition = '';
+          }, 290);
+        } else {
+          sheet.style.transition = 'transform 0.32s cubic-bezier(0.32,0.72,0,1)';
+          sheet.style.transform  = 'translateY(0)';
+          setTimeout(() => {
+            sheet.style.transform  = '';
+            sheet.style.transition = '';
+          }, 320);
+        }
+        dy = 0;
+      }
+
+      zone.addEventListener('touchstart', onStart, { passive: false });
+      zone.addEventListener('touchmove',  onMove,  { passive: false });
+      zone.addEventListener('touchend',   onEnd);
+      zone.addEventListener('mousedown',  onStart);
+      document.addEventListener('mousemove', onMove);
+      document.addEventListener('mouseup',   onEnd);
+    })();
+
+    /* ── Swipe-down to close audio list sheet ── */
+    (function () {
+      const overlay = document.getElementById('audioListOverlay');
+      const sheet  = document.getElementById('audioListSheet');
+      const zone   = document.getElementById('audioListDragZone');
+
+      let startY = 0, prevY = 0, prevT = 0, dy = 0, dragging = false;
+
+      function onStart(e) {
+        dragging = true;
+        startY = prevY = e.touches ? e.touches[0].clientY : e.clientY;
+        prevT  = Date.now();
+        dy     = 0;
+        sheet.style.transition = 'none';
+        if (e.cancelable) e.preventDefault();
+      }
+      function onMove(e) {
+        if (!dragging) return;
+        const y = e.touches ? e.touches[0].clientY : e.clientY;
+        dy = Math.max(0, y - startY);
+        sheet.style.transform = `translateY(${dy}px)`;
+        prevY = y;
+        prevT = Date.now();
+        if (e.cancelable) e.preventDefault();
+      }
+      function onEnd() {
+        if (!dragging) return;
+        dragging = false;
+        const elapsed  = Date.now() - prevT;
+        const velocity = elapsed > 0 ? (prevY - startY) / elapsed : 0;
+        const dismiss  = dy > 100 || (dy > 30 && velocity > 0.3);
+        if (dismiss) {
+          sheet.style.transition = 'transform 0.28s ease-in';
+          sheet.style.transform  = 'translateY(110%)';
+          setTimeout(() => {
+            overlay.classList.remove('open');
+            sheet.style.transform  = '';
+            sheet.style.transition = '';
+          }, 290);
+        } else {
+          sheet.style.transition = 'transform 0.32s cubic-bezier(0.32,0.72,0,1)';
+          sheet.style.transform  = 'translateY(0)';
+          setTimeout(() => {
+            sheet.style.transform  = '';
+            sheet.style.transition = '';
+          }, 320);
+        }
+        dy = 0;
+      }
+
+      zone.addEventListener('touchstart', onStart, { passive: false });
+      zone.addEventListener('touchmove',  onMove,  { passive: false });
+      zone.addEventListener('touchend',   onEnd);
+      zone.addEventListener('mousedown',  onStart);
+      document.addEventListener('mousemove', onMove);
+      document.addEventListener('mouseup',   onEnd);
+    })();
 
     /* ── Swipe-down to close bottom sheet ── */
     (function () {
@@ -1244,8 +1429,8 @@
     })();
 
     (function () {
-      const NS = 'http://www.w3.org/2000/svg';
       const BURST_COLORS = ['#1877F2', '#F02849', '#F7B928', '#58C472', '#FF9500', '#A855F7'];
+      const app = document.querySelector('.app');
 
       /* ── helpers ── */
       function parseCount(text) {
@@ -1256,23 +1441,30 @@
         return n >= 1000 ? (n / 1000).toFixed(1) + 'K' : String(n);
       }
 
+      /* ── Scroll to next feed item (wraps to first if at end) ── */
+      function scrollToNextFeed(el) {
+        const current = el.closest('.feed-item');
+        const next = current.nextElementSibling;
+        if (next && next.classList.contains('feed-item')) {
+          next.scrollIntoView({ behavior: 'smooth' });
+        } else {
+          app.querySelector('.feed-item').scrollIntoView({ behavior: 'smooth' });
+        }
+      }
+
       /* ── thumbs-up Facebook-style animation ── */
       function activateLike(btn) {
         if (btn.classList.contains('liked')) return;
         btn.classList.add('liked');
 
-        // Force re-trigger animation if class was already there
         const svg = btn.querySelector('svg');
         if (svg) { svg.style.animation = 'none'; svg.offsetWidth; svg.style.animation = ''; }
 
-        // Increment count with flip
         const span = btn.querySelector('span');
         if (span) {
-          const newVal = formatCount(parseCount(span.textContent) + 1);
-          span.textContent = newVal;
+          span.textContent = formatCount(parseCount(span.textContent) + 1);
         }
 
-        // Burst particles from button position into the video-area
         const videoArea = btn.closest('.video-area');
         if (!videoArea) return;
         const btnRect = btn.getBoundingClientRect();
@@ -1292,98 +1484,153 @@
         });
       }
 
-      /* ── wire up thumbs-up and thumbs-down buttons ── */
-      document.querySelectorAll('.v-action-group').forEach(group => {
-        const [likeBtn, dislikeBtn] = group.querySelectorAll('.v-action-item');
-        if (!likeBtn || !dislikeBtn) return;
+      /* ── Wire all interactive elements inside one feed item ── */
+      function wireItem(item) {
+        // Like / Dislike
+        item.querySelectorAll('.v-action-group').forEach(group => {
+          const [likeBtn, dislikeBtn] = group.querySelectorAll('.v-action-item');
+          if (!likeBtn || !dislikeBtn) return;
 
-        likeBtn.style.cursor = 'pointer';
-        dislikeBtn.style.cursor = 'pointer';
+          likeBtn.style.cursor = 'pointer';
+          dislikeBtn.style.cursor = 'pointer';
 
-        likeBtn.addEventListener('click', () => {
-          likeBtn.classList.toggle('liked');
-          // Optionally, unselect dislike if toggling like
-          dislikeBtn.classList.remove('disliked');
-          if (likeBtn.classList.contains('liked')) activateLike(likeBtn);
+          likeBtn.addEventListener('click', () => {
+            likeBtn.classList.toggle('liked');
+            dislikeBtn.classList.remove('disliked');
+            if (likeBtn.classList.contains('liked')) activateLike(likeBtn);
+          });
+          likeBtn.addEventListener('touchend', e => {
+            e.stopPropagation();
+            likeBtn.classList.toggle('liked');
+            dislikeBtn.classList.remove('disliked');
+            if (likeBtn.classList.contains('liked')) activateLike(likeBtn);
+          }, { passive: true });
+
+          dislikeBtn.addEventListener('click', () => {
+            dislikeBtn.classList.toggle('disliked');
+            likeBtn.classList.remove('liked');
+            if (dislikeBtn.classList.contains('disliked')) scrollToNextFeed(dislikeBtn);
+          });
+          dislikeBtn.addEventListener('touchend', e => {
+            e.stopPropagation();
+            dislikeBtn.classList.toggle('disliked');
+            likeBtn.classList.remove('liked');
+            if (dislikeBtn.classList.contains('disliked')) scrollToNextFeed(dislikeBtn);
+          }, { passive: true });
         });
-        likeBtn.addEventListener('touchend', e => {
-          e.stopPropagation();
-          likeBtn.classList.toggle('liked');
-          dislikeBtn.classList.remove('disliked');
-          if (likeBtn.classList.contains('liked')) activateLike(likeBtn);
-        }, { passive: true });
 
-        dislikeBtn.addEventListener('click', () => {
-          dislikeBtn.classList.toggle('disliked');
-          // Optionally, unselect like if toggling dislike
-          likeBtn.classList.remove('liked');
-        });
-        dislikeBtn.addEventListener('touchend', e => {
-          e.stopPropagation();
-          dislikeBtn.classList.toggle('disliked');
-          likeBtn.classList.remove('liked');
-        }, { passive: true });
-      });
+        // Audio bar seeking
+        item.querySelectorAll('.audio-bar').forEach(bar => {
+          const videoArea = item.querySelector('.video-area');
+          const fill = bar.querySelector('.audio-bar-fill');
+          const timer = videoArea.querySelector('.seek-timer');
+          let isDragging = false;
 
-      /* ── wire up audio bar seeking ── */
-      document.querySelectorAll('.audio-bar').forEach(bar => {
-        const feedItem = bar.closest('.feed-item');
-        const videoArea = feedItem.querySelector('.video-area');
-        const fill = bar.querySelector('.audio-bar-fill');
-        const timer = videoArea.querySelector('.seek-timer');
-        let isDragging = false;
-
-        function updateSeek(e) {
-          const rect = bar.getBoundingClientRect();
-          const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-          let pos = (clientX - rect.left) / rect.width;
-          pos = Math.max(0, Math.min(1, pos));
-
-          fill.style.width = (pos * 100) + '%';
-
-          // Dummy time calculation (e.g. 59 seconds total as per user image)
-          const totalSeconds = 59;
-          const currentSeconds = Math.floor(pos * totalSeconds);
-          const format = s => String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0');
-          timer.textContent = `${format(currentSeconds)} / ${format(totalSeconds)}`;
-        }
-
-        const startDragging = (e) => {
-          isDragging = true;
-          videoArea.classList.add('is-seeking');
-          updateSeek(e);
-          if (e.type === 'touchstart') e.preventDefault();
-        };
-
-        const stopDragging = () => {
-          if (!isDragging) return;
-          isDragging = false;
-          videoArea.classList.remove('is-seeking');
-        };
-
-        bar.addEventListener('mousedown', startDragging);
-        bar.addEventListener('touchstart', startDragging, { passive: false });
-
-        window.addEventListener('mousemove', e => { if (isDragging) updateSeek(e); });
-        window.addEventListener('touchmove', e => {
-          if (isDragging) {
-            updateSeek(e);
-            if (e.cancelable) e.preventDefault();
+          function updateSeek(e) {
+            const rect = bar.getBoundingClientRect();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            let pos = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+            fill.style.width = (pos * 100) + '%';
+            const totalSeconds = 59;
+            const cur = Math.floor(pos * totalSeconds);
+            const fmt = s => String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0');
+            timer.textContent = `${fmt(cur)} / ${fmt(totalSeconds)}`;
           }
-        }, { passive: false });
 
-        window.addEventListener('mouseup', stopDragging);
-        window.addEventListener('touchend', stopDragging);
-      });
+          const startDragging = (e) => {
+            isDragging = true;
+            videoArea.classList.add('is-seeking');
+            updateSeek(e);
+            if (e.type === 'touchstart') e.preventDefault();
+          };
+          const stopDragging = () => {
+            if (!isDragging) return;
+            isDragging = false;
+            videoArea.classList.remove('is-seeking');
+          };
 
-      /* ── Wire comment buttons ── */
-      document.querySelectorAll('.v-action').forEach(function (action) {
-        const path = action.querySelector('svg path');
-        if (path && path.getAttribute('d') && path.getAttribute('d').startsWith('M21 11.5')) {
+          bar.addEventListener('mousedown', startDragging);
+          bar.addEventListener('touchstart', startDragging, { passive: false });
+          window.addEventListener('mousemove', e => { if (isDragging) updateSeek(e); });
+          window.addEventListener('touchmove', e => {
+            if (isDragging) { updateSeek(e); if (e.cancelable) e.preventDefault(); }
+          }, { passive: false });
+          window.addEventListener('mouseup', stopDragging);
+          window.addEventListener('touchend', stopDragging);
+        });
+
+        // Comment buttons
+        item.querySelectorAll('.v-action').forEach(action => {
+          const path = action.querySelector('svg path');
+          if (path && path.getAttribute('d') && path.getAttribute('d').startsWith('M21 11.5')) {
+            action.style.cursor = 'pointer';
+            action.addEventListener('click', openComments);
+          }
+        });
+
+        // Save buttons
+        item.querySelectorAll('.v-action img[alt="Save"]').forEach(img => {
+          const action = img.closest('.v-action');
           action.style.cursor = 'pointer';
-          action.addEventListener('click', openComments);
-        }
+          action.addEventListener('click', openSavePlaylist);
+        });
+
+        // Queue / audio list button (has polygon in svg)
+        item.querySelectorAll('.v-action').forEach(action => {
+          if (action.querySelector('svg polygon')) {
+            action.style.cursor = 'pointer';
+            action.addEventListener('click', openAudioList);
+          }
+        });
+
+        // Follow / Following toggle
+        item.querySelectorAll('.add-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const img = btn.querySelector('img');
+            const following = btn.dataset.following === 'true';
+            btn.dataset.following = String(!following);
+            img.src = following ? '/assets/follow_ic.png' : '/assets/following_ic.png';
+          });
+        });
+      }
+
+      /* ── Wire originals ── */
+      const originals = Array.from(app.querySelectorAll('.feed-item'));
+      originals.forEach(wireItem);
+
+      /* ── Clone all 4 items and append before nav-bar (infinite loop) ── */
+      const navBar = app.querySelector('.nav-bar');
+      originals.forEach((item, i) => {
+        const clone = item.cloneNode(true);
+        clone.dataset.clone = String(i);
+        app.insertBefore(clone, navBar);
+        wireItem(clone);
       });
+
+      /* ── Seamless loop: when scroll settles on a clone, jump to the original ── */
+      let resetting = false;
+      function checkLoop() {
+        if (resetting) return;
+        for (const clone of app.querySelectorAll('[data-clone]')) {
+          const idx = parseInt(clone.dataset.clone);
+          if (Math.abs(app.scrollTop - clone.offsetTop) < 5) {
+            resetting = true;
+            app.scrollTo({ top: originals[idx].offsetTop, behavior: 'instant' });
+            requestAnimationFrame(() => { resetting = false; });
+            break;
+          }
+        }
+      }
+
+      if ('onscrollend' in app) {
+        app.addEventListener('scrollend', checkLoop);
+      } else {
+        let scrollTimer;
+        app.addEventListener('scroll', () => {
+          clearTimeout(scrollTimer);
+          scrollTimer = setTimeout(checkLoop, 200);
+        });
+      }
     })();
   </script>
 </body>

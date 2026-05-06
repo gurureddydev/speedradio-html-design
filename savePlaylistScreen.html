@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Save Playlist</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700;9..40,800&display=swap"
+    rel="stylesheet" />
+
+  <style>
+    :root {
+      --bg: #0f0f10;
+      --sheet: #1A1A1A;
+      --text: #ffffff;
+      --muted: rgba(255, 255, 255, 0.55);
+      --border: rgba(255, 255, 255, 0.12);
+      --red: #ff2d2d;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    html,
+    body {
+      height: 100%;
+      background: var(--sheet);
+      color: var(--text);
+      overflow: hidden;
+    }
+
+    /* ── SAVE-IN SHEET ── */
+    .sheet {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      background: var(--sheet);
+      border-radius: 12px 12px 0 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .handle {
+      width: 44px;
+      height: 5px;
+      background: #6b6b6b;
+      border-radius: 10px;
+      margin: 10px auto;
+      flex-shrink: 0;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 16px 12px;
+      flex-shrink: 0;
+    }
+
+    .header h3 {
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .btn-primary {
+      background: var(--red);
+      border: none;
+      color: #fff;
+      padding: 10px 14px;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .divider {
+      height: 1px;
+      background: var(--border);
+      flex-shrink: 0;
+    }
+
+    .list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    /* ── EMPTY STATE ── */
+    .empty {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      text-align: center;
+      position: relative;
+      z-index: 2;
+    }
+
+    .empty-img {
+      width: 100px;
+      height: auto;
+      opacity: 0.75;
+    }
+
+    .empty h2 {
+      font-size: 20px;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.80);
+      line-height: 100%;
+      letter-spacing: 0px;
+    }
+
+    .empty p {
+      font-size: 16px;
+      font-weight: 400;
+      color: rgba(255, 255, 255, 0.60);
+      line-height: 100%;
+      letter-spacing: 0px;
+    }
+
+    /* decorative bg shape — anchored to sheet at Figma coordinates */
+    .empty-bg {
+      position: absolute;
+      width: 183px;
+      height: 495px;
+      left: 0;
+      top: 108px;
+      opacity: 0.4;
+      mix-blend-mode: multiply;
+      pointer-events: none;
+      z-index: 0;
+      object-fit: contain;
+      object-position: left top;
+    }
+
+    /* ── PLAYLIST CARD ── */
+    .card {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 8px;
+      gap: 4px;
+      min-height: 98px;
+      background: #252525 url('/assets/playlist_bg.png') no-repeat right center / auto 100%;
+      border-radius: 12px;
+      overflow: hidden;
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    /* PUBLIC / PRIVATE badge */
+    .card-badge {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      padding: 4px 8px;
+      gap: 4px;
+      height: 24px;
+      background: rgba(255, 255, 255, 0.25);
+      border-radius: 5px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+      flex-shrink: 0;
+    }
+
+    .card-badge svg {
+      width: 13px;
+      height: 13px;
+      stroke: #fff;
+      fill: none;
+      flex-shrink: 0;
+    }
+
+    /* Row below badge */
+    .card-row {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      flex: 1;
+      padding-right: 0;
+    }
+
+    /* Music note icon */
+    .card-thumb {
+      width: 38px;
+      height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .card-thumb svg {
+      width: 30px;
+      height: 30px;
+      fill: rgba(255, 255, 255, 0.75);
+    }
+
+    /* Text block */
+    .card-info {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+    }
+
+    .card-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #fff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .card-meta {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    /* ADD / ADDED button */
+    .btn-add {
+      flex-shrink: 0;
+      height: 36px;
+      padding: 0 16px;
+      border: 1.5px solid rgba(255, 255, 255, 0.45);
+      background: transparent;
+      color: #fff;
+      border-radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+    }
+
+    .btn-add.added {
+      background: rgba(255, 255, 255, 0.18);
+      border-color: rgba(255, 255, 255, 0.7);
+      color: #fff;
+    }
+
+    /* ── CREATE SCREEN (full-screen overlay) ── */
+    .create-screen {
+      position: fixed;
+      inset: 0;
+      background: var(--bg);
+      z-index: 50;
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: stretch;
+      padding: 0 20px 120px;
+    }
+
+    .create-screen.visible {
+      display: flex;
+    }
+
+    .create-title {
+      font-weight: 700;
+      font-size: 16px;
+      line-height: 100%;
+      color: #ffffff;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    /* Name input */
+    .name-input-wrap {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px;
+      width: 100%;
+      height: 56px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 5px;
+      margin-bottom: 12px;
+    }
+
+    .name-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #fff;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 700;
+      font-size: 22px;
+      line-height: 1;
+      caret-color: var(--red);
+    }
+
+    .name-input::placeholder {
+      color: rgba(255, 255, 255, 0.25);
+      font-weight: 500;
+    }
+
+    .char-count {
+      font-size: 13px;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.4);
+      flex-shrink: 0;
+      margin-left: 8px;
+    }
+
+    /* Privacy toggle */
+    .prv-toggle {
+      position: relative;
+      display: flex;
+      background: #262626;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 10px;
+      overflow: hidden;
+      height: 54px;
+      margin-bottom: 14px;
+    }
+
+    .prv-slider {
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: calc(50% - 3px);
+      height: calc(100% - 6px);
+      background: #ffffff;
+      border-radius: 7px;
+      transition: transform 0.25s ease;
+      z-index: 1;
+    }
+
+    .prv-toggle.private .prv-slider {
+      transform: translateX(100%);
+    }
+
+    .prv-item {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--muted);
+      cursor: pointer;
+      z-index: 2;
+      transition: color 0.2s ease;
+      user-select: none;
+    }
+
+    .prv-item.active {
+      color: #000000;
+    }
+
+    .prv-item svg {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+    }
+
+    /* Action buttons */
+    .create-actions {
+      display: flex;
+      gap: 12px;
+    }
+
+    .create-actions button {
+      flex: 1;
+      height: 54px;
+      border-radius: 10px;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 700;
+      font-size: 15px;
+      cursor: pointer;
+    }
+
+    .btn-cancel {
+      background: #111111;
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      color: #ffffff;
+    }
+
+    .btn-create {
+      background: var(--red);
+      border: none;
+      color: #ffffff;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ── SAVE-IN SHEET ── -->
+  <div class="sheet">
+    <div class="handle"></div>
+
+    <div class="header">
+      <h3 id="saveInTitle">Save in</h3>
+      <button class="btn-primary" onclick="openCreate()">New playlist</button>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="list" id="playlistContainer"></div>
+  </div>
+
+  <!-- ── CREATE SCREEN ── -->
+  <div class="create-screen" id="createScreen">
+
+    <p class="create-title">Give a name to your Playlist</p>
+
+    <div class="name-input-wrap">
+      <input id="playlistInput" class="name-input" placeholder="Playlist name" maxlength="50" autocomplete="off" />
+      <span class="char-count" id="charCount">0/50</span>
+    </div>
+
+    <div class="prv-toggle" id="privacyToggle">
+      <div class="prv-slider"></div>
+
+      <div class="prv-item active" data-value="PUBLIC">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+          stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10" />
+          <line x1="2" y1="12" x2="22" y2="12" />
+          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+        </svg>
+        Public
+      </div>
+
+      <div class="prv-item" data-value="PRIVATE">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+          stroke-linejoin="round">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+          <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+        </svg>
+        Private
+      </div>
+    </div>
+
+    <div class="create-actions">
+      <button class="btn-cancel" onclick="closeCreate()">Cancel</button>
+      <button class="btn-create" onclick="createPlaylist()">Create</button>
+    </div>
+
+  </div>
+
+  <script>
+    /* Globe SVG (PUBLIC badge) */
+    const GLOBE_SVG = `<svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="10"/>
+      <line x1="2" y1="12" x2="22" y2="12"/>
+      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+    </svg>`;
+
+    /* Lock SVG (PRIVATE badge) */
+    const LOCK_SVG = `<svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+      <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+    </svg>`;
+
+    /* Music note SVG */
+    const MUSIC_SVG = `<svg viewBox="0 0 24 24">
+      <path d="M9 18V5l12-2v13" fill="none" stroke="rgba(255,255,255,0.75)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="6" cy="18" r="3" fill="rgba(255,255,255,0.75)"/>
+      <circle cx="18" cy="16" r="3" fill="rgba(255,255,255,0.75)"/>
+    </svg>`;
+
+    let playlists = [];
+
+    let selectedPrivacy = 'PUBLIC';
+
+    /* ── Toggle ADD / ADDED ── */
+    function toggleAdd(btn) {
+      if (btn.classList.contains('added')) {
+        btn.classList.remove('added');
+        btn.textContent = 'ADD';
+      } else {
+        btn.classList.add('added');
+        btn.textContent = 'ADDED';
+      }
+    }
+
+    /* ── Build one card element ── */
+    function buildCard(p) {
+      const badgeIcon = p.type === 'PUBLIC' ? GLOBE_SVG : LOCK_SVG;
+      const followersText = p.type === 'PUBLIC' ? `• ${p.followers.toLocaleString()} followers` : '';
+
+      const el = document.createElement('div');
+      el.className = 'card';
+      el.innerHTML = `
+        <div class="card-badge">
+          ${badgeIcon}
+          ${p.type}
+        </div>
+        <div class="card-row">
+          <div class="card-thumb">${MUSIC_SVG}</div>
+          <div class="card-info">
+            <div class="card-title">${p.name}</div>
+            <div class="card-meta">• ${p.clips} new clips • ${p.duration}</div>
+            ${followersText ? `<div class="card-meta">${followersText}</div>` : ''}
+          </div>
+          <button class="btn-add" onclick="toggleAdd(this)">ADD</button>
+        </div>`;
+      return el;
+    }
+
+    /* ── Manage decorative bg on sheet ── */
+    function setEmptyBg(show) {
+      const sheet = document.querySelector('.sheet');
+      let bg = sheet.querySelector('.empty-bg');
+      if (show && !bg) {
+        bg = document.createElement('img');
+        bg.className = 'empty-bg';
+        bg.src = '/assets/empty_playlist_bg.png';
+        bg.alt = '';
+        sheet.appendChild(bg);
+      } else if (!show && bg) {
+        bg.remove();
+      }
+    }
+
+    /* ── Render list ── */
+    function render() {
+      const container = document.getElementById('playlistContainer');
+      const saveInTitle = document.getElementById('saveInTitle');
+      container.innerHTML = '';
+
+      if (playlists.length === 0) {
+        saveInTitle.style.visibility = 'hidden';
+        setEmptyBg(true);
+        container.innerHTML = `
+          <div class="empty">
+            <img src="/assets/empty_img.png" class="empty-img" alt="" />
+            <h2>No playlists</h2>
+            <p>Lorem ipsum dolor sit amet,<br>consectetuer adipiscing elit.</p>
+          </div>`;
+        return;
+      }
+
+      saveInTitle.style.visibility = '';
+      setEmptyBg(false);
+      playlists.forEach(p => container.appendChild(buildCard(p)));
+    }
+
+    /* ── Open / close create screen ── */
+    function openCreate() {
+      document.getElementById('createScreen').classList.add('visible');
+      document.getElementById('playlistInput').focus();
+    }
+
+    function closeCreate() {
+      document.getElementById('createScreen').classList.remove('visible');
+      document.getElementById('playlistInput').value = '';
+      document.getElementById('charCount').textContent = '0/50';
+    }
+
+    /* ── Create playlist ── */
+    function createPlaylist() {
+      const input = document.getElementById('playlistInput');
+      const name = input.value.trim();
+      if (!name) return;
+
+      playlists.unshift({ name, type: selectedPrivacy, clips: 0, duration: '0m', followers: 0 });
+      closeCreate();
+      render();
+    }
+
+    /* ── Char counter ── */
+    document.getElementById('playlistInput').addEventListener('input', function () {
+      document.getElementById('charCount').textContent = this.value.length + '/50';
+    });
+
+    /* ── Privacy toggle ── */
+    const toggle = document.getElementById('privacyToggle');
+    toggle.querySelectorAll('.prv-item').forEach(item => {
+      item.addEventListener('click', () => {
+        toggle.querySelectorAll('.prv-item').forEach(i => i.classList.remove('active'));
+        item.classList.add('active');
+        selectedPrivacy = item.dataset.value;
+        toggle.classList.toggle('private', selectedPrivacy === 'PRIVATE');
+      });
+    });
+
+    render();
+  </script>
+
+</body>
+
+</html>
