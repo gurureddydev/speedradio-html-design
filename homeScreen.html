@@ -12,6 +12,79 @@
     :root {
       --text-dark: #1E1E1E;
       --nav-bg: #1A1A1A;
+
+      /* Height-based responsive tokens */
+      --header-pt: clamp(48px, 6.5vh, 60px);
+      --header-pb: clamp(8px, 1.2vh, 12px);
+      --header-gap: clamp(6px, 1vh, 10px);
+      
+      --action-gap: clamp(4px, 0.7vh, 8px);
+      --action-bottom: clamp(14px, 2.5vh, 32px);
+      
+      --profile-py: clamp(8px, 1.4vh, 12px);
+      --avatar-size: 40px;
+
+      /* Font sizes */
+      --fz-badge: clamp(10px, 1.5vh, 12px);
+      --fz-title: clamp(14px, 2.2vh, 18px);
+      --fz-tag: clamp(9px, 1.3vh, 11px);
+      --fz-caption: clamp(14px, 2.2vh, 18px);
+      --fz-action: clamp(9px, 1.3vh, 11px);
+      --fz-nav: clamp(20px, 3vh, 24px);
+    }
+
+    /* Large Heights (e.g., iPhone 14 Pro, Pixel 7) */
+    @media (min-height: 750px) {
+      :root {
+        --header-pt: clamp(60px, 8vh, 72px);
+        --header-gap: clamp(10px, 1.5vh, 14px);
+        --action-gap: clamp(8px, 1.2vh, 12px);
+        --action-bottom: clamp(24px, 3.5vh, 48px);
+        --profile-py: clamp(12px, 1.8vh, 16px);
+        --avatar-size: 44px;
+        --fz-badge: clamp(11px, 1.7vh, 13px);
+        --fz-title: clamp(16px, 2.5vh, 20px);
+        --fz-tag: clamp(10px, 1.5vh, 12px);
+        --fz-caption: clamp(16px, 2.5vh, 20px);
+        --fz-action: clamp(10px, 1.5vh, 12px);
+        --fz-nav: clamp(22px, 3.2vh, 26px);
+      }
+    }
+
+    /* Extra Large Heights (e.g., modern flagships, tall devices) */
+    @media (min-height: 850px) {
+      :root {
+        --header-pt: clamp(72px, 10vh, 90px);
+        --header-gap: clamp(12px, 2vh, 18px);
+        --action-gap: clamp(10px, 1.5vh, 16px);
+        --action-bottom: clamp(32px, 4.5vh, 60px);
+        --profile-py: clamp(14px, 2vh, 20px);
+        --avatar-size: 48px;
+        --fz-badge: clamp(12px, 1.8vh, 14px);
+        --fz-title: clamp(18px, 2.8vh, 24px);
+        --fz-tag: clamp(11px, 1.6vh, 13px);
+        --fz-caption: clamp(18px, 2.8vh, 24px);
+        --fz-action: clamp(11px, 1.6vh, 13px);
+        --fz-nav: clamp(24px, 3.5vh, 30px);
+      }
+    }
+
+    /* Small Heights (e.g., older phones, landscape-ish mobile) */
+    @media (max-height: 650px) {
+      :root {
+        --header-pt: clamp(36px, 5vh, 48px);
+        --header-gap: clamp(4px, 0.8vh, 8px);
+        --action-gap: clamp(3px, 0.5vh, 6px);
+        --action-bottom: clamp(10px, 1.8vh, 20px);
+        --profile-py: clamp(6px, 1vh, 10px);
+        --avatar-size: 36px;
+        --fz-badge: clamp(9px, 1.3vh, 11px);
+        --fz-title: clamp(12px, 2vh, 16px);
+        --fz-tag: clamp(8px, 1.2vh, 10px);
+        --fz-caption: clamp(12px, 2vh, 16px);
+        --fz-action: clamp(8px, 1.2vh, 10px);
+        --fz-nav: clamp(18px, 2.5vh, 22px);
+      }
     }
 
     * {
@@ -82,10 +155,10 @@
 
     /* Header Area */
     .header-area {
-      padding: clamp(50px, 7vh, 64px) 20px clamp(8px, 1.5vh, 12px);
+      padding: var(--header-pt) 20px var(--header-pb);
       display: flex;
       flex-direction: column;
-      gap: clamp(8px, 1.2vh, 12px);
+      gap: var(--header-gap);
       flex-shrink: 0;
       position: relative;
       z-index: 1;
@@ -96,13 +169,13 @@
       background: rgba(255, 255, 255, 0.25);
       padding: clamp(4px, 0.8vh, 6px) 12px;
       border-radius: 6px;
-      font-size: clamp(11px, 1.7vh, 12px);
+      font-size: var(--fz-badge);
       font-weight: 600;
       color: var(--text-dark);
     }
 
     .title {
-      font-size: clamp(14px, 2.2vh, 18px);
+      font-size: var(--fz-title);
       font-weight: 800;
       color: var(--text-dark);
       line-height: 1.2;
@@ -172,7 +245,7 @@
       background: rgba(0, 0, 0, 0.08);
       padding: clamp(4px, 0.8vh, 6px) clamp(10px, 2vw, 14px);
       border-radius: 20px;
-      font-size: clamp(10px, 1.5vh, 12px);
+      font-size: var(--fz-tag);
       font-weight: 600;
       color: var(--text-dark);
       white-space: nowrap;
@@ -263,11 +336,11 @@
       position: absolute;
       right: 12px;
       top: clamp(10px, 1.5vh, 14px);
-      bottom: clamp(14px, 2.5vh, 40px);
+      bottom: var(--action-bottom);
       display: flex;
       flex-direction: column;
       justify-content: flex-end;
-      gap: clamp(3px, 0.55vh, 7px);
+      gap: var(--action-gap);
       z-index: 5;
       overflow: hidden;
     }
@@ -310,13 +383,13 @@
     }
 
     .v-action span {
-      font-size: clamp(9px, 1.3vh, 11px);
+      font-size: var(--fz-action);
       font-weight: 600;
       color: #fff;
     }
 
     .v-action.small span {
-      font-size: clamp(9px, 1.5vh, 13px);
+      font-size: var(--fz-action);
     }
 
     .video-caption {
@@ -325,7 +398,7 @@
       left: 0;
       right: 0;
       text-align: center;
-      font-size: clamp(14px, 2.4vh, 18px);
+      font-size: var(--fz-caption);
       font-weight: 800;
       color: #fff;
       text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8), -1px -1px 3px rgba(0, 0, 0, 0.8);
@@ -335,7 +408,7 @@
 
     /* Profile Area */
     .profile-area {
-      padding: clamp(8px, 1.5vh, 12px) 16px;
+      padding: var(--profile-py) 16px;
       display: flex;
       align-items: center;
       gap: 12px;
@@ -349,8 +422,8 @@
     }
 
     .avatar-wrapper {
-      width: 40px;
-      height: 40px;
+      width: var(--avatar-size);
+      height: var(--avatar-size);
       border-radius: 50%;
       overflow: hidden;
       border: 2px solid var(--card-bg);
@@ -431,8 +504,8 @@
     }
 
     .nav-item svg {
-      width: clamp(22px, 3.2vh, 26px);
-      height: clamp(22px, 3.2vh, 26px);
+      width: var(--fz-nav);
+      height: var(--fz-nav);
       fill: none;
       stroke: #fff;
       stroke-width: 1.8;
