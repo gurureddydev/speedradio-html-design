@@ -39,19 +39,25 @@
     /* Now playing */
     .now-playing {
       background: rgba(255, 255, 255, 0.1);
-      border-radius: 0 0 5px 5px;
+      border-radius: 0 0 12px 12px;
       padding: 10px 14px;
       display: flex;
       align-items: center;
       gap: 12px;
       position: fixed;
-      width: 100vw;
-      max-width: 420px;
+
+      /* updated */
+      width: calc(100% - 32px);
+      max-width: 388px;
+
       height: 72px;
       left: 50%;
-      top: 0;
+      top: 24px;
       transform: translateX(-50%);
+
       z-index: 20;
+      overflow: hidden;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
       box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12);
     }
 
@@ -111,12 +117,11 @@
 
     .np-progress {
       position: absolute;
-      bottom: 0;
       left: 0;
       right: 0;
+      bottom: 0;
       height: 4px;
-      background: rgba(255, 255, 255, 0.4);
-      border-radius: 0 0 5px 5px;
+      background: rgba(255, 255, 255, 0.15);
     }
 
     .np-progress-fill {
@@ -127,29 +132,73 @@
     }
 
     /* Comment modal */
+    /* Comment modal */
     .comment-modal {
       background: #1C1C1E;
-      border-radius: 12px 12px 0 0;
+      border-radius: 20px 20px 0 0;
+
       width: 100%;
       max-width: 420px;
-      height: calc(100dvh - 72px);
+
       position: fixed;
       left: 50%;
-      top: 72px;
+      top: 0;
+      bottom: 0;
+
       transform: translateX(-50%);
       z-index: 10;
+
       display: flex;
       flex-direction: column;
+
       overflow: hidden;
+
+      /* native sheet feel */
+      padding-top: env(safe-area-inset-top, 8px);
+
+      /* smoother movement */
+      transition:
+        transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+        border-radius 0.28s ease;
+
+      will-change: transform;
+
+      /* makes sheet feel taller */
+      min-height: 100dvh;
+
+      /* subtle native shadow */
+      box-shadow:
+        0 -10px 40px rgba(0, 0, 0, 0.45);
     }
 
+    /* expanded state */
+    .comment-modal.expanded {
+      border-radius: 0;
+    }
+
+    /* Drag handle */
     .drag-handle {
-      width: 40px;
-      height: 4px;
-      background: rgba(255, 255, 255, 0.3);
-      border-radius: 2px;
-      margin: 10px auto 0;
+      width: 42px;
+      height: 5px;
+
+      background: rgba(255, 255, 255, 0.32);
+
+      border-radius: 999px;
+
+      margin: 6px auto 14px;
+
       flex-shrink: 0;
+
+      z-index: 30;
+
+      cursor: grab;
+
+      transition: opacity 0.2s ease;
+    }
+
+    .drag-handle:active {
+      cursor: grabbing;
+      opacity: 0.7;
     }
 
 
@@ -161,6 +210,11 @@
       overflow-y: auto;
       display: flex;
       flex-direction: column;
+      /* push all content (comments + empty state) below the floating now-playing bar.
+         player bottom = top(24px) + height(72px) = 96px.
+         list top    = modal padding-top (env safe-area, fallback 8px) + drag-handle (25px).
+         so the gap to fill = 96 - safe-area - 25 = 71px - safe-area, min 8px. */
+      padding-top: max(calc(71px - env(safe-area-inset-top, 8px)), 8px);
     }
 
     .comment-list::-webkit-scrollbar {
@@ -171,12 +225,9 @@
     .empty-state {
       flex: 1;
       margin: 16px;
-      /* spacing from edges */
 
       background: #1C1C1E;
-      /* exact bottom sheet color */
       border: 1px solid #FFFFFF1A;
-      /* exact Figma border (10% white) */
       border-radius: 16px;
 
       display: flex;
@@ -319,15 +370,14 @@
     }
 
     .c-like-icon {
-      display: inline-block;
-      background-color: rgba(255, 255, 255, 0.7);
-      mask: url('assets/like_ic.png') no-repeat center / contain;
-      -webkit-mask: url('assets/like_ic.png') no-repeat center / contain;
-      transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), background-color 0.2s;
+      display: block;
+      object-fit: contain;
+      opacity: 0.7;
+      transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.2s;
     }
 
     .c-like-btn.liked .c-like-icon {
-      background-color: #fff;
+      opacity: 1;
       transform: scale(1.15);
     }
 
@@ -447,145 +497,213 @@
       text-align: center;
     }
 
-    /* Replying-to bar */
-    .replying-bar {
-      display: none;
-      align-items: center;
-      justify-content: space-between;
-      padding: 7px 16px;
-      background: rgba(234, 28, 37, 0.08);
-      border-top: 1px solid rgba(234, 28, 37, 0.18);
-      flex-shrink: 0;
-    }
-
-    .replying-bar.show {
-      display: flex;
-    }
-
-    .replying-bar-text {
-      color: rgba(255, 255, 255, 0.7);
-      font-size: 12px;
-    }
-
-    .replying-bar-text b {
-      color: #EA1C25;
-      font-weight: 600;
-    }
-
-    .replying-cancel {
-      background: none;
-      border: none;
-      cursor: pointer;
-      padding: 2px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
 
     /* Context menu */
-    .ctx-overlay {
-      position: fixed;
-      inset: 0;
-      z-index: 200;
-    }
-
+    /* Context menu */
     .ctx-menu {
       position: fixed;
-      background: #2C2C2E;
-      border-radius: 12px;
-      overflow: hidden;
+      width: 131px;
+      height: 104px;
+      background: #242424;
+      border-radius: 15px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 16px;
       z-index: 201;
-      min-width: 160px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+      box-shadow: 0px 5px 9.8px rgba(0, 0, 0, 0.6);
     }
 
     .ctx-item {
+      width: 100%;
+      height: 32px;
+      border: none;
+      background: transparent;
       display: flex;
       align-items: center;
       gap: 12px;
-      padding: 14px 18px;
-      color: #fff;
-      font-size: 14px;
-      font-weight: 500;
       cursor: pointer;
-      border: none;
-      background: none;
-      width: 100%;
-      text-align: left;
+      padding: 0;
+
       font-family: 'DM Sans', sans-serif;
+      font-weight: 500;
+      font-size: 16px;
+      line-height: 21px;
+
+      color: #FFFFFF;
     }
 
-    .ctx-item+.ctx-item {
-      border-top: 1px solid rgba(255, 255, 255, 0.08);
-    }
-
-    .ctx-item.danger {
-      color: #EA1C25;
-    }
-
-    /* Mention popup */
-    .mention-popup {
-      position: fixed;
-      background: #2C2C2E;
-      border-radius: 12px;
-      overflow: hidden;
-      z-index: 150;
-      width: calc(100% - 40px);
-      max-width: 380px;
-      left: 50%;
-      transform: translateX(-50%);
-      box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.3);
-      display: none;
-    }
-
-    .mention-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 12px 16px;
-      cursor: pointer;
-      border: none;
-      background: none;
-      width: 100%;
-      text-align: left;
-    }
-
-    .mention-item+.mention-item {
-      border-top: 1px solid rgba(255, 255, 255, 0.06);
-    }
-
-    .mention-item:active {
-      background: rgba(255, 255, 255, 0.05);
-    }
-
-    .mention-av {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 12px;
-      font-weight: 700;
-      color: #fff;
+    .ctx-item svg {
+      width: 24px;
+      height: 24px;
       flex-shrink: 0;
     }
 
+    .ctx-item svg path,
+    .ctx-item svg rect,
+    .ctx-item svg circle {
+      stroke: #FFFFFF;
+    }
+
+    .ctx-item.danger {
+      color: #FF2D2D;
+    }
+
+    .ctx-item.danger svg path,
+    .ctx-item.danger svg rect,
+    .ctx-item.danger svg circle {
+      stroke: #FF2D2D;
+    }
+
+    /* ─────────────────────────────────────────
+   Mention Popup — Figma Match Redesign
+───────────────────────────────────────── */
+
+    .mention-popup {
+      position: fixed;
+      left: 50%;
+      transform: translateX(-50%);
+
+      width: calc(100% - 14px);
+      max-width: 377px;
+
+      background: #1C1C1E;
+      border: 1px solid #242424;
+      border-radius: 15px;
+
+      padding: 12px;
+
+      display: none;
+      flex-direction: column;
+      gap: 16px;
+
+      z-index: 150;
+
+      box-shadow: 0px 5px 9.8px rgba(0, 0, 0, 0.6);
+
+      overflow: hidden;
+
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+
+      animation: mentionPopupIn 0.16s ease-out;
+    }
+
+    /* smooth popup animation */
+    @keyframes mentionPopupIn {
+      from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(8px) scale(0.98);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0) scale(1);
+      }
+    }
+
+    /* mention row */
+    .mention-item {
+      width: 100%;
+
+      display: flex;
+      align-items: center;
+      gap: 12px;
+
+      background: transparent;
+      border: none;
+
+      padding: 0;
+
+      cursor: pointer;
+
+      text-align: left;
+
+      transition:
+        transform 0.14s ease,
+        opacity 0.14s ease;
+    }
+
+    /* spacing handled by popup gap */
+    .mention-item+.mention-item {
+      border-top: none;
+    }
+
+    /* tap feedback */
+    .mention-item:active {
+      transform: scale(0.985);
+      opacity: 0.82;
+    }
+
+    /* avatar image */
+    .mention-av {
+      width: 52px;
+      height: 52px;
+
+      border-radius: 50%;
+
+      flex-shrink: 0;
+
+      overflow: hidden;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      background: #333;
+
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    /* if using img avatars */
+    .mention-av img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* text container */
     .mention-info {
+      min-width: 0;
+
       display: flex;
       flex-direction: column;
+      justify-content: center;
+
       gap: 2px;
+
+      flex: 1;
     }
 
+    /* main name */
     .mention-name {
-      color: #fff;
-      font-size: 14px;
-      font-weight: 600;
+      color: #FFFFFF;
+
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      line-height: 20px;
+
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
+    /* username */
     .mention-uname {
-      color: rgba(255, 255, 255, 0.5);
-      font-size: 12px;
+      color: rgba(255, 255, 255, 0.68);
+
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 18px;
+
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     /* Toast */
@@ -688,7 +806,7 @@
       background: #242424;
       border: 1px solid #696969;
       border-radius: 15px;
-      padding: 8px 12px;
+      padding: 8px 4px;
       min-height: 49px;
       gap: 8px;
     }
@@ -799,16 +917,6 @@
         </div>
       </div>
 
-      <!-- Replying-to indicator -->
-      <div class="replying-bar" id="replyingBar">
-        <div class="replying-bar-text">Replying to <b id="replyTarget"></b></div>
-        <button class="replying-cancel" onclick="cancelReply()">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <path d="M4 4l8 8M12 4l-8 8" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" stroke-linecap="round" />
-          </svg>
-        </button>
-      </div>
-
       <!-- Emoji bar -->
       <div class="emoji-bar">
         <button class="emoji-btn" onclick="insertEmoji('😍','assets/emoji_1.png')"><img src="assets/emoji_1.png"
@@ -827,8 +935,8 @@
       <div class="input-bar">
         <div class="input-avatar">DM</div>
         <div class="input-box">
-          <div id="commentInput" class="editor" contenteditable="true" role="textbox"
-            data-placeholder="Add a response..." spellcheck="true"></div>
+          <div id="commentInput" class="editor" contenteditable="true" role="textbox" data-placeholder="Add response..."
+            spellcheck="true"></div>
           <button class="send-btn" id="sendBtn" onclick="submitComment()">
             <img src="assets/comment_send_img.png" alt="Send" />
           </button>
@@ -868,8 +976,6 @@
     const commentList = document.getElementById('commentList');
     const emptyState = document.getElementById('emptyState');
     const sendBtn = document.getElementById('sendBtn');
-    const replyingBar = document.getElementById('replyingBar');
-    const replyTarget = document.getElementById('replyTarget');
     const mentionPopup = document.getElementById('mentionPopup');
     const toast = document.getElementById('toast');
     const toastMsg = document.getElementById('toastMsg');
@@ -967,7 +1073,7 @@
     const SVG_REPLY = `<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="1.33"><path d="M2.67 2.67H9.33a4 4 0 0 1 0 8H6"/><path d="M4 8.67L2 10.67l2 2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
     const SVG_EDIT = `<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="1.33"><path d="M11.33 2.67a1.88 1.88 0 0 1 2.67 2.67L4.67 14.67l-3.34.67.67-3.34z" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
     // ── Build Like icon ───────────────────────────────────────────────────────
-    const IC_LIKE = (size) => `<span class="c-like-icon" style="width:${size}px; height:${size}px;"></span>`;
+    const IC_LIKE = (size) => `<img class="c-like-icon" src="assets/like_ic.png" width="${size}" height="${size}" />`;
 
     // ── Build a reply element ──────────────────────────────────────────────────
     function buildReplyEl(html, isOwn) {
@@ -1040,10 +1146,7 @@
         : commentEl.querySelector('.c-name').textContent;
 
       replyingTo = { commentEl };
-      replyTarget.textContent = '@' + nameSrc.replace(/\s+/g, '');
-      replyingBar.classList.add('show');
-      editor.dataset.placeholder = 'Add a comment...';
-      editor.setAttribute('data-placeholder', 'Add a comment...');
+      editor.setAttribute('data-placeholder', 'Replying to @' + nameSrc.replace(/\s+/g, '') + '...');
       editor.focus();
 
       // Pre-fill @mention if replying to someone else's reply
@@ -1068,7 +1171,6 @@
 
     function cancelReply() {
       replyingTo = null;
-      replyingBar.classList.remove('show');
       editor.setAttribute('data-placeholder', 'Add a response...');
     }
 
@@ -1140,6 +1242,7 @@
     // ── Like toggle ────────────────────────────────────────────────────────────
     function toggleLike(btn) {
       const isLiked = btn.classList.toggle('liked');
+      const icon = btn.querySelector('.c-like-icon');
       const isReply = !!btn.closest('.reply-item');
       const parent = btn.closest(isReply ? '.reply-right' : '.c-right');
       const countEl = parent.querySelector(isReply ? '.reply-like-count' : '.c-like-count');
@@ -1147,10 +1250,12 @@
 
       if (isLiked) {
         count++;
+        icon.src = 'assets/like_fill_ic.svg';
         btn.classList.add('animating');
         setTimeout(() => btn.classList.remove('animating'), 300);
       } else {
         count--;
+        icon.src = 'assets/like_ic.png';
       }
 
       countEl.dataset.count = count;
@@ -1189,16 +1294,18 @@
       menu.id = 'ctxMenu';
 
       if (isOwn) {
+
         const del = document.createElement('button');
-        del.className = 'ctx-item danger';
-        del.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#EA1C25" stroke-width="1.5"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" stroke-linecap="round" stroke-linejoin="round"/></svg> Delete`;
+        del.className = 'ctx-item';
+        del.innerHTML = `<img src="assets/ic_delete.png" width="18" height="18" style="object-fit:contain;flex-shrink:0;" /> <span style="color:#FFFFFF">Delete</span>`;
+
         del.onclick = () => deleteItem(id, isReply);
         menu.appendChild(del);
       }
 
       const rep = document.createElement('button');
       rep.className = 'ctx-item';
-      rep.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#EA1C25" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01" stroke-linecap="round"/></svg> <span style="color:#EA1C25">Report</span>`;
+      rep.innerHTML = `<img src="assets/ic_report.png" width="18" height="18" style="object-fit:contain;flex-shrink:0;" /> <span style="color:#EA1C25">Report</span>`;
       rep.onclick = () => { closeCtxMenu(); showToast('Response reported'); };
       menu.appendChild(rep);
 
@@ -1277,7 +1384,7 @@
         <span class="mention-uname">${u.username}</span>
       </div>
     </button>`).join('');
-      mentionPopup.style.display = 'block';
+      mentionPopup.style.display = 'flex';
     }
 
     function hideMentionPopup() {
@@ -1342,6 +1449,52 @@
 
     // Dismiss context menu on scroll
     commentList.addEventListener('scroll', closeCtxMenu);
+
+    // ── Native bottom sheet drag ─────────────────────────────
+
+    const bottomSheet = document.querySelector('.comment-modal');
+    const dragHandle = document.querySelector('.drag-handle');
+
+    let startY = 0;
+    let currentY = 0;
+    let isDragging = false;
+
+    dragHandle.addEventListener('touchstart', (e) => {
+      startY = e.touches[0].clientY;
+      isDragging = true;
+      bottomSheet.style.transition = 'none';
+    }, { passive: true });
+
+    window.addEventListener('touchmove', (e) => {
+      if (!isDragging) return;
+
+      currentY = e.touches[0].clientY;
+      const delta = currentY - startY;
+
+      // allow only downward movement
+      if (delta > 0) {
+        bottomSheet.style.transform =
+          `translateX(-50%) translateY(${delta}px)`;
+      }
+    }, { passive: true });
+
+    window.addEventListener('touchend', () => {
+      if (!isDragging) return;
+
+      const delta = currentY - startY;
+
+      bottomSheet.style.transition =
+        'transform 0.28s cubic-bezier(0.22, 1, 0.36, 1)';
+
+      // snap back to full height
+      bottomSheet.style.transform = 'translateX(-50%) translateY(0)';
+
+      if (delta < 80) {
+        bottomSheet.classList.add('expanded');
+      }
+
+      isDragging = false;
+    });
   </script>
 </body>
 
