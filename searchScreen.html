@@ -3,7 +3,11 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#1A1A1A">
     <title>Discover - Search</title>
     <link
         href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;0,9..40,900&display=swap"
@@ -13,27 +17,47 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none
+        }
+
+        html {
+            height: 100%;
+            overflow: hidden
         }
 
         body {
-            background: #111;
+            background: #1A1A1A;
             display: flex;
             justify-content: center;
             font-family: 'DM Sans', sans-serif;
-            min-height: 100vh
+            height: 100%;
+            overflow: hidden;
+            overscroll-behavior: none;
+            -webkit-overflow-scrolling: touch
         }
 
         .screen {
             position: relative;
             width: 100%;
-            max-width: 420px;
+            max-width: 480px;
             height: 100dvh;
             background: #1A1A1A;
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            margin-top: 24px; /* Added top margin for visual gap */
+            padding-top: env(safe-area-inset-top, 0px);
+        }
+
+        /* Desktop centering — only on wide screens */
+        @media (min-width: 481px) {
+            body {
+                background: #111
+            }
+            .screen {
+                border-left: 1px solid rgba(255,255,255,.06);
+                border-right: 1px solid rgba(255,255,255,.06)
+            }
         }
 
         /* STATUS BAR */
@@ -42,6 +66,7 @@
             justify-content: space-between;
             align-items: center;
             padding: 0 16px;
+            padding-top: env(safe-area-inset-top, 0px);
             height: 44px;
             flex-shrink: 0
         }
@@ -63,8 +88,8 @@
         .shdr {
             display: flex;
             flex-direction: column;
-            padding: 14px 16px 0;
-            gap: 16px;
+            padding: 10px 16px 0;
+            gap: 12px;
             flex-shrink: 0
         }
 
@@ -90,12 +115,18 @@
         .sbox {
             display: flex;
             align-items: center;
-            padding: 8px 12px;
-            gap: 8px;
+            padding: 10px 14px;
+            gap: 10px;
             flex: 1;
-            height: 37px;
-            background: #313131;
-            border-radius: 8px
+            height: 42px;
+            background: #2A2A2A;
+            border-radius: 12px;
+            transition: background .2s ease, box-shadow .2s ease
+        }
+
+        .sbox:focus-within {
+            background: #333;
+            box-shadow: 0 0 0 1.5px rgba(234,28,37,.35)
         }
 
         .sbox input {
@@ -105,9 +136,11 @@
             outline: none;
             font-family: 'DM Sans', sans-serif;
             font-weight: 400;
-            font-size: 14px;
-            line-height: 18px;
-            color: rgba(255, 255, 255, 0.9)
+            font-size: 16px;
+            line-height: 20px;
+            color: rgba(255, 255, 255, 0.95);
+            /* Prevent iOS zoom on focus */
+            font-size: max(16px, 1rem)
         }
 
         .sbox input::placeholder {
@@ -133,39 +166,53 @@
         .tabs {
             display: flex;
             align-items: center;
-            gap: 20px;
-            height: 29px;
-            border-bottom: 1.11px solid rgba(255, 255, 255, 0.2)
+            gap: 0;
+            height: 44px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+            padding: 0 4px
         }
 
         .tb {
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 4px;
-            height: 29px;
+            padding: 8px 16px;
+            height: 44px;
             background: none;
             border: none;
-            border-bottom: 2px solid transparent;
-            margin-bottom: -1.11px;
+            border-bottom: 2.5px solid transparent;
+            margin-bottom: -1px;
             cursor: pointer;
             font-family: 'DM Sans', sans-serif;
             font-weight: 600;
             font-size: 14px;
-            color: rgba(255, 255, 255, 0.7);
-            white-space: nowrap
+            color: rgba(255, 255, 255, 0.5);
+            white-space: nowrap;
+            transition: color .2s ease, border-color .2s ease;
+            position: relative;
+            /* min 44px touch target */
+            min-width: 44px
         }
 
         .tb.on {
             color: #fff;
-            border-bottom: 2px solid #fff
+            border-bottom: 2.5px solid #EA1C25
+        }
+
+        .tb:active {
+            color: rgba(255,255,255,.8);
+            transform: scale(.97)
         }
 
         /* SCREENS */
         .tc {
             display: none;
             flex: 1;
-            overflow-y: auto
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior-y: contain;
+            scroll-behavior: smooth;
+            scrollbar-width: none
         }
 
         .tc::-webkit-scrollbar {
@@ -210,9 +257,16 @@
         .ri {
             display: flex;
             align-items: center;
-            padding: 12px 16px;
-            gap: 12px;
-            cursor: pointer
+            padding: 14px 16px;
+            gap: 14px;
+            cursor: pointer;
+            min-height: 48px;
+            transition: background .15s ease;
+            border-radius: 8px
+        }
+
+        .ri:active {
+            background: rgba(255,255,255,.04)
         }
 
         .rit {
@@ -246,13 +300,19 @@
             display: flex;
             align-items: center;
             padding: 14px 16px;
-            gap: 12px;
+            gap: 14px;
             cursor: pointer;
-            border-bottom: 1px solid rgba(255, 255, 255, .06)
+            border-bottom: 1px solid rgba(255, 255, 255, .06);
+            min-height: 48px;
+            transition: background .15s ease
         }
 
         .sgi:last-child {
             border-bottom: none
+        }
+
+        .sgi:active {
+            background: rgba(255,255,255,.04)
         }
 
         .sgt {
@@ -277,9 +337,14 @@
             flex-direction: row;
             justify-content: space-between;
             align-items: flex-start;
-            padding: 12px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, .12);
-            gap: 8px
+            padding: 14px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, .08);
+            gap: 10px;
+            transition: background .15s ease
+        }
+
+        .pc:active {
+            background: rgba(255,255,255,.02)
         }
 
         .plft {
@@ -297,6 +362,13 @@
             border-radius: 50%;
             flex-shrink: 0;
             overflow: hidden
+        }
+
+        .pav img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block
         }
 
         .av1 {
@@ -397,15 +469,21 @@
         }
 
         .fbtn {
-            width: 40px;
-            height: 40px;
-            border-radius: 6px;
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
             border: none;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            flex-shrink: 0
+            flex-shrink: 0;
+            transition: transform .15s ease, opacity .15s ease
+        }
+
+        .fbtn:active {
+            transform: scale(.92);
+            opacity: .8
         }
 
         .fbtn.red {
@@ -414,7 +492,7 @@
 
         .fbtn.grey {
             background: #2C2C2C;
-            border: 1px solid rgba(255, 255, 255, .2)
+            border: 1px solid rgba(255, 255, 255, .15)
         }
 
         /* ══ CLIPS — Figma exact ══
@@ -619,18 +697,19 @@
             display: flex;
             flex-direction: row;
             align-items: center;
-            padding: 4px 9px;
+            padding: 8px 12px;
             gap: 12px;
             width: auto;
             align-self: stretch;
             min-height: 77px;
-            border-radius: 5px;
+            border-radius: 8px;
             cursor: pointer;
-            margin: 0 16px
+            margin: 0 12px;
+            transition: background .15s ease
         }
 
         .ci:active {
-            background: rgba(255, 255, 255, .04)
+            background: rgba(255, 255, 255, .06)
         }
 
         .cil {
@@ -1071,22 +1150,35 @@
             left: 50%;
             transform: translateX(-50%);
             width: 100%;
-            max-width: 420px;
-            background: #1A1A1A;
+            max-width: 480px;
+            background: rgba(26, 26, 26, .92);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             display: flex;
             justify-content: space-around;
             align-items: center;
-            padding: clamp(10px, 1.8vh, 14px) 16px calc(clamp(14px, 2.2vh, 20px) + env(safe-area-inset-bottom, 0px));
+            padding: 8px 16px calc(8px + env(safe-area-inset-bottom, 0px));
             z-index: 50;
+            border-top: 1px solid rgba(255,255,255,.06)
         }
 
         .nav-item {
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            opacity: 0.6;
+            opacity: 0.5;
             text-decoration: none;
+            padding: 6px 12px;
+            min-width: 48px;
+            min-height: 44px;
+            border-radius: 12px;
+            transition: opacity .2s ease, transform .15s ease
+        }
+
+        .nav-item:active {
+            transform: scale(.9)
         }
 
         .nav-item.active {
@@ -1094,8 +1186,8 @@
         }
 
         .nav-item svg {
-            width: clamp(22px, 3.2vh, 26px);
-            height: clamp(22px, 3.2vh, 26px);
+            width: 24px;
+            height: 24px;
             fill: none;
             stroke: #fff;
             stroke-width: 1.8;
@@ -1115,14 +1207,25 @@
             height: 28px;
             border-radius: 50%;
             overflow: hidden;
-            border: 1.5px solid #fff;
+            border: 2px solid transparent;
             background: #fff;
+            transition: border-color .2s ease
+        }
+
+        .nav-item.active .nav-avatar {
+            border-color: #EA1C25
         }
 
         .nav-avatar svg {
             width: 100%;
             height: 100%;
             display: block;
+        }
+
+        /* Nav bar spacer — prevents content from hiding behind nav */
+        .nav-spacer {
+            flex-shrink: 0;
+            height: calc(64px + env(safe-area-inset-bottom, 0px))
         }
     </style>
 </head>
@@ -1161,28 +1264,30 @@
         </div>
 
         <!-- RECENT -->
-        <div id="sr" class="tc" style="padding-bottom:64px;">
+        <div id="sr" class="tc">
             <div class="rbox">
                 <div class="rhdr"><span class="rtit">Recent Searches</span><span class="rclr" onclick="clrAll()">Clear
                         All</span></div>
                 <div id="rl"></div>
             </div>
+            <div class="nav-spacer"></div>
         </div>
 
         <!-- SUGGESTIONS -->
-        <div id="ss" class="tc" style="padding-bottom:64px;">
+        <div id="ss" class="tc">
             <div class="sgbox" id="sl"></div>
+            <div class="nav-spacer"></div>
         </div>
 
         <!-- RESULTS -->
         <div id="sres" class="tc" style="overflow:hidden;">
 
             <!-- PROFILES -->
-            <div class="tc on" id="tab-profiles" style="overflow-y:auto;padding-bottom:64px;">
+            <div class="tc on" id="tab-profiles" style="overflow-y:auto;">
                 <div class="plist">
                     <div class="pc">
                         <div class="plft">
-                            <div class="pav av1"></div>
+                            <div class="pav"><img src="assets/profile_1.png" alt="Portuguese emma"></div>
                             <div class="pin"><span class="pnm">Portuguese emma</span><span
                                     class="phd">@emmawilson</span><span class="pbi">Portuguese Singer • Songwriter •
                                     Music Producer</span></div>
@@ -1195,7 +1300,7 @@
                     </div>
                     <div class="pc">
                         <div class="plft">
-                            <div class="pav av2"></div>
+                            <div class="pav"><img src="assets/profile_4.png" alt="Portuguese woman luca"></div>
                             <div class="pin"><span class="pnm">Portuguese woman luca</span><span
                                     class="phd">@lucasoliveira</span><span class="pbi">Portuguese Chef • Culinary Expert
                                     • TV Personality</span></div>
@@ -1208,7 +1313,7 @@
                     </div>
                     <div class="pc">
                         <div class="plft">
-                            <div class="pav av3"></div>
+                            <div class="pav"><img src="assets/profile_5.png" alt="Portuguese woman em"></div>
                             <div class="pin"><span class="pnm">Portuguese woman em</span><span
                                     class="phd">@emmawilson</span><span class="pbi">Portuguese Singer • Songwriter •
                                     Music Producer</span>
@@ -1224,7 +1329,7 @@
                     </div>
                     <div class="pc">
                         <div class="plft">
-                            <div class="pav av4"></div>
+                            <div class="pav"><img src="assets/profile_6.png" alt="woman peace"></div>
                             <div class="pin"><span class="pnm">woman peace</span><span
                                     class="phd">@sofia.santos</span><span class="pbi">Portuguese Fashion Designer •
                                     Entrepreneur • Stylist</span>
@@ -1240,7 +1345,7 @@
                     </div>
                     <div class="pc">
                         <div class="plft">
-                            <div class="pav av5"></div>
+                            <div class="pav"><img src="assets/profile_7.png" alt="Portuguese woman peace"></div>
                             <div class="pin"><span class="pnm">Portuguese woman peace</span><span
                                     class="phd">@miguel.ferreira</span><span class="pbi">Portuguese Photographer •
                                     Visual Artist • Influencer</span>
@@ -1254,11 +1359,528 @@
                                 <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2Z" fill="#E6E6E6" />
                             </svg></button>
                     </div>
+                    <div class="pc">
+                        <div class="plft">
+                            <div class="pav"><img src="assets/profile_2.jpg" alt="Ana Rodrigues"></div>
+                            <div class="pin"><span class="pnm">Ana Rodrigues</span><span
+                                    class="phd">@ana.rodrigues</span><span class="pbi">Portuguese Dancer • Choreographer • Dance Instructor</span>
+                                <div class="pmt"><span class="pfl">42.3K followers</span><span
+                                        style="color:rgba(255,255,255,.4)">•</span>
+                                    <div class="mavs"><span class="ma1"></span><span class="ma2"></span><span
+                                            class="ma3"></span></div><span class="mut">15 mutual</span>
+                                </div>
+                            </div>
+                        </div><button class="fbtn red"><svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2Z" fill="#E6E6E6" />
+                            </svg></button>
+                    </div>
+                    <div class="pc">
+                        <div class="plft">
+                            <div class="pav"><img src="assets/profile_3.jpg" alt="Carlos Mendes"></div>
+                            <div class="pin"><span class="pnm">Carlos Mendes</span><span
+                                    class="phd">@carlos.mendes</span><span class="pbi">Portuguese DJ • Music Producer • Festival Curator</span>
+                            </div>
+                        </div><button class="fbtn grey"><svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                <path
+                                    d="M16 11c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3Zm-8 0c1.66 0 3-1.34 3-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3Zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5Zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5Z"
+                                    fill="white" />
+                                <path d="M20 8V6h-2V4h-2v2h-2v2h2v2h2V8h2Z" fill="white" />
+                            </svg></button>
+                    </div>
+                    <div class="pc">
+                        <div class="plft">
+                            <div class="pav"><img src="assets/profile_8.png" alt="Isabella Costa"></div>
+                            <div class="pin"><span class="pnm">Isabella Costa</span><span
+                                    class="phd">@isabella.costa</span><span class="pbi">Portuguese Actress • Theatre Artist • Voice Coach</span>
+                                <div class="pmt"><span class="pfl">18.9K followers</span><span
+                                        style="color:rgba(255,255,255,.4)">•</span>
+                                    <div class="mavs"><span class="ma1"></span><span class="ma2"></span><span
+                                            class="ma3"></span></div><span class="mut">6 mutual</span>
+                                </div>
+                            </div>
+                        </div><button class="fbtn red"><svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2Z" fill="#E6E6E6" />
+                            </svg></button>
+                    </div>
+                    <div class="pc">
+                        <div class="plft">
+                            <div class="pav"><img src="assets/profile_2.jpg" alt="Maria Santos"></div>
+                            <div class="pin"><span class="pnm">Maria Santos</span><span
+                                    class="phd">@maria.santos</span><span class="pbi">Portuguese Journalist • Writer • Podcast Host</span>
+                                <div class="pmt"><span class="pfl">67.8K followers</span><span
+                                        style="color:rgba(255,255,255,.4)">•</span>
+                                    <div class="mavs"><span class="ma1"></span><span class="ma2"></span><span
+                                            class="ma3"></span></div><span class="mut">22 mutual</span>
+                                </div>
+                            </div>
+                        </div><button class="fbtn grey"><svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                <path
+                                    d="M16 11c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3Zm-8 0c1.66 0 3-1.34 3-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3Zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5Zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5Z"
+                                    fill="white" />
+                                <path d="M20 8V6h-2V4h-2v2h-2v2h2v2h2V8h2Z" fill="white" />
+                            </svg></button>
+                    </div>
+                    <div class="pc">
+                        <div class="plft">
+                            <div class="pav"><img src="assets/profile_3.jpg" alt="Tiago Almeida"></div>
+                            <div class="pin"><span class="pnm">Tiago Almeida</span><span
+                                    class="phd">@tiago.almeida</span><span class="pbi">Portuguese Filmmaker • Cinematographer • Editor</span>
+                                <div class="pmt"><span class="pfl">9.2K followers</span><span
+                                        style="color:rgba(255,255,255,.4)">•</span>
+                                    <div class="mavs"><span class="ma1"></span><span class="ma2"></span><span
+                                            class="ma3"></span></div><span class="mut">4 mutual</span>
+                                </div>
+                            </div>
+                        </div><button class="fbtn red"><svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2Z" fill="#E6E6E6" />
+                            </svg></button>
+                    </div>
+                    <div class="pc">
+                        <div class="plft">
+                            <div class="pav"><img src="assets/profile_4.png" alt="Rafael Sousa"></div>
+                            <div class="pin"><span class="pnm">Rafael Sousa</span><span
+                                    class="phd">@rafael.sousa</span><span class="pbi">Portuguese Guitarist • Session Musician • Composer</span>
+                                <div class="pmt"><span class="pfl">11.4K followers</span><span
+                                        style="color:rgba(255,255,255,.4)">•</span>
+                                    <div class="mavs"><span class="ma1"></span><span class="ma2"></span><span
+                                            class="ma3"></span></div><span class="mut">7 mutual</span>
+                                </div>
+                            </div>
+                        </div><button class="fbtn red"><svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2Z" fill="#E6E6E6" />
+                            </svg></button>
+                    </div>
+                    <div class="pc">
+                        <div class="plft">
+                            <div class="pav"><img src="assets/profile_5.png" alt="Beatriz Lopes"></div>
+                            <div class="pin"><span class="pnm">Beatriz Lopes</span><span
+                                    class="phd">@beatriz.lopes</span><span class="pbi">Portuguese Yoga Instructor • Wellness Coach • Author</span>
+                            </div>
+                        </div><button class="fbtn grey"><svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                <path
+                                    d="M16 11c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3Zm-8 0c1.66 0 3-1.34 3-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3Zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5Zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5Z"
+                                    fill="white" />
+                                <path d="M20 8V6h-2V4h-2v2h-2v2h2v2h2V8h2Z" fill="white" />
+                            </svg></button>
+                    </div>
+                    <div class="pc">
+                        <div class="plft">
+                            <div class="pav"><img src="assets/profile_6.png" alt="Diogo Martins"></div>
+                            <div class="pin"><span class="pnm">Diogo Martins</span><span
+                                    class="phd">@diogo.martins</span><span class="pbi">Portuguese Stand-up Comedian • Actor • Content Creator</span>
+                                <div class="pmt"><span class="pfl">53.2K followers</span><span
+                                        style="color:rgba(255,255,255,.4)">•</span>
+                                    <div class="mavs"><span class="ma1"></span><span class="ma2"></span><span
+                                            class="ma3"></span></div><span class="mut">19 mutual</span>
+                                </div>
+                            </div>
+                        </div><button class="fbtn red"><svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2Z" fill="#E6E6E6" />
+                            </svg></button>
+                    </div>
+                    <div class="pc">
+                        <div class="plft">
+                            <div class="pav"><img src="assets/profile_7.png" alt="Catarina Pereira"></div>
+                            <div class="pin"><span class="pnm">Catarina Pereira</span><span
+                                    class="phd">@catarina.pereira</span><span class="pbi">Portuguese Illustrator • Graphic Designer • Muralist</span>
+                                <div class="pmt"><span class="pfl">28.6K followers</span><span
+                                        style="color:rgba(255,255,255,.4)">•</span>
+                                    <div class="mavs"><span class="ma1"></span><span class="ma2"></span><span
+                                            class="ma3"></span></div><span class="mut">11 mutual</span>
+                                </div>
+                            </div>
+                        </div><button class="fbtn grey"><svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                <path
+                                    d="M16 11c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3Zm-8 0c1.66 0 3-1.34 3-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3Zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5Zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5Z"
+                                    fill="white" />
+                                <path d="M20 8V6h-2V4h-2v2h-2v2h2v2h2V8h2Z" fill="white" />
+                            </svg></button>
+                    </div>
+                    <div class="pc">
+                        <div class="plft">
+                            <div class="pav"><img src="assets/profile_8.png" alt="Gonçalo Ribeiro"></div>
+                            <div class="pin"><span class="pnm">Gonçalo Ribeiro</span><span
+                                    class="phd">@goncalo.ribeiro</span><span class="pbi">Portuguese Architect • Urban Designer • Lecturer</span>
+                            </div>
+                        </div><button class="fbtn grey"><svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                <path
+                                    d="M16 11c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3Zm-8 0c1.66 0 3-1.34 3-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3Zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5Zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5Z"
+                                    fill="white" />
+                                <path d="M20 8V6h-2V4h-2v2h-2v2h2v2h2V8h2Z" fill="white" />
+                            </svg></button>
+                    </div>
+                    <div class="pc">
+                        <div class="plft">
+                            <div class="pav"><img src="assets/profile_1.png" alt="Inês Tavares"></div>
+                            <div class="pin"><span class="pnm">Inês Tavares</span><span
+                                    class="phd">@ines.tavares</span><span class="pbi">Portuguese Pastry Chef • Food Blogger • Recipe Developer</span>
+                                <div class="pmt"><span class="pfl">36.1K followers</span><span
+                                        style="color:rgba(255,255,255,.4)">•</span>
+                                    <div class="mavs"><span class="ma1"></span><span class="ma2"></span><span
+                                            class="ma3"></span></div><span class="mut">14 mutual</span>
+                                </div>
+                            </div>
+                        </div><button class="fbtn red"><svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2Z" fill="#E6E6E6" />
+                            </svg></button>
+                    </div>
+                    <div class="pc">
+                        <div class="plft">
+                            <div class="pav"><img src="assets/profile_2.jpg" alt="Hugo Fernandes"></div>
+                            <div class="pin"><span class="pnm">Hugo Fernandes</span><span
+                                    class="phd">@hugo.fernandes</span><span class="pbi">Portuguese Surfer • Ocean Photographer • Travel Vlogger</span>
+                                <div class="pmt"><span class="pfl">72.5K followers</span><span
+                                        style="color:rgba(255,255,255,.4)">•</span>
+                                    <div class="mavs"><span class="ma1"></span><span class="ma2"></span><span
+                                            class="ma3"></span></div><span class="mut">25 mutual</span>
+                                </div>
+                            </div>
+                        </div><button class="fbtn red"><svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2Z" fill="#E6E6E6" />
+                            </svg></button>
+                    </div>
+                    <div class="pc">
+                        <div class="plft">
+                            <div class="pav"><img src="assets/profile_3.jpg" alt="Leonor Carvalho"></div>
+                            <div class="pin"><span class="pnm">Leonor Carvalho</span><span
+                                    class="phd">@leonor.carvalho</span><span class="pbi">Portuguese Ceramicist • Art Teacher • Gallery Curator</span>
+                            </div>
+                        </div><button class="fbtn grey"><svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                <path
+                                    d="M16 11c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3Zm-8 0c1.66 0 3-1.34 3-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3Zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5Zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5Z"
+                                    fill="white" />
+                                <path d="M20 8V6h-2V4h-2v2h-2v2h2v2h2V8h2Z" fill="white" />
+                            </svg></button>
+                    </div>
+                    <div class="pc">
+                        <div class="plft">
+                            <div class="pav"><img src="assets/profile_4.png" alt="Rodrigo Nunes"></div>
+                            <div class="pin"><span class="pnm">Rodrigo Nunes</span><span
+                                    class="phd">@rodrigo.nunes</span><span class="pbi">Portuguese Tech Founder • Software Engineer • Speaker</span>
+                                <div class="pmt"><span class="pfl">45.9K followers</span><span
+                                        style="color:rgba(255,255,255,.4)">•</span>
+                                    <div class="mavs"><span class="ma1"></span><span class="ma2"></span><span
+                                            class="ma3"></span></div><span class="mut">18 mutual</span>
+                                </div>
+                            </div>
+                        </div><button class="fbtn red"><svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2Z" fill="#E6E6E6" />
+                            </svg></button>
+                    </div>
+                    <div class="pc">
+                        <div class="plft">
+                            <div class="pav"><img src="assets/profile_5.png" alt="Mariana Oliveira"></div>
+                            <div class="pin"><span class="pnm">Mariana Oliveira</span><span
+                                    class="phd">@mariana.oliveira</span><span class="pbi">Portuguese Fado Singer • Cultural Ambassador • Performer</span>
+                                <div class="pmt"><span class="pfl">88.3K followers</span><span
+                                        style="color:rgba(255,255,255,.4)">•</span>
+                                    <div class="mavs"><span class="ma1"></span><span class="ma2"></span><span
+                                            class="ma3"></span></div><span class="mut">31 mutual</span>
+                                </div>
+                            </div>
+                        </div><button class="fbtn grey"><svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                <path
+                                    d="M16 11c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3Zm-8 0c1.66 0 3-1.34 3-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3Zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5Zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5Z"
+                                    fill="white" />
+                                <path d="M20 8V6h-2V4h-2v2h-2v2h2v2h2V8h2Z" fill="white" />
+                            </svg></button>
+                    </div>
+                    <div class="pc">
+                        <div class="plft">
+                            <div class="pav"><img src="assets/profile_6.png" alt="Joana Costa"></div>
+                            <div class="pin"><span class="pnm">Joana Costa</span><span
+                                    class="phd">@joana.costa</span><span class="pbi">Portuguese UI/UX Designer • Web Developer</span>
+                                <div class="pmt"><span class="pfl">12.8K followers</span><span
+                                        style="color:rgba(255,255,255,.4)">•</span>
+                                    <div class="mavs"><span class="ma1"></span><span class="ma2"></span><span
+                                            class="ma3"></span></div><span class="mut">5 mutual</span>
+                                </div>
+                            </div>
+                        </div><button class="fbtn red"><svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2Z" fill="#E6E6E6" />
+                            </svg></button>
+                    </div>
+                    <div class="pc">
+                        <div class="plft">
+                            <div class="pav"><img src="assets/profile_7.png" alt="Ricardo Silva"></div>
+                            <div class="pin"><span class="pnm">Ricardo Silva</span><span
+                                    class="phd">@ricardo.silva</span><span class="pbi">Portuguese Personal Trainer • Nutritionist</span>
+                            </div>
+                        </div><button class="fbtn grey"><svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                <path
+                                    d="M16 11c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3Zm-8 0c1.66 0 3-1.34 3-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3Zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5Zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5Z"
+                                    fill="white" />
+                                <path d="M20 8V6h-2V4h-2v2h-2v2h2v2h2V8h2Z" fill="white" />
+                            </svg></button>
+                    </div>
+                    <div class="pc">
+                        <div class="plft">
+                            <div class="pav"><img src="assets/profile_8.png" alt="Sofia Martins"></div>
+                            <div class="pin"><span class="pnm">Sofia Martins</span><span
+                                    class="phd">@sofia.m</span><span class="pbi">Portuguese Makeup Artist • Beauty Blogger</span>
+                                <div class="pmt"><span class="pfl">105K followers</span><span
+                                        style="color:rgba(255,255,255,.4)">•</span>
+                                    <div class="mavs"><span class="ma1"></span><span class="ma2"></span><span
+                                            class="ma3"></span></div><span class="mut">42 mutual</span>
+                                </div>
+                            </div>
+                        </div><button class="fbtn red"><svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2Z" fill="#E6E6E6" />
+                            </svg></button>
+                    </div>
+                    <div class="pc">
+                        <div class="plft">
+                            <div class="pav"><img src="assets/profile_1.png" alt="Bruno Gomes"></div>
+                            <div class="pin"><span class="pnm">Bruno Gomes</span><span
+                                    class="phd">@bruno.gomes</span><span class="pbi">Portuguese Chef • Restaurant Owner</span>
+                            </div>
+                        </div><button class="fbtn grey"><svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                <path
+                                    d="M16 11c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3Zm-8 0c1.66 0 3-1.34 3-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3Zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5Zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5Z"
+                                    fill="white" />
+                                <path d="M20 8V6h-2V4h-2v2h-2v2h2v2h2V8h2Z" fill="white" />
+                            </svg></button>
+                    </div>
+                    <div class="pc">
+                        <div class="plft">
+                            <div class="pav"><img src="assets/profile_2.jpg" alt="Marta Pinto"></div>
+                            <div class="pin"><span class="pnm">Marta Pinto</span><span
+                                    class="phd">@marta.pinto</span><span class="pbi">Portuguese Photographer • Visual Artist</span>
+                                <div class="pmt"><span class="pfl">19.2K followers</span><span
+                                        style="color:rgba(255,255,255,.4)">•</span>
+                                    <div class="mavs"><span class="ma1"></span><span class="ma2"></span><span
+                                            class="ma3"></span></div><span class="mut">8 mutual</span>
+                                </div>
+                            </div>
+                        </div><button class="fbtn red"><svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2Z" fill="#E6E6E6" />
+                            </svg></button>
+                    </div>
+                    <div class="pc">
+                        <div class="plft">
+                            <div class="pav"><img src="assets/profile_3.jpg" alt="Pedro Alves"></div>
+                            <div class="pin"><span class="pnm">Pedro Alves</span><span
+                                    class="phd">@pedro.alves</span><span class="pbi">Portuguese Software Engineer • Tech Lead</span>
+                                <div class="pmt"><span class="pfl">5.6K followers</span><span
+                                        style="color:rgba(255,255,255,.4)">•</span>
+                                    <div class="mavs"><span class="ma1"></span><span class="ma2"></span><span
+                                            class="ma3"></span></div><span class="mut">2 mutual</span>
+                                </div>
+                            </div>
+                        </div><button class="fbtn grey"><svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                <path
+                                    d="M16 11c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3Zm-8 0c1.66 0 3-1.34 3-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3Zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5Zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5Z"
+                                    fill="white" />
+                                <path d="M20 8V6h-2V4h-2v2h-2v2h2v2h2V8h2Z" fill="white" />
+                            </svg></button>
+                    </div>
+                    <div class="pc">
+                        <div class="plft">
+                            <div class="pav"><img src="assets/profile_4.png" alt="Inês Silva"></div>
+                            <div class="pin"><span class="pnm">Inês Silva</span><span
+                                    class="phd">@ines.silva</span><span class="pbi">Portuguese Graphic Designer • Illustrator</span>
+                            </div>
+                        </div><button class="fbtn red"><svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2Z" fill="#E6E6E6" />
+                            </svg></button>
+                    </div>
+                    <div class="pc">
+                        <div class="plft">
+                            <div class="pav"><img src="assets/profile_5.png" alt="João Mendes"></div>
+                            <div class="pin"><span class="pnm">João Mendes</span><span
+                                    class="phd">@joao.mendes</span><span class="pbi">Portuguese Musician • Producer</span>
+                                <div class="pmt"><span class="pfl">14.1K followers</span><span
+                                        style="color:rgba(255,255,255,.4)">•</span>
+                                    <div class="mavs"><span class="ma1"></span><span class="ma2"></span><span
+                                            class="ma3"></span></div><span class="mut">6 mutual</span>
+                                </div>
+                            </div>
+                        </div><button class="fbtn grey"><svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                <path
+                                    d="M16 11c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3Zm-8 0c1.66 0 3-1.34 3-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3Zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5Zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5Z"
+                                    fill="white" />
+                                <path d="M20 8V6h-2V4h-2v2h-2v2h2v2h2V8h2Z" fill="white" />
+                            </svg></button>
+                    </div>
+                    <div class="pc">
+                        <div class="plft">
+                            <div class="pav"><img src="assets/profile_6.png" alt="Diana Castro"></div>
+                            <div class="pin"><span class="pnm">Diana Castro</span><span
+                                    class="phd">@diana.castro</span><span class="pbi">Portuguese Fashion Blogger • Influencer</span>
+                                <div class="pmt"><span class="pfl">58.9K followers</span><span
+                                        style="color:rgba(255,255,255,.4)">•</span>
+                                    <div class="mavs"><span class="ma1"></span><span class="ma2"></span><span
+                                            class="ma3"></span></div><span class="mut">28 mutual</span>
+                                </div>
+                            </div>
+                        </div><button class="fbtn red"><svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2Z" fill="#E6E6E6" />
+                            </svg></button>
+                    </div>
+                    <div class="pc">
+                        <div class="plft">
+                            <div class="pav"><img src="assets/profile_7.png" alt="André Sousa"></div>
+                            <div class="pin"><span class="pnm">André Sousa</span><span
+                                    class="phd">@andre.sousa</span><span class="pbi">Portuguese Video Editor • Motion Graphics</span>
+                            </div>
+                        </div><button class="fbtn grey"><svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                <path
+                                    d="M16 11c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3Zm-8 0c1.66 0 3-1.34 3-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3Zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5Zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5Z"
+                                    fill="white" />
+                                <path d="M20 8V6h-2V4h-2v2h-2v2h2v2h2V8h2Z" fill="white" />
+                            </svg></button>
+                    </div>
+                    <div class="pc">
+                        <div class="plft">
+                            <div class="pav"><img src="assets/profile_8.png" alt="Rui Machado"></div>
+                            <div class="pin"><span class="pnm">Rui Machado</span><span
+                                    class="phd">@rui.machado</span><span class="pbi">Portuguese Sound Engineer • Audio Mixer</span>
+                                <div class="pmt"><span class="pfl">8.4K followers</span><span
+                                        style="color:rgba(255,255,255,.4)">•</span>
+                                    <div class="mavs"><span class="ma1"></span><span class="ma2"></span><span
+                                            class="ma3"></span></div><span class="mut">3 mutual</span>
+                                </div>
+                            </div>
+                        </div><button class="fbtn red"><svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2Z" fill="#E6E6E6" />
+                            </svg></button>
+                    </div>
+                    <div class="pc">
+                        <div class="plft">
+                            <div class="pav"><img src="assets/profile_1.png" alt="Camila Vieira"></div>
+                            <div class="pin"><span class="pnm">Camila Vieira</span><span
+                                    class="phd">@camila.vieira</span><span class="pbi">Portuguese Content Strategist • Marketer</span>
+                            </div>
+                        </div><button class="fbtn grey"><svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                <path
+                                    d="M16 11c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3Zm-8 0c1.66 0 3-1.34 3-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3Zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5Zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5Z"
+                                    fill="white" />
+                                <path d="M20 8V6h-2V4h-2v2h-2v2h2v2h2V8h2Z" fill="white" />
+                            </svg></button>
+                    </div>
+                    <div class="pc">
+                        <div class="plft">
+                            <div class="pav"><img src="assets/profile_2.jpg" alt="Tomás Correia"></div>
+                            <div class="pin"><span class="pnm">Tomás Correia</span><span
+                                    class="phd">@tomas.correia</span><span class="pbi">Portuguese Web Designer • UI Specialist</span>
+                                <div class="pmt"><span class="pfl">22.1K followers</span><span
+                                        style="color:rgba(255,255,255,.4)">•</span>
+                                    <div class="mavs"><span class="ma1"></span><span class="ma2"></span><span
+                                            class="ma3"></span></div><span class="mut">12 mutual</span>
+                                </div>
+                            </div>
+                        </div><button class="fbtn red"><svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2Z" fill="#E6E6E6" />
+                            </svg></button>
+                    </div>
+                    <div class="pc">
+                        <div class="plft">
+                            <div class="pav"><img src="assets/profile_3.jpg" alt="Vera Dias"></div>
+                            <div class="pin"><span class="pnm">Vera Dias</span><span
+                                    class="phd">@vera.dias</span><span class="pbi">Portuguese Portrait Photographer • Retoucher</span>
+                            </div>
+                        </div><button class="fbtn grey"><svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                <path
+                                    d="M16 11c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3Zm-8 0c1.66 0 3-1.34 3-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3Zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5Zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5Z"
+                                    fill="white" />
+                                <path d="M20 8V6h-2V4h-2v2h-2v2h2v2h2V8h2Z" fill="white" />
+                            </svg></button>
+                    </div>
+                    <div class="pc">
+                        <div class="plft">
+                            <div class="pav"><img src="assets/profile_4.png" alt="Miguel Ramos"></div>
+                            <div class="pin"><span class="pnm">Miguel Ramos</span><span
+                                    class="phd">@miguel.ramos</span><span class="pbi">Portuguese Fitness Model • Gym Owner</span>
+                                <div class="pmt"><span class="pfl">145K followers</span><span
+                                        style="color:rgba(255,255,255,.4)">•</span>
+                                    <div class="mavs"><span class="ma1"></span><span class="ma2"></span><span
+                                            class="ma3"></span></div><span class="mut">56 mutual</span>
+                                </div>
+                            </div>
+                        </div><button class="fbtn red"><svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2Z" fill="#E6E6E6" />
+                            </svg></button>
+                    </div>
+                    <div class="pc">
+                        <div class="plft">
+                            <div class="pav"><img src="assets/profile_5.png" alt="Lúcia Neves"></div>
+                            <div class="pin"><span class="pnm">Lúcia Neves</span><span
+                                    class="phd">@lucia.neves</span><span class="pbi">Portuguese Classical Pianist • Composer</span>
+                                <div class="pmt"><span class="pfl">34.7K followers</span><span
+                                        style="color:rgba(255,255,255,.4)">•</span>
+                                    <div class="mavs"><span class="ma1"></span><span class="ma2"></span><span
+                                            class="ma3"></span></div><span class="mut">17 mutual</span>
+                                </div>
+                            </div>
+                        </div><button class="fbtn grey"><svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                <path
+                                    d="M16 11c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3Zm-8 0c1.66 0 3-1.34 3-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3Zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5Zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5Z"
+                                    fill="white" />
+                                <path d="M20 8V6h-2V4h-2v2h-2v2h2v2h2V8h2Z" fill="white" />
+                            </svg></button>
+                    </div>
+                    <div class="pc">
+                        <div class="plft">
+                            <div class="pav"><img src="assets/profile_6.png" alt="Filipe Morais"></div>
+                            <div class="pin"><span class="pnm">Filipe Morais</span><span
+                                    class="phd">@filipe.morais</span><span class="pbi">Portuguese App Developer • Tech Mentor</span>
+                            </div>
+                        </div><button class="fbtn red"><svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2Z" fill="#E6E6E6" />
+                            </svg></button>
+                    </div>
+                    <div class="pc">
+                        <div class="plft">
+                            <div class="pav"><img src="assets/profile_7.png" alt="Carla Monteiro"></div>
+                            <div class="pin"><span class="pnm">Carla Monteiro</span><span
+                                    class="phd">@carla.monteiro</span><span class="pbi">Portuguese Event Planner • Wedding Stylist</span>
+                                <div class="pmt"><span class="pfl">41.2K followers</span><span
+                                        style="color:rgba(255,255,255,.4)">•</span>
+                                    <div class="mavs"><span class="ma1"></span><span class="ma2"></span><span
+                                            class="ma3"></span></div><span class="mut">21 mutual</span>
+                                </div>
+                            </div>
+                        </div><button class="fbtn grey"><svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                <path
+                                    d="M16 11c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3Zm-8 0c1.66 0 3-1.34 3-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3Zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5Zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5Z"
+                                    fill="white" />
+                                <path d="M20 8V6h-2V4h-2v2h-2v2h2v2h2V8h2Z" fill="white" />
+                            </svg></button>
+                    </div>
+                    <div class="pc">
+                        <div class="plft">
+                            <div class="pav"><img src="assets/profile_8.png" alt="Nuno Teixeira"></div>
+                            <div class="pin"><span class="pnm">Nuno Teixeira</span><span
+                                    class="phd">@nuno.teixeira</span><span class="pbi">Portuguese Documentary Maker • Director</span>
+                                <div class="pmt"><span class="pfl">62.8K followers</span><span
+                                        style="color:rgba(255,255,255,.4)">•</span>
+                                    <div class="mavs"><span class="ma1"></span><span class="ma2"></span><span
+                                            class="ma3"></span></div><span class="mut">33 mutual</span>
+                                </div>
+                            </div>
+                        </div><button class="fbtn red"><svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2Z" fill="#E6E6E6" />
+                            </svg></button>
+                    </div>
+                    <div class="pc">
+                        <div class="plft">
+                            <div class="pav"><img src="assets/profile_1.png" alt="Patricia Lima"></div>
+                            <div class="pin"><span class="pnm">Patricia Lima</span><span
+                                    class="phd">@patricia.lima</span><span class="pbi">Portuguese Language Teacher • Translator</span>
+                            </div>
+                        </div><button class="fbtn grey"><svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                <path
+                                    d="M16 11c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3Zm-8 0c1.66 0 3-1.34 3-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3Zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5Zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5Z"
+                                    fill="white" />
+                                <path d="M20 8V6h-2V4h-2v2h-2v2h2v2h2V8h2Z" fill="white" />
+                            </svg></button>
+                    </div>
+                    <div class="nav-spacer"></div>
                 </div>
             </div>
 
             <!-- CLIPS -->
-            <div class="tc" id="tab-clips" style="overflow-y:auto;padding-bottom:64px;">
+            <div class="tc" id="tab-clips" style="overflow-y:auto;">
                 <div class="clips" style="padding-top:0;">
                     <!-- Active now-playing card (hidden by default) -->
                     <div class="ca" id="npCard" style="display:none;">
@@ -1297,11 +1919,12 @@
                         </div>
                     </div>
                     <div id="inactClips"></div>
+                    <div class="nav-spacer"></div>
                 </div>
             </div>
 
             <!-- PLAYLISTS -->
-            <div class="tc" id="tab-playlists" style="overflow-y:auto;padding-bottom:64px;">
+            <div class="tc" id="tab-playlists" style="overflow-y:auto;">
                 <div id="plView">
                     <!-- List -->
                     <div class="pls" id="plList">
@@ -1533,6 +2156,7 @@
                             </div>
                         </div>
 
+                    <div class="nav-spacer"></div>
                     </div>
 
                     <!-- Detail view -->
