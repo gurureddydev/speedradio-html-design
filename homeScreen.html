@@ -348,7 +348,7 @@
 
     /* Profile Area */
     .profile-area {
-      padding: clamp(8px, 1.5vh, 12px) 0 clamp(8px, 1.2vh, 10px);
+      padding: clamp(8px, 1.5vh, 12px) 0 4px;
       display: flex;
       flex-direction: column;
       gap: clamp(6px, 1vh, 8px);
@@ -551,30 +551,6 @@
       position: relative;
     }
 
-    .audio-bar-thumb {
-      position: absolute;
-      top: 50%;
-      transform: translate(-50%, -50%);
-      width: 14px;
-      height: 14px;
-      border-radius: 50%;
-      background: #fff;
-      box-shadow: 0 1px 6px rgba(0, 0, 0, 0.45);
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.2s ease, width 0.15s ease, height 0.15s ease;
-      z-index: 3;
-    }
-
-    .audio-bar:hover .audio-bar-thumb,
-    .audio-bar.is-dragging .audio-bar-thumb {
-      opacity: 1;
-    }
-
-    .audio-bar.is-dragging .audio-bar-thumb {
-      width: 18px;
-      height: 18px;
-    }
 
     /* Seek Timer Overlay */
     .seek-timer {
@@ -911,7 +887,6 @@
         </div>
         <div class="audio-bar">
           <div class="audio-bar-fill" style="width: 38%;"></div>
-          <div class="audio-bar-thumb" style="left: 38%;"></div>
         </div>
       </div>
     </div>
@@ -1014,7 +989,6 @@
         </div>
         <div class="audio-bar">
           <div class="audio-bar-fill" style="width: 38%;"></div>
-          <div class="audio-bar-thumb" style="left: 38%;"></div>
         </div>
       </div>
     </div>
@@ -1117,7 +1091,6 @@
         </div>
         <div class="audio-bar">
           <div class="audio-bar-fill" style="width: 55%;"></div>
-          <div class="audio-bar-thumb" style="left: 55%;"></div>
         </div>
       </div>
     </div>
@@ -1220,7 +1193,6 @@
         </div>
         <div class="audio-bar">
           <div class="audio-bar-fill" style="width: 22%;"></div>
-          <div class="audio-bar-thumb" style="left: 22%;"></div>
         </div>
       </div>
     </div>
