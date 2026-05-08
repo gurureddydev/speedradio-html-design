@@ -36,7 +36,7 @@
       overflow: hidden;
     }
 
-    /* Now playing */
+    /* ── Now playing ───────────────────────────────────────── */
     .now-playing {
       background: rgba(255, 255, 255, 0.1);
       border-radius: 0 0 12px 12px;
@@ -45,16 +45,12 @@
       align-items: center;
       gap: 12px;
       position: fixed;
-
-      /* updated */
       width: calc(100% - 32px);
       max-width: 388px;
-
       height: 72px;
       left: 50%;
       top: 24px;
       transform: translateX(-50%);
-
       z-index: 20;
       overflow: hidden;
       border-bottom: 1px solid rgba(255, 255, 255, 0.08);
@@ -131,68 +127,53 @@
       border-radius: 0 0 0 5px;
     }
 
-    /* Comment modal */
-    /* Comment modal */
+    /* ── Comment sheet ─────────────────────────────────────── */
+    /*
+     * The sheet is always full-screen (top: 0 → bottom: 0).
+     * The now-playing bar floats above it (z-index: 20 vs z-index: 10).
+     *
+     * KEY FIX: instead of `padding-top` on the scroll container (which
+     * only pushes the first item and lets scrolled content bleed under
+     * the player), we insert a real .sheet-spacer DOM element ABOVE the
+     * scroll container. The scroll container then starts at 96px — the
+     * exact bottom edge of the now-playing bar — so scrolled content
+     * clips there and never leaks behind the player.
+     *
+     * Heights (in-browser, env(safe-area-inset-top) ≈ 0, fallback 8px):
+     *   modal padding-top : 8px
+     *   drag handle zone  : 6 + 5 + 14 = 25px
+     *   now-playing bottom: top(24) + height(72) = 96px
+     *   spacer needed     : 96 − 8 − 25 = 63px
+     */
     .comment-modal {
       background: #1C1C1E;
       border-radius: 20px 20px 0 0;
-
       width: 100%;
       max-width: 420px;
-
       position: fixed;
       left: 50%;
       top: 0;
       bottom: 0;
-
       transform: translateX(-50%);
       z-index: 10;
-
       display: flex;
       flex-direction: column;
-
       overflow: hidden;
-
-      /* native sheet feel */
       padding-top: env(safe-area-inset-top, 8px);
-
-      /* smoother movement */
-      transition:
-        transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
-        border-radius 0.28s ease;
-
+      transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
       will-change: transform;
-
-      /* makes sheet feel taller */
-      min-height: 100dvh;
-
-      /* subtle native shadow */
-      box-shadow:
-        0 -10px 40px rgba(0, 0, 0, 0.45);
-    }
-
-    /* expanded state */
-    .comment-modal.expanded {
-      border-radius: 0;
+      box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.45);
     }
 
     /* Drag handle */
     .drag-handle {
       width: 42px;
       height: 5px;
-
       background: rgba(255, 255, 255, 0.32);
-
       border-radius: 999px;
-
       margin: 6px auto 14px;
-
       flex-shrink: 0;
-
-      z-index: 30;
-
       cursor: grab;
-
       transition: opacity 0.2s ease;
     }
 
@@ -201,20 +182,54 @@
       opacity: 0.7;
     }
 
+    /*
+     * Spacer — fills the dead zone behind the now-playing bar.
+     * The "Responses" title sits at the BOTTOM of this zone so it
+     * appears just below the player card as a natural section header.
+     */
+    .sheet-spacer {
+      /* 63px = 96px (player bottom) − 8px (modal padding) − 25px (handle) */
+      height: 63px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: flex-end;
+      padding: 0 16px 10px;
+    }
 
+    .sheet-title-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
 
-    /* Scrollable list */
+    .sheet-title-text {
+      color: #fff;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: -0.2px;
+    }
+
+    .sheet-count-badge {
+      background: rgba(255, 255, 255, 0.12);
+      color: rgba(255, 255, 255, 0.65);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 99px;
+      display: none;
+    }
+
+    /*
+     * Scroll container — starts at exactly 96px from viewport top,
+     * so comments can never visually overlap the now-playing bar.
+     */
     .comment-list {
       flex: 1;
       min-height: 0;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
-      /* push all content (comments + empty state) below the floating now-playing bar.
-         player bottom = top(24px) + height(72px) = 96px.
-         list top    = modal padding-top (env safe-area, fallback 8px) + drag-handle (25px).
-         so the gap to fill = 96 - safe-area - 25 = 71px - safe-area, min 8px. */
-      padding-top: max(calc(71px - env(safe-area-inset-top, 8px)), 8px);
+      /* NO padding-top — the .sheet-spacer above handles clearance */
     }
 
     .comment-list::-webkit-scrollbar {
@@ -225,11 +240,10 @@
     .empty-state {
       flex: 1;
       margin: 16px;
-
+      margin-top: 40px;
       background: #1C1C1E;
       border: 1px solid #FFFFFF1A;
       border-radius: 16px;
-
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -248,7 +262,7 @@
       color: rgba(255, 255, 255, 0.6);
     }
 
-    /* Comment item */
+    /* ── Comment item ──────────────────────────────────────── */
     .comment-item {
       display: flex;
       align-items: flex-start;
@@ -406,7 +420,7 @@
       text-align: center;
     }
 
-    /* Reply thread — one level only */
+    /* ── Reply thread ──────────────────────────────────────── */
     .reply-thread {
       display: flex;
       flex-direction: column;
@@ -497,13 +511,10 @@
       text-align: center;
     }
 
-
-    /* Context menu */
-    /* Context menu */
+    /* ── Context menu ──────────────────────────────────────── */
     .ctx-menu {
       position: fixed;
       width: 131px;
-      height: 104px;
       background: #242424;
       border-radius: 15px;
       padding: 12px;
@@ -525,72 +536,39 @@
       gap: 12px;
       cursor: pointer;
       padding: 0;
-
       font-family: 'DM Sans', sans-serif;
       font-weight: 500;
       font-size: 16px;
       line-height: 21px;
-
       color: #FFFFFF;
-    }
-
-    .ctx-item svg {
-      width: 24px;
-      height: 24px;
-      flex-shrink: 0;
-    }
-
-    .ctx-item svg path,
-    .ctx-item svg rect,
-    .ctx-item svg circle {
-      stroke: #FFFFFF;
     }
 
     .ctx-item.danger {
       color: #FF2D2D;
     }
 
-    .ctx-item.danger svg path,
-    .ctx-item.danger svg rect,
-    .ctx-item.danger svg circle {
-      stroke: #FF2D2D;
-    }
-
-    /* ─────────────────────────────────────────
-   Mention Popup — Figma Match Redesign
-───────────────────────────────────────── */
-
+    /* ── Mention popup ─────────────────────────────────────── */
     .mention-popup {
       position: fixed;
       left: 50%;
       transform: translateX(-50%);
-
       width: calc(100% - 14px);
       max-width: 377px;
-
       background: #1C1C1E;
       border: 1px solid #242424;
       border-radius: 15px;
-
       padding: 12px;
-
       display: none;
       flex-direction: column;
       gap: 16px;
-
       z-index: 150;
-
       box-shadow: 0px 5px 9.8px rgba(0, 0, 0, 0.6);
-
       overflow: hidden;
-
       backdrop-filter: blur(18px);
       -webkit-backdrop-filter: blur(18px);
-
       animation: mentionPopupIn 0.16s ease-out;
     }
 
-    /* smooth popup animation */
     @keyframes mentionPopupIn {
       from {
         opacity: 0;
@@ -603,110 +581,77 @@
       }
     }
 
-    /* mention row */
     .mention-item {
       width: 100%;
-
       display: flex;
       align-items: center;
       gap: 12px;
-
       background: transparent;
       border: none;
-
       padding: 0;
-
       cursor: pointer;
-
       text-align: left;
-
-      transition:
-        transform 0.14s ease,
-        opacity 0.14s ease;
+      transition: transform 0.14s ease, opacity 0.14s ease;
     }
 
-    /* spacing handled by popup gap */
-    .mention-item+.mention-item {
-      border-top: none;
-    }
-
-    /* tap feedback */
     .mention-item:active {
       transform: scale(0.985);
       opacity: 0.82;
     }
 
-    /* avatar image */
     .mention-av {
       width: 52px;
       height: 52px;
-
       border-radius: 50%;
-
       flex-shrink: 0;
-
       overflow: hidden;
-
       display: flex;
       align-items: center;
       justify-content: center;
-
       background: #333;
-
       font-size: 14px;
       font-weight: 700;
       color: #fff;
     }
 
-    /* if using img avatars */
     .mention-av img {
       width: 100%;
       height: 100%;
       object-fit: cover;
     }
 
-    /* text container */
     .mention-info {
       min-width: 0;
-
       display: flex;
       flex-direction: column;
       justify-content: center;
-
       gap: 2px;
-
       flex: 1;
     }
 
-    /* main name */
     .mention-name {
       color: #FFFFFF;
-
       font-family: 'DM Sans', sans-serif;
       font-size: 15px;
       font-weight: 700;
       line-height: 20px;
-
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
 
-    /* username */
     .mention-uname {
       color: rgba(255, 255, 255, 0.68);
-
       font-family: 'DM Sans', sans-serif;
       font-size: 14px;
       font-weight: 500;
       line-height: 18px;
-
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
 
-    /* Toast */
+    /* ── Toast ─────────────────────────────────────────────── */
     .toast {
       position: fixed;
       top: 108px;
@@ -733,7 +678,7 @@
       transform: translateX(-50%) translateY(0);
     }
 
-    /* Emoji bar */
+    /* ── Emoji bar ─────────────────────────────────────────── */
     .emoji-bar {
       background: #242424;
       border-top: 1px solid rgba(255, 255, 255, 0.08);
@@ -774,7 +719,7 @@
       transform: scale(0.88);
     }
 
-    /* Input bar */
+    /* ── Input bar ─────────────────────────────────────────── */
     .input-bar {
       background: #242424;
       padding: 13px 20px calc(16px + env(safe-area-inset-bottom, 0px));
@@ -884,7 +829,7 @@
 <body>
   <div class="phone">
 
-    <!-- Now Playing -->
+    <!-- Now Playing — fixed above sheet (z-index: 20) -->
     <div class="now-playing">
       <div class="np-thumb">
         <img src="assets/poster_img.png" alt="Poster" />
@@ -904,11 +849,24 @@
       </div>
     </div>
 
-    <!-- Comment modal -->
-    <div class="comment-modal">
-      <div class="drag-handle"></div>
+    <!-- Comment sheet — full screen, z-index: 10 -->
+    <div class="comment-modal" id="commentModal">
+      <!-- Drag handle — sits above the now-playing card -->
+      <div class="drag-handle" id="dragHandle"></div>
 
+      <!--
+        Sheet spacer — physically occupies the space behind the now-playing bar.
+        The scroll container starts AFTER this element, meaning scrolled comments
+        can never rise above the player bar. This is the core fix.
+      -->
+      <div class="sheet-spacer">
+        <div class="sheet-title-row">
+          <span class="sheet-title-text"></span>
+          <span class="sheet-count-badge" id="commentCount"></span>
+        </div>
+      </div>
 
+      <!-- Scroll container — starts at ~96px from viewport top (below player) -->
       <div class="comment-list" id="commentList">
         <div class="empty-state" id="emptyState">
           <img src="assets/message_empty.png" alt="" style="width:121px;height:100px;opacity:0.8;" />
@@ -945,7 +903,7 @@
     </div>
   </div>
 
-  <!-- Mention popup (outside modal so it can overlap freely) -->
+  <!-- Mention popup -->
   <div class="mention-popup" id="mentionPopup"></div>
 
   <!-- Toast -->
@@ -979,11 +937,25 @@
     const mentionPopup = document.getElementById('mentionPopup');
     const toast = document.getElementById('toast');
     const toastMsg = document.getElementById('toastMsg');
+    const countBadge = document.getElementById('commentCount');
+    const commentModal = document.getElementById('commentModal');
+    const dragHandle = document.getElementById('dragHandle');
 
     // ── State ──────────────────────────────────────────────────────────────────
-    let replyingTo = null;   // { commentEl }
-    let editingTextEl = null; // <div class="c-text"> or <div class="reply-text"> being edited
+    let replyingTo = null;
+    let editingTextEl = null;
     let idSeq = 0;
+
+    // ── Comment count ──────────────────────────────────────────────────────────
+    function updateCount() {
+      const n = commentList.querySelectorAll('.comment-item').length;
+      if (n > 0) {
+        countBadge.textContent = n;
+        countBadge.style.display = '';
+      } else {
+        countBadge.style.display = 'none';
+      }
+    }
 
     // ── Toast ──────────────────────────────────────────────────────────────────
     let toastTimer = null;
@@ -1051,7 +1023,6 @@
       return w;
     }
 
-    // Highlight @mentions in plain text nodes
     function highlightMentions(html) {
       const div = document.createElement('div');
       div.innerHTML = html;
@@ -1069,13 +1040,12 @@
       return div.innerHTML;
     }
 
-    // ── Build SVG icons ────────────────────────────────────────────────────────
+    // ── SVG / icon builders ────────────────────────────────────────────────────
     const SVG_REPLY = `<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="1.33"><path d="M2.67 2.67H9.33a4 4 0 0 1 0 8H6"/><path d="M4 8.67L2 10.67l2 2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
     const SVG_EDIT = `<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="1.33"><path d="M11.33 2.67a1.88 1.88 0 0 1 2.67 2.67L4.67 14.67l-3.34.67.67-3.34z" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
-    // ── Build Like icon ───────────────────────────────────────────────────────
     const IC_LIKE = (size) => `<img class="c-like-icon" src="assets/like_ic.png" width="${size}" height="${size}" />`;
 
-    // ── Build a reply element ──────────────────────────────────────────────────
+    // ── Build reply element ────────────────────────────────────────────────────
     function buildReplyEl(html, isOwn) {
       const id = 'ri' + (++idSeq);
       const el = document.createElement('div');
@@ -1083,27 +1053,27 @@
       el.dataset.id = id;
       el.dataset.own = isOwn ? '1' : '0';
       el.innerHTML = `
-    <div class="reply-avatar" style="background:${isOwn ? ME.color : COLORS[idSeq % COLORS.length]}">${isOwn ? ME.initials : 'U'}</div>
-    <div class="reply-body">
-      <div class="reply-header">
-        <span class="reply-name">${isOwn ? ME.name : 'User'}</span>
-        <span class="reply-time">1s</span>
-      </div>
-      <div class="reply-text">${highlightMentions(html)}</div>
-      <div class="reply-actions">
-        <button class="c-action-btn" onclick="startReply(this, true)">${SVG_REPLY} Reply</button>
-        ${isOwn ? `<button class="c-action-btn" onclick="startEdit(this, true)">${SVG_EDIT} Edit</button>` : ''}
-      </div>
-    </div>
-    <div class="reply-right">
-      <button class="reply-like-btn c-like-btn" onclick="toggleLike(this)">${IC_LIKE(18)}</button>
-      <span class="reply-like-count" data-count="0">0</span>
-    </div>`;
+        <div class="reply-avatar" style="background:${isOwn ? ME.color : COLORS[idSeq % COLORS.length]}">${isOwn ? ME.initials : 'U'}</div>
+        <div class="reply-body">
+          <div class="reply-header">
+            <span class="reply-name">${isOwn ? ME.name : 'User'}</span>
+            <span class="reply-time">1s</span>
+          </div>
+          <div class="reply-text">${highlightMentions(html)}</div>
+          <div class="reply-actions">
+            <button class="c-action-btn" onclick="startReply(this, true)">${SVG_REPLY} Reply</button>
+            ${isOwn ? `<button class="c-action-btn" onclick="startEdit(this, true)">${SVG_EDIT} Edit</button>` : ''}
+          </div>
+        </div>
+        <div class="reply-right">
+          <button class="reply-like-btn c-like-btn" onclick="toggleLike(this)">${IC_LIKE(18)}</button>
+          <span class="reply-like-count" data-count="0">0</span>
+        </div>`;
       bindLongPress(el);
       return el;
     }
 
-    // ── Build a top-level comment element ─────────────────────────────────────
+    // ── Build comment element ──────────────────────────────────────────────────
     function buildCommentEl(html, isOwn) {
       const id = 'ci' + (++idSeq);
       const el = document.createElement('div');
@@ -1111,35 +1081,34 @@
       el.dataset.id = id;
       el.dataset.own = isOwn ? '1' : '0';
       el.innerHTML = `
-    <div class="c-avatar" style="background:${isOwn ? ME.color : COLORS[idSeq % COLORS.length]}">${isOwn ? ME.initials : 'U'}</div>
-    <div class="c-body">
-      <div class="c-row">
-        <div class="c-left">
-          <div class="c-header">
-            <span class="c-name">${isOwn ? ME.name : 'User'}</span>
-            <span class="c-time">1s</span>
+        <div class="c-avatar" style="background:${isOwn ? ME.color : COLORS[idSeq % COLORS.length]}">${isOwn ? ME.initials : 'U'}</div>
+        <div class="c-body">
+          <div class="c-row">
+            <div class="c-left">
+              <div class="c-header">
+                <span class="c-name">${isOwn ? ME.name : 'User'}</span>
+                <span class="c-time">1s</span>
+              </div>
+              <div class="c-text">${highlightMentions(html)}</div>
+              <div class="c-actions">
+                <button class="c-action-btn" onclick="startReply(this, false)">${SVG_REPLY} Reply</button>
+                ${isOwn ? `<button class="c-action-btn" onclick="startEdit(this, false)">${SVG_EDIT} Edit</button>` : ''}
+                <span class="c-replies-label" style="display:none"></span>
+              </div>
+            </div>
+            <div class="c-right">
+              <button class="c-like-btn" onclick="toggleLike(this)">${IC_LIKE(22)}</button>
+              <span class="c-like-count" data-count="0">0</span>
+            </div>
           </div>
-          <div class="c-text">${highlightMentions(html)}</div>
-          <div class="c-actions">
-            <button class="c-action-btn" onclick="startReply(this, false)">${SVG_REPLY} Reply</button>
-            ${isOwn ? `<button class="c-action-btn" onclick="startEdit(this, false)">${SVG_EDIT} Edit</button>` : ''}
-            <span class="c-replies-label" style="display:none"></span>
-          </div>
-        </div>
-        <div class="c-right">
-          <button class="c-like-btn" onclick="toggleLike(this)">${IC_LIKE(22)}</button>
-          <span class="c-like-count" data-count="0">0</span>
-        </div>
-      </div>
-      <div class="reply-thread"></div>
-    </div>`;
+          <div class="reply-thread"></div>
+        </div>`;
       bindLongPress(el);
       return el;
     }
 
     // ── Reply ──────────────────────────────────────────────────────────────────
     function startReply(btn, fromReply) {
-      // For replies-to-replies: target is still the parent comment (1 level only)
       const commentEl = btn.closest('.comment-item');
       const nameSrc = fromReply
         ? btn.closest('.reply-item').querySelector('.reply-name').textContent
@@ -1149,7 +1118,6 @@
       editor.setAttribute('data-placeholder', 'Replying to @' + nameSrc.replace(/\s+/g, '') + '...');
       editor.focus();
 
-      // Pre-fill @mention if replying to someone else's reply
       if (fromReply) {
         const mention = document.createElement('span');
         mention.className = 'c-mention';
@@ -1157,8 +1125,7 @@
         mention.textContent = '@' + nameSrc.replace(/\s+/g, '');
         editor.innerHTML = '';
         editor.appendChild(mention);
-        editor.appendChild(document.createTextNode(' '));
-        // move cursor to end
+        editor.appendChild(document.createTextNode(' '));
         const range = document.createRange();
         range.selectNodeContents(editor);
         range.collapse(false);
@@ -1182,7 +1149,6 @@
       editor.innerHTML = textEl.innerHTML;
       editor.setAttribute('data-placeholder', 'Edit response...');
       editor.focus();
-      // move cursor to end
       const range = document.createRange();
       range.selectNodeContents(editor);
       range.collapse(false);
@@ -1200,7 +1166,6 @@
 
       const clean = sanitize(editor).innerHTML;
 
-      // Edit mode: update existing text in place
       if (editingTextEl) {
         editingTextEl.innerHTML = highlightMentions(clean);
         editingTextEl = null;
@@ -1211,7 +1176,6 @@
         return;
       }
 
-      // Reply mode
       if (replyingTo) {
         const { commentEl } = replyingTo;
         const thread = commentEl.querySelector('.reply-thread');
@@ -1226,11 +1190,14 @@
         cancelReply();
         replyEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       } else {
-        // New top-level comment
         emptyState.style.display = 'none';
         const el = buildCommentEl(clean, true);
         commentList.appendChild(el);
-        el.scrollIntoView({ behavior: 'smooth', block: 'end' });
+        updateCount();
+        // Scroll to bottom so new comment is visible
+        requestAnimationFrame(() => {
+          commentList.scrollTop = commentList.scrollHeight;
+        });
       }
 
       editor.innerHTML = '';
@@ -1262,13 +1229,10 @@
       countEl.textContent = count;
     }
 
-    // ── Context menu (long press / right-click) ────────────────────────────────
+    // ── Context menu ───────────────────────────────────────────────────────────
     function bindLongPress(el) {
       let timer = null;
-
-      function onStart(e) {
-        timer = setTimeout(() => showCtxMenu(e, el), 420);
-      }
+      function onStart(e) { timer = setTimeout(() => showCtxMenu(e, el), 420); }
       function onEnd() { clearTimeout(timer); timer = null; }
 
       el.addEventListener('touchstart', onStart, { passive: true });
@@ -1284,7 +1248,6 @@
       const isReply = el.classList.contains('reply-item');
       const id = el.dataset.id;
 
-      // Overlay to catch dismiss taps
       const overlay = document.createElement('div');
       overlay.className = 'ctx-overlay';
       overlay.onclick = closeCtxMenu;
@@ -1294,11 +1257,9 @@
       menu.id = 'ctxMenu';
 
       if (isOwn) {
-
         const del = document.createElement('button');
         del.className = 'ctx-item';
         del.innerHTML = `<img src="assets/ic_delete.png" width="18" height="18" style="object-fit:contain;flex-shrink:0;" /> <span style="color:#FFFFFF">Delete</span>`;
-
         del.onclick = () => deleteItem(id, isReply);
         menu.appendChild(del);
       }
@@ -1312,7 +1273,6 @@
       document.body.appendChild(overlay);
       document.body.appendChild(menu);
 
-      // Position near touch/click
       const cx = e.touches ? e.touches[0].clientX : e.clientX;
       const cy = e.touches ? e.touches[0].clientY : e.clientY;
       const mw = menu.offsetWidth || 180;
@@ -1335,7 +1295,6 @@
         if (!el) return;
         const commentEl = el.closest('.comment-item');
         el.remove();
-        // Update reply count on parent
         const thread = commentEl.querySelector('.reply-thread');
         const label = commentEl.querySelector('.c-replies-label');
         const cnt = thread.querySelectorAll('.reply-item').length;
@@ -1343,6 +1302,7 @@
         if (cnt) label.textContent = cnt + (cnt === 1 ? ' Reply' : ' Replies');
       } else {
         document.querySelector(`.comment-item[data-id="${id}"]`)?.remove();
+        updateCount();
         if (!commentList.querySelector('.comment-item')) {
           emptyState.style.display = '';
         }
@@ -1377,19 +1337,17 @@
 
       positionMentionPopup();
       mentionPopup.innerHTML = list.map(u => `
-    <button class="mention-item" onclick="insertMention('${u.name.replace(/'/g, "\\'")}','${u.username}')">
-      <div class="mention-av" style="background:${u.color}">${u.initials}</div>
-      <div class="mention-info">
-        <span class="mention-name">${u.name}</span>
-        <span class="mention-uname">${u.username}</span>
-      </div>
-    </button>`).join('');
+        <button class="mention-item" onclick="insertMention('${u.name.replace(/'/g, "\\'")}','${u.username}')">
+          <div class="mention-av" style="background:${u.color}">${u.initials}</div>
+          <div class="mention-info">
+            <span class="mention-name">${u.name}</span>
+            <span class="mention-uname">${u.username}</span>
+          </div>
+        </button>`).join('');
       mentionPopup.style.display = 'flex';
     }
 
-    function hideMentionPopup() {
-      mentionPopup.style.display = 'none';
-    }
+    function hideMentionPopup() { mentionPopup.style.display = 'none'; }
 
     function insertMention(name, username) {
       const sel = window.getSelection();
@@ -1402,20 +1360,18 @@
       const text = node.textContent;
       const atIdx = text.slice(0, offset).lastIndexOf('@');
 
-      // Build mention span (non-editable so cursor exits cleanly)
       const mention = document.createElement('span');
       mention.className = 'c-mention';
       mention.contentEditable = 'false';
       mention.textContent = '@' + username;
 
       const before = document.createTextNode(text.slice(0, atIdx));
-      const after = document.createTextNode(' ' + text.slice(offset));
+      const after = document.createTextNode(' ' + text.slice(offset));
       node.parentNode.insertBefore(before, node);
       node.parentNode.insertBefore(mention, node);
       node.parentNode.insertBefore(after, node);
       node.remove();
 
-      // Move cursor after the non-breaking space
       const nr = document.createRange();
       nr.setStart(after, 1);
       nr.collapse(true);
@@ -1436,7 +1392,7 @@
     editor.addEventListener('keydown', e => {
       if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault();
-        if (mentionPopup.style.display === 'block') {
+        if (mentionPopup.style.display === 'flex') {
           mentionPopup.querySelector('.mention-item')?.click();
           return;
         }
@@ -1447,53 +1403,48 @@
 
     editor.addEventListener('blur', () => setTimeout(hideMentionPopup, 150));
 
-    // Dismiss context menu on scroll
     commentList.addEventListener('scroll', closeCtxMenu);
 
-    // ── Native bottom sheet drag ─────────────────────────────
-
-    const bottomSheet = document.querySelector('.comment-modal');
-    const dragHandle = document.querySelector('.drag-handle');
-
-    let startY = 0;
-    let currentY = 0;
+    // ── Drag handle — snap-back dismiss gesture ────────────────────────────────
+    let dragStartY = 0;
+    let dragCurrentY = 0;
     let isDragging = false;
 
-    dragHandle.addEventListener('touchstart', (e) => {
-      startY = e.touches[0].clientY;
+    dragHandle.addEventListener('touchstart', e => {
+      dragStartY = e.touches[0].clientY;
       isDragging = true;
-      bottomSheet.style.transition = 'none';
+      commentModal.style.transition = 'none';
     }, { passive: true });
 
-    window.addEventListener('touchmove', (e) => {
+    window.addEventListener('touchmove', e => {
       if (!isDragging) return;
-
-      currentY = e.touches[0].clientY;
-      const delta = currentY - startY;
-
-      // allow only downward movement
+      dragCurrentY = e.touches[0].clientY;
+      const delta = dragCurrentY - dragStartY;
       if (delta > 0) {
-        bottomSheet.style.transform =
-          `translateX(-50%) translateY(${delta}px)`;
+        commentModal.style.transform = `translateX(-50%) translateY(${delta}px)`;
       }
     }, { passive: true });
 
     window.addEventListener('touchend', () => {
       if (!isDragging) return;
-
-      const delta = currentY - startY;
-
-      bottomSheet.style.transition =
-        'transform 0.28s cubic-bezier(0.22, 1, 0.36, 1)';
-
-      // snap back to full height
-      bottomSheet.style.transform = 'translateX(-50%) translateY(0)';
-
-      if (delta < 80) {
-        bottomSheet.classList.add('expanded');
-      }
-
       isDragging = false;
+
+      const delta = dragCurrentY - dragStartY;
+      commentModal.style.transition = 'transform 0.28s cubic-bezier(0.22, 1, 0.36, 1)';
+
+      if (delta > 160) {
+        // Dismiss → snap back after short pause (prototype: no real navigation)
+        commentModal.style.transform = `translateX(-50%) translateY(100%)`;
+        setTimeout(() => {
+          commentModal.style.transition = 'none';
+          commentModal.style.transform = 'translateX(-50%) translateY(0)';
+          requestAnimationFrame(() => {
+            commentModal.style.transition = 'transform 0.28s cubic-bezier(0.22, 1, 0.36, 1)';
+          });
+        }, 400);
+      } else {
+        commentModal.style.transform = 'translateX(-50%) translateY(0)';
+      }
     });
   </script>
 </body>

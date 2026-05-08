@@ -1227,6 +1227,59 @@
             flex-shrink: 0;
             height: calc(64px + env(safe-area-inset-bottom, 0px))
         }
+
+        /* BOTTOM SHEET */
+        .bsov {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,.55);
+            z-index: 300;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity .25s ease;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center
+        }
+        .bsov.on {
+            opacity: 1;
+            pointer-events: all
+        }
+        .bsh {
+            width: 100%;
+            max-width: 480px;
+            background: #2C2C2C;
+            border-radius: 28px 28px 0 0;
+            padding: 12px 0 calc(28px + env(safe-area-inset-bottom,0px));
+            transform: translateY(100%);
+            transition: transform .32s cubic-bezier(.32,.72,0,1)
+        }
+        .bsov.on .bsh {
+            transform: translateY(0)
+        }
+        .bspill {
+            width: 36px;
+            height: 4px;
+            background: rgba(255,255,255,.2);
+            border-radius: 2px;
+            margin: 0 auto 20px
+        }
+        .bsi {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            padding: 16px 28px;
+            cursor: pointer;
+            transition: background .15s ease
+        }
+        .bsi:active { background: rgba(255,255,255,.06) }
+        .bsi span {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 16px;
+            font-weight: 500;
+            line-height: 22px;
+            color: #fff
+        }
     </style>
 </head>
 
@@ -1930,87 +1983,55 @@
                     <div class="pls" id="plList">
 
                         <!-- Card 1: PRIVATE · Portuguese woman peace · JOIN -->
-                        <div class="plc">
+                        <div class="plc" style="cursor:pointer" onclick="openDet(0)">
                             <div class="plb h98 warm">
                                 <div class="plbg"><svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                                        <path
-                                            d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2Zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2Zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2Z"
-                                            fill="white" />
+                                        <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2Zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2Zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2Z" fill="white" />
                                     </svg><span class="plbt">Private</span></div>
                             </div>
                             <div class="plbd">
                                 <div class="pllft">
-                                    <div class="plic"><svg width="30" height="30" viewBox="0 0 24 24" fill="none">
-                                            <path
-                                                d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"
-                                                fill="white" />
-                                        </svg></div>
+                                    <div class="plic"><svg width="30" height="30" viewBox="0 0 24 24" fill="none"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" fill="white" /></svg></div>
                                     <div class="pldt"><span class="plnm">Portuguese woman peace</span>
                                         <div class="plmr">
-                                            <div class="plmi">
-                                                <div class="plmd"></div><span class="plmt">132 new clips</span>
-                                            </div>
-                                            <div class="plmi">
-                                                <div class="plmd"></div><span class="plmt">7h 12m</span>
-                                            </div>
-                                            <div class="plmi">
-                                                <div class="plmd"></div><span class="plmt">1140 followers</span>
-                                            </div>
+                                            <div class="plmi"><div class="plmd"></div><span class="plmt">132 new clips</span></div>
+                                            <div class="plmi"><div class="plmd"></div><span class="plmt">7h 12m</span></div>
+                                            <div class="plmi"><div class="plmd"></div><span class="plmt">1140 followers</span></div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="plac"><button class="plab">Join</button><button class="plmb"><svg width="16"
-                                            height="16" viewBox="0 0 24 24" fill="none">
-                                            <circle cx="12" cy="5" r="2" fill="white" />
-                                            <circle cx="12" cy="12" r="2" fill="white" />
-                                            <circle cx="12" cy="19" r="2" fill="white" />
-                                        </svg></button></div>
+                                <div class="plac">
+                                    <button class="plab" onclick="toggleJoin(this,event)">Join</button>
+                                    <button class="plmb" onclick="event.stopPropagation();openBs(event)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="2" fill="white"/><circle cx="12" cy="12" r="2" fill="white"/><circle cx="12" cy="19" r="2" fill="white"/></svg></button>
+                                </div>
                             </div>
                             <div class="plft2">
-                                <div class="plavs">
-                                    <div class="plav fa1"></div>
-                                    <div class="plav fa2"></div>
-                                    <div class="plav fa3"></div>
-                                </div><span class="pltx">Satish and 46 others vibe with this play...</span>
+                                <div class="plavs"><div class="plav fa1"></div><div class="plav fa2"></div><div class="plav fa3"></div></div>
+                                <span class="pltx">Satish and 46 others vibe with this play...</span>
                             </div>
                         </div>
 
                         <!-- Card 2: PUBLIC · Energetic workout tunes · LEAVE (→ detail) -->
-                        <div class="plc" style="cursor:pointer" onclick="openDet()">
+                        <div class="plc" style="cursor:pointer" onclick="openDet(1)">
                             <div class="plb h116 green">
                                 <div class="plbg"><svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                                        <path
-                                            d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2Zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93Zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"
-                                            fill="white" />
+                                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2Zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93Zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z" fill="white" />
                                     </svg><span class="plbt">Public</span></div>
                             </div>
                             <div class="plbd tall">
                                 <div class="pllft tall">
-                                    <div class="plic"><svg width="30" height="30" viewBox="0 0 24 24" fill="none">
-                                            <path
-                                                d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"
-                                                fill="white" />
-                                        </svg></div>
-                                    <div class="pldt"><span class="plnm">Energetic workout tunes,Perfect for your
-                                            fitness groove!</span>
+                                    <div class="plic"><svg width="30" height="30" viewBox="0 0 24 24" fill="none"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" fill="white" /></svg></div>
+                                    <div class="pldt"><span class="plnm">Energetic workout tunes,Perfect for your fitness groove!</span>
                                         <div class="plmr">
-                                            <div class="plmi">
-                                                <div class="plmd"></div><span class="plmt">12 new clips</span>
-                                            </div>
-                                            <div class="plmi">
-                                                <div class="plmd"></div><span class="plmt">3h 5m</span>
-                                            </div>
+                                            <div class="plmi"><div class="plmd"></div><span class="plmt">12 new clips</span></div>
+                                            <div class="plmi"><div class="plmd"></div><span class="plmt">3h 5m</span></div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="plac" style="align-self:flex-start;margin-top:2px;"><button class="plab"
-                                        onclick="event.stopPropagation()">Leave</button><button class="plmb"
-                                        onclick="event.stopPropagation()"><svg width="16" height="16"
-                                            viewBox="0 0 24 24" fill="none">
-                                            <circle cx="12" cy="5" r="2" fill="white" />
-                                            <circle cx="12" cy="12" r="2" fill="white" />
-                                            <circle cx="12" cy="19" r="2" fill="white" />
-                                        </svg></button></div>
+                                <div class="plac" style="align-self:flex-start;margin-top:2px;">
+                                    <button class="plab" onclick="event.stopPropagation()">Leave</button>
+                                    <button class="plmb" onclick="event.stopPropagation();openBs(event)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="2" fill="white"/><circle cx="12" cy="12" r="2" fill="white"/><circle cx="12" cy="19" r="2" fill="white"/></svg></button>
+                                </div>
                             </div>
                             <div class="plft2">
                                 <div class="plsav"></div><span class="pltx">Satish created this playlist.</span>
@@ -2018,141 +2039,89 @@
                         </div>
 
                         <!-- Card 3: PRIVATE · Workout Beats · REQUESTED -->
-                        <div class="plc">
+                        <div class="plc" style="cursor:pointer" onclick="openDet(2)">
                             <div class="plb h98 dark">
                                 <div class="plbg"><svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                                        <path
-                                            d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2Zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2Zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2Z"
-                                            fill="white" />
+                                        <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2Zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2Zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2Z" fill="white" />
                                     </svg><span class="plbt">Private</span></div>
                             </div>
                             <div class="plbd">
                                 <div class="pllft">
-                                    <div class="plic"><svg width="30" height="30" viewBox="0 0 24 24" fill="none">
-                                            <path
-                                                d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"
-                                                fill="white" />
-                                        </svg></div>
+                                    <div class="plic"><svg width="30" height="30" viewBox="0 0 24 24" fill="none"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" fill="white" /></svg></div>
                                     <div class="pldt"><span class="plnm">Workout Beats</span>
                                         <div class="plmr">
-                                            <div class="plmi">
-                                                <div class="plmd"></div><span class="plmt">132 new clips</span>
-                                            </div>
-                                            <div class="plmi">
-                                                <div class="plmd"></div><span class="plmt">7h 12m</span>
-                                            </div>
-                                            <div class="plmi">
-                                                <div class="plmd"></div><span class="plmt">1140 followers</span>
-                                            </div>
+                                            <div class="plmi"><div class="plmd"></div><span class="plmt">132 new clips</span></div>
+                                            <div class="plmi"><div class="plmd"></div><span class="plmt">7h 12m</span></div>
+                                            <div class="plmi"><div class="plmd"></div><span class="plmt">1140 followers</span></div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="plac"><button class="plab">Requested</button><button class="plmb"><svg
-                                            width="16" height="16" viewBox="0 0 24 24" fill="none">
-                                            <circle cx="12" cy="5" r="2" fill="white" />
-                                            <circle cx="12" cy="12" r="2" fill="white" />
-                                            <circle cx="12" cy="19" r="2" fill="white" />
-                                        </svg></button></div>
+                                <div class="plac">
+                                    <button class="plab" onclick="toggleJoin(this,event)">Requested</button>
+                                    <button class="plmb" onclick="event.stopPropagation();openBs(event)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="2" fill="white"/><circle cx="12" cy="12" r="2" fill="white"/><circle cx="12" cy="19" r="2" fill="white"/></svg></button>
+                                </div>
                             </div>
                             <div class="plft2">
-                                <div class="plavs">
-                                    <div class="plav fa1"></div>
-                                    <div class="plav fa2"></div>
-                                    <div class="plav fa3"></div>
-                                </div><span class="pltx">Satish and 46 others vibe with this playl...</span>
+                                <div class="plavs"><div class="plav fa1"></div><div class="plav fa2"></div><div class="plav fa3"></div></div>
+                                <span class="pltx">Satish and 46 others vibe with this playl...</span>
                             </div>
                         </div>
 
                         <!-- Card 4: PRIVATE · Pumping Workout Beats · REQUESTED -->
-                        <div class="plc">
+                        <div class="plc" style="cursor:pointer" onclick="openDet(3)">
                             <div class="plb h98 warm">
                                 <div class="plbg"><svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                                        <path
-                                            d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2Zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2Zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2Z"
-                                            fill="white" />
+                                        <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2Zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2Zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2Z" fill="white" />
                                     </svg><span class="plbt">Private</span></div>
                             </div>
                             <div class="plbd">
                                 <div class="pllft">
-                                    <div class="plic"><svg width="30" height="30" viewBox="0 0 24 24" fill="none">
-                                            <path
-                                                d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"
-                                                fill="white" />
-                                        </svg></div>
+                                    <div class="plic"><svg width="30" height="30" viewBox="0 0 24 24" fill="none"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" fill="white" /></svg></div>
                                     <div class="pldt"><span class="plnm">Pumping Workout Beats</span>
                                         <div class="plmr">
-                                            <div class="plmi">
-                                                <div class="plmd"></div><span class="plmt">132 new clips</span>
-                                            </div>
-                                            <div class="plmi">
-                                                <div class="plmd"></div><span class="plmt">7h 12m</span>
-                                            </div>
-                                            <div class="plmi">
-                                                <div class="plmd"></div><span class="plmt">1140 followers</span>
-                                            </div>
+                                            <div class="plmi"><div class="plmd"></div><span class="plmt">132 new clips</span></div>
+                                            <div class="plmi"><div class="plmd"></div><span class="plmt">7h 12m</span></div>
+                                            <div class="plmi"><div class="plmd"></div><span class="plmt">1140 followers</span></div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="plac"><button class="plab">Requested</button><button class="plmb"><svg
-                                            width="16" height="16" viewBox="0 0 24 24" fill="none">
-                                            <circle cx="12" cy="5" r="2" fill="white" />
-                                            <circle cx="12" cy="12" r="2" fill="white" />
-                                            <circle cx="12" cy="19" r="2" fill="white" />
-                                        </svg></button></div>
+                                <div class="plac">
+                                    <button class="plab" onclick="toggleJoin(this,event)">Requested</button>
+                                    <button class="plmb" onclick="event.stopPropagation();openBs(event)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="2" fill="white"/><circle cx="12" cy="12" r="2" fill="white"/><circle cx="12" cy="19" r="2" fill="white"/></svg></button>
+                                </div>
                             </div>
                             <div class="plft2">
-                                <div class="plavs">
-                                    <div class="plav fa1"></div>
-                                    <div class="plav fa2"></div>
-                                    <div class="plav fa3"></div>
-                                </div><span class="pltx">Satish and 46 others vibe with this playl...</span>
+                                <div class="plavs"><div class="plav fa1"></div><div class="plav fa2"></div><div class="plav fa3"></div></div>
+                                <span class="pltx">Satish and 46 others vibe with this playl...</span>
                             </div>
                         </div>
 
                         <!-- Card 5: PUBLIC · Energising… · JOIN -->
-                        <div class="plc">
+                        <div class="plc" style="cursor:pointer" onclick="openDet(4)">
                             <div class="plb h134 blue">
                                 <div class="plbg"><svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                                        <path
-                                            d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2Zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93Zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"
-                                            fill="white" />
+                                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2Zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93Zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z" fill="white" />
                                     </svg><span class="plbt">Public</span></div>
                             </div>
                             <div class="plbd tall">
                                 <div class="pllft tall">
-                                    <div class="plic"><svg width="30" height="30" viewBox="0 0 24 24" fill="none">
-                                            <path
-                                                d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"
-                                                fill="white" />
-                                        </svg></div>
-                                    <div class="pldt"><span class="plnm">Energising workout tunes,Perfect for your
-                                            fitness groove!</span>
+                                    <div class="plic"><svg width="30" height="30" viewBox="0 0 24 24" fill="none"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" fill="white" /></svg></div>
+                                    <div class="pldt"><span class="plnm">Energising workout tunes,Perfect for your fitness groove!</span>
                                         <div class="plmr">
-                                            <div class="plmi">
-                                                <div class="plmd"></div><span class="plmt">132 new clips</span>
-                                            </div>
-                                            <div class="plmi">
-                                                <div class="plmd"></div><span class="plmt">7h 12m</span>
-                                            </div>
-                                            <div class="plmi">
-                                                <div class="plmd"></div><span class="plmt">Be the first to join</span>
-                                            </div>
+                                            <div class="plmi"><div class="plmd"></div><span class="plmt">132 new clips</span></div>
+                                            <div class="plmi"><div class="plmd"></div><span class="plmt">7h 12m</span></div>
+                                            <div class="plmi"><div class="plmd"></div><span class="plmt">Be the first to join</span></div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="plac" style="align-self:center;"><button class="plab">Join</button><button
-                                        class="plmb"><svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                                            <circle cx="12" cy="5" r="2" fill="white" />
-                                            <circle cx="12" cy="12" r="2" fill="white" />
-                                            <circle cx="12" cy="19" r="2" fill="white" />
-                                        </svg></button></div>
+                                <div class="plac" style="align-self:center;">
+                                    <button class="plab" onclick="toggleJoin(this,event)">Join</button>
+                                    <button class="plmb" onclick="event.stopPropagation();openBs(event)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="2" fill="white"/><circle cx="12" cy="12" r="2" fill="white"/><circle cx="12" cy="19" r="2" fill="white"/></svg></button>
+                                </div>
                             </div>
                             <div class="plft2">
-                                <div class="plavs">
-                                    <div class="plav fa1"></div>
-                                    <div class="plav fa2"></div>
-                                    <div class="plav fa3"></div>
-                                </div><span class="pltx">Satish and 46 others vibe with this playl...</span>
+                                <div class="plavs"><div class="plav fa1"></div><div class="plav fa2"></div><div class="plav fa3"></div></div>
+                                <span class="pltx">Satish and 46 others vibe with this playl...</span>
                             </div>
                         </div>
 
@@ -2161,22 +2130,20 @@
 
                     <!-- Detail view -->
                     <div id="plDet" style="display:none;flex-direction:column;flex:1;">
-                        <!-- Figma Frame 304: height:70px; bg:#4E4E4E; padding:8px; gap:12px -->
                         <div class="pldhdr">
                             <button class="pldbk" onclick="closeDet()">
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                    <path d="M20 11H7.83l5.59-5.59L12 4 4 12l8 8 1.41-1.41L7.83 13H20v-2Z"
-                                        fill="white" />
+                                    <path d="M20 11H7.83l5.59-5.59L12 4 4 12l8 8 1.41-1.41L7.83 13H20v-2Z" fill="white" />
                                 </svg>
                             </button>
                             <div class="pldin">
-                                <span class="pldnm">Energetic workout tunes,Perfect for your fitness groove!</span>
+                                <span class="pldnm" id="pldnm-text">Energetic workout tunes,Perfect for your fitness groove!</span>
                                 <div class="pldmt">
-                                    <span class="pldtx">12 new clips</span>
+                                    <span class="pldtx" id="pldmt-clips">12 new clips</span>
                                     <div class="pldd"></div>
-                                    <span class="pldtx">3h 5m</span>
+                                    <span class="pldtx" id="pldmt-dur">3h 5m</span>
                                     <div class="pldd"></div>
-                                    <span class="pldtx">47 members</span>
+                                    <span class="pldtx" id="pldmt-members">47 members</span>
                                 </div>
                             </div>
                         </div>
@@ -2220,6 +2187,28 @@
             </div>
         </div>
 
+        <!-- BOTTOM SHEET -->
+        <div class="bsov" id="bsheet" onclick="closeBs(event)">
+            <div class="bsh">
+                <div class="bspill"></div>
+                <div class="bsi">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <circle cx="18" cy="5" r="3" stroke="white" stroke-width="1.8"/>
+                        <circle cx="6" cy="12" r="3" stroke="white" stroke-width="1.8"/>
+                        <circle cx="18" cy="19" r="3" stroke="white" stroke-width="1.8"/>
+                        <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" stroke="white" stroke-width="1.8"/>
+                        <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" stroke="white" stroke-width="1.8"/>
+                    </svg>
+                    <span>Share</span>
+                </div>
+                <div class="bsi">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3Zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3Zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5Zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5Z" fill="white"/>
+                    </svg>
+                    <span>View members</span>
+                </div>
+            </div>
+        </div>
     </div>
     <script>
         const IMG = 'https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=120&h=120&fit=crop&crop=face';
@@ -2227,7 +2216,15 @@
         const TA = 'Portuguese woman peace';
         const recent = ['Emma Wilson', 'Portugeuse songs', 'Portugeuse woman peace', 'Newyork woman peace', 'Newyork woman peace'];
         const suggs = ['brazil language learning is good or bad', 'woman peace', 'songs', 'song trend', 'woman peace'];
+        const PDATA = [
+            { name: 'Portuguese woman peace', clips: '132 new clips', dur: '7h 12m', members: '1140 followers' },
+            { name: 'Energetic workout tunes,Perfect for your fitness groove!', clips: '12 new clips', dur: '3h 5m', members: '47 members' },
+            { name: 'Workout Beats', clips: '132 new clips', dur: '7h 12m', members: '1140 followers' },
+            { name: 'Pumping Workout Beats', clips: '132 new clips', dur: '7h 12m', members: '1140 followers' },
+            { name: 'Energising workout tunes,Perfect for your fitness groove!', clips: '132 new clips', dur: '7h 12m', members: 'Be the first to join' }
+        ];
         let st = 'empty';
+        let detPlaying = true;
 
         buildInact(false); buildDetClips(true); renderR(); show('empty');
 
@@ -2250,18 +2247,46 @@
         function clearS() { document.getElementById('si').value = ''; document.getElementById('sc').classList.remove('on'); show('recent'); }
         function goBack() { document.getElementById('si').value = ''; document.getElementById('sc').classList.remove('on'); show('empty'); }
         function swTab(id, btn) { document.querySelectorAll('.tb').forEach(b => b.classList.remove('on')); document.querySelectorAll('#sres .tc').forEach(t => t.classList.remove('on')); btn.classList.add('on'); document.getElementById('tab-' + id).classList.add('on'); }
-        function mkClip(title, isFirst) { return `<div class="ci" onclick="playClip()"><div class="cil"><div class="cth"><img src="${IMG}" alt="" onerror="this.style.display='none'"/></div><div class="cii"><div class="citb"><span class="cit">${title}</span><span class="cia">Marcus Chen</span></div><span class="cid">00:51</span></div></div><div class="cir"><button class="bplay"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 1.5 12 7 3 12.5V1.5Z" fill="white"/></svg></button><button class="bmore"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="2" fill="white"/><circle cx="12" cy="12" r="2" fill="white"/><circle cx="12" cy="19" r="2" fill="white"/></svg></button></div></div>`; }
-        function buildInact(hasAct) { const c = hasAct ? 6 : 7; let h = ''; for (let i = 0; i < c; i++)h += mkClip((!hasAct && i < 2) ? TA : TI, i === 0); document.getElementById('inactClips').innerHTML = h; }
+
+        // Clips tab
+        function mkClip(title) { return `<div class="ci" onclick="playClip()"><div class="cil"><div class="cth"><img src="${IMG}" alt="" onerror="this.style.display='none'"/></div><div class="cii"><div class="citb"><span class="cit">${title}</span><span class="cia">Marcus Chen</span></div><span class="cid">00:51</span></div></div><div class="cir"><button class="bplay"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 1.5 12 7 3 12.5V1.5Z" fill="white"/></svg></button><button class="bmore" onclick="event.stopPropagation();openBs(event)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="2" fill="white"/><circle cx="12" cy="12" r="2" fill="white"/><circle cx="12" cy="19" r="2" fill="white"/></svg></button></div></div>`; }
+        function buildInact(hasAct) { const c = hasAct ? 6 : 7; let h = ''; for (let i = 0; i < c; i++)h += mkClip((!hasAct && i < 2) ? TA : TI); document.getElementById('inactClips').innerHTML = h; }
         function playClip() { document.getElementById('npCard').style.display = 'flex'; buildInact(true); }
-        function mkDetClip(title) { return `<div class="ci" style="margin:0 16px;"><div class="cil"><div class="cth"><img src="${IMG}" alt="" onerror="this.style.display='none'"/></div><div class="cii"><div class="citb"><span class="cit">${title}</span><span class="cia">Marcus Chen</span></div><span class="cid">00:51</span></div></div><div class="cir"><button class="bplay"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 1.5 12 7 3 12.5V1.5Z" fill="white"/></svg></button><button class="bmore"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="2" fill="white"/><circle cx="12" cy="12" r="2" fill="white"/><circle cx="12" cy="19" r="2" fill="white"/></svg></button></div></div>`; }
+
+        // Playlist detail clips
+        function mkDetClip(title) { return `<div class="ci" style="margin:0 16px;" onclick="playDetClip(this)"><div class="cil"><div class="cth"><img src="${IMG}" alt="" onerror="this.style.display='none'"/></div><div class="cii"><div class="citb"><span class="cit">${title}</span><span class="cia">Marcus Chen</span></div><span class="cid">00:51</span></div></div><div class="cir"><button class="bplay"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 1.5 12 7 3 12.5V1.5Z" fill="white"/></svg></button><button class="bmore" onclick="event.stopPropagation();openBs(event)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="2" fill="white"/><circle cx="12" cy="12" r="2" fill="white"/><circle cx="12" cy="19" r="2" fill="white"/></svg></button></div></div>`; }
         function buildDetClips(withAct) {
             let h = '';
-            if (withAct) h += `<div class="ca" style="margin:0 16px 0;"><div class="cal"><div class="cth"><img src="${IMG}" alt="" onerror="this.style.display='none'"/></div><div class="cai"><div class="cnr"><div class="eq"><div class="eqb"></div><div class="eqb"></div><div class="eqb"></div><div class="eqb"></div></div><span class="cnl">Now playing</span></div><span class="cat">${TI}</span><span class="caa">Marcus Chen</span><span class="cad">00:51</span></div></div><div class="car"><button class="bpause"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="2" y="1" width="3.5" height="12" rx="1" fill="white"/><rect x="8.5" y="1" width="3.5" height="12" rx="1" fill="white"/></svg></button><button class="bmore"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="2" fill="white"/><circle cx="12" cy="12" r="2" fill="white"/><circle cx="12" cy="19" r="2" fill="white"/></svg></button></div><div class="cap"><div class="capf"></div></div></div>`;
-            for (let i = 0; i < 5; i++)h += mkDetClip(TI);
+            if (withAct) h += `<div class="ca" style="margin:0 16px 0;"><div class="cal"><div class="cth"><img src="${IMG}" alt="" onerror="this.style.display='none'"/></div><div class="cai"><div class="cnr"><div class="eq"><div class="eqb"></div><div class="eqb"></div><div class="eqb"></div><div class="eqb"></div></div><span class="cnl">Now playing</span></div><span class="cat">${TI}</span><span class="caa">Marcus Chen</span><span class="cad">00:51</span></div></div><div class="car"><button class="bpause" onclick="pauseDet()"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="2" y="1" width="3.5" height="12" rx="1" fill="white"/><rect x="8.5" y="1" width="3.5" height="12" rx="1" fill="white"/></svg></button><button class="bmore" onclick="event.stopPropagation();openBs(event)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="2" fill="white"/><circle cx="12" cy="12" r="2" fill="white"/><circle cx="12" cy="19" r="2" fill="white"/></svg></button></div><div class="cap"><div class="capf"></div></div></div>`;
+            for (let i = 0; i < 5; i++) h += mkDetClip(TI);
             document.getElementById('pdClips').innerHTML = h;
+            detPlaying = withAct;
         }
-        function openDet() { document.getElementById('plList').style.display = 'none'; document.getElementById('plDet').style.display = 'flex'; }
+        function playDetClip(el) { buildDetClips(true); }
+        function pauseDet() { buildDetClips(false); }
+
+        // Playlist open/close
+        function openDet(idx) {
+            const p = PDATA[idx];
+            document.getElementById('pldnm-text').textContent = p.name;
+            document.getElementById('pldmt-clips').textContent = p.clips;
+            document.getElementById('pldmt-dur').textContent = p.dur;
+            document.getElementById('pldmt-members').textContent = p.members;
+            document.getElementById('plList').style.display = 'none';
+            document.getElementById('plDet').style.display = 'flex';
+        }
         function closeDet() { document.getElementById('plDet').style.display = 'none'; document.getElementById('plList').style.display = 'flex'; }
+
+        // Bottom sheet
+        function openBs(e) { if (e) e.stopPropagation(); document.getElementById('bsheet').classList.add('on'); }
+        function closeBs(e) { if (!e || e.target === document.getElementById('bsheet')) document.getElementById('bsheet').classList.remove('on'); }
+
+        // JOIN / REQUESTED toggle
+        function toggleJoin(btn, e) {
+            e.stopPropagation();
+            const t = btn.textContent.trim().toLowerCase();
+            btn.textContent = (t === 'join') ? 'Requested' : 'Join';
+        }
     </script>
 </body>
 
