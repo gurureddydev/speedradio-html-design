@@ -747,10 +747,10 @@
       position: relative;
       width: 100%;
       max-width: 420px;
-      height: 88dvh;
+      height: 100dvh;
       transform: translateY(100%);
       transition: transform 0.38s cubic-bezier(0.32, 0.72, 0, 1);
-      border-radius: 12px 12px 0 0;
+      border-radius: 0;
       overflow: hidden;
       background: #202020;
     }
@@ -1590,6 +1590,11 @@
             isDragging = true;
             bar.classList.add('is-dragging');
             videoArea.classList.add('is-seeking');
+            item.querySelectorAll(FADE_TARGETS).forEach(el => {
+              el.style.transition = 'opacity 0.2s ease';
+              el.style.opacity = '0';
+              el.style.pointerEvents = 'none';
+            });
             updateSeek(e);
             if (e.type === 'touchstart') e.preventDefault();
           };
@@ -1598,6 +1603,10 @@
             isDragging = false;
             bar.classList.remove('is-dragging');
             videoArea.classList.remove('is-seeking');
+            item.querySelectorAll(FADE_TARGETS).forEach(el => {
+              el.style.pointerEvents = '';
+            });
+            settleFade();
           };
 
           bar.addEventListener('mousedown', startDragging);
@@ -1687,13 +1696,42 @@
         }
       }
 
+      /* ── TikTok-style UI fade tied to scroll progress ── */
+      const FADE_TARGETS = '.video-actions, .video-caption, .link-btn';
+
+      function applyFade() {
+        const cardH = app.clientHeight;
+        app.querySelectorAll('.feed-item').forEach(item => {
+          const dist = Math.abs(item.offsetTop - app.scrollTop);
+          const opacity = Math.max(0, 1 - dist / (cardH * 0.45));
+          item.querySelectorAll(FADE_TARGETS).forEach(el => {
+            el.style.transition = 'none';
+            el.style.opacity = opacity;
+          });
+        });
+      }
+
+      function settleFade() {
+        const cardH = app.clientHeight;
+        app.querySelectorAll('.feed-item').forEach(item => {
+          const dist = Math.abs(item.offsetTop - app.scrollTop);
+          const isActive = dist < cardH * 0.1;
+          item.querySelectorAll(FADE_TARGETS).forEach(el => {
+            el.style.transition = 'opacity 0.3s ease';
+            el.style.opacity = isActive ? '1' : '0';
+          });
+        });
+      }
+
+      app.addEventListener('scroll', applyFade);
+
       if ('onscrollend' in app) {
-        app.addEventListener('scrollend', checkLoop);
+        app.addEventListener('scrollend', () => { checkLoop(); settleFade(); });
       } else {
         let scrollTimer;
         app.addEventListener('scroll', () => {
           clearTimeout(scrollTimer);
-          scrollTimer = setTimeout(checkLoop, 200);
+          scrollTimer = setTimeout(() => { checkLoop(); settleFade(); }, 200);
         });
       }
     })();
