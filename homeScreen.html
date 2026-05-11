@@ -10,7 +10,7 @@
     rel="stylesheet" />
   <style>
     :root {
-      --text-dark: #1E1E1E;
+      --text-dark: #242424CC;
       --nav-bg: #1A1A1A;
     }
 
@@ -96,7 +96,7 @@
       align-self: flex-start;
       background: rgba(255, 255, 255, 0.25);
       padding: clamp(4px, 0.8vh, 6px) 12px;
-      border-radius: 6px;
+      border-radius: 2px;
       font-size: clamp(11px, 1.7vh, 12px);
       font-weight: 600;
       color: var(--text-dark);
@@ -109,68 +109,53 @@
       line-height: 1.2;
     }
 
+    /* Wrapper keeps the gradient fixed at the visible edges */
+    .tags-wrap {
+      position: relative;
+      margin-right: -20px;
+    }
+
     .tags-container {
       display: flex;
       gap: 8px;
       overflow-x: auto;
       scrollbar-width: none;
-      margin-right: -20px;
-      padding-right: 36px;
-      /* extra space for gradient overlay */
-      position: relative;
+      padding-right: 8px;
     }
 
     .tags-container::-webkit-scrollbar {
       display: none;
     }
 
-    /* Edge gradient for chips (tags) container */
-    .feed-item[style*='#EA1C25'] .tags-container::after {
+    /*
+      Edge gradient — right/end side.
+      740px wide, right: -600px so that the 18.92% stop (= 140px from element left)
+      lands exactly at the visible right edge, giving a clean ~49px fade.
+    */
+    .feed-item[style*='#EA1C25'] .tags-wrap::after,
+    .feed-item[style*='#FEDD01'] .tags-wrap::after,
+    .feed-item[style*='#09D1C7'] .tags-wrap::after,
+    .feed-item[style*='#EFE2D5'] .tags-wrap::after {
       content: '';
       position: absolute;
-      top: 0;
-      right: 0;
-      width: 36px;
-      height: 100%;
+      top: 0; bottom: 0;
+      right: -600px;
+      width: 740px;
       pointer-events: none;
       z-index: 2;
-      background: linear-gradient(90deg, rgba(234, 28, 37, 0) 12.26%, #EA1C25 90%);
     }
 
-    .feed-item[style*='#FEDD01'] .tags-container::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      right: 0;
-      width: 36px;
-      height: 100%;
-      pointer-events: none;
-      z-index: 2;
-      background: linear-gradient(90deg, rgba(254, 221, 1, 0) 12.26%, #FEDD01 90%);
+    .feed-item[style*='#EA1C25'] .tags-wrap::after {
+      background: linear-gradient(90deg, rgba(234, 28, 37, 0) 12.26%, #EA1C25 18.92%);
     }
-
-    .feed-item[style*='#09D1C7'] .tags-container::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      right: 0;
-      width: 36px;
-      height: 100%;
-      pointer-events: none;
-      z-index: 2;
-      background: linear-gradient(90deg, rgba(9, 209, 199, 0) 12.26%, #09D1C7 90%);
+    .feed-item[style*='#FEDD01'] .tags-wrap::after {
+      background: linear-gradient(90deg, rgba(254, 221, 1, 0) 12.26%, #FEDD01 18.92%);
     }
-
-    .feed-item[style*='#EFE2D5'] .tags-container::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      right: 0;
-      width: 36px;
-      height: 100%;
-      pointer-events: none;
-      z-index: 2;
-      background: linear-gradient(90deg, rgba(239, 226, 213, 0) 12.26%, #EFE2D5 90%);
+    .feed-item[style*='#09D1C7'] .tags-wrap::after {
+      background: linear-gradient(90deg, rgba(9, 209, 199, 0) 12.26%, #09D1C7 18.92%);
+    }
+    .feed-item[style*='#EFE2D5'] .tags-wrap::after {
+      background: linear-gradient(90deg, rgba(239, 226, 213, 0) 12.26%, #EFE2D5 18.92%);
     }
 
     .tag {
@@ -178,19 +163,25 @@
       padding: clamp(4px, 0.8vh, 6px) clamp(10px, 2vw, 14px);
       border-radius: 20px;
       font-size: clamp(10px, 1.5vh, 12px);
-      font-weight: 600;
+      font-weight: medium;
       color: var(--text-dark);
       white-space: nowrap;
     }
 
     /* ── Per-card badge & tag colors ── */
-    .feed-item[style*='#EA1C25'] .badge,
+    .feed-item[style*='#EA1C25'] .badge {
+      background: #ED3E45;
+    }
+
     .feed-item[style*='#EA1C25'] .tag {
       background: #ED3E45;
       border: 1px solid rgba(0, 0, 0, 0.10);
     }
 
-    .feed-item[style*='#FEDD01'] .badge,
+    .feed-item[style*='#FEDD01'] .badge {
+      background: #E5C701;
+    }
+
     .feed-item[style*='#FEDD01'] .tag {
       background: #FEE432;
       border: 1px solid rgba(0, 0, 0, 0.10);
@@ -198,11 +189,11 @@
 
     .feed-item[style*='#09D1C7'] .badge {
       background: #39DAD2;
-      border: 1px solid rgba(0, 0, 0, 0.10);
     }
 
     .feed-item[style*='#09D1C7'] .tag {
       background: #47DDD5;
+      border: 1px solid rgba(0, 0, 0, 0.10);
     }
 
     .feed-item[style*='#EFE2D5'] .badge {
@@ -210,7 +201,7 @@
     }
 
     .feed-item[style*='#EFE2D5'] .tag {
-      background: #F2E7DD;
+      background: #DCD1C6;
       border: 1px solid rgba(0, 0, 0, 0.10);
     }
 
@@ -692,31 +683,6 @@
       }
     }
 
-    .tags-gradient {
-      position: absolute;
-      top: 0;
-      right: 0;
-      width: 36px;
-      height: 40px;
-      pointer-events: none;
-      z-index: 2;
-    }
-
-    .feed-item[style*='#EA1C25'] .tags-gradient {
-      background: linear-gradient(90deg, rgba(234, 28, 37, 0) 12.26%, #EA1C25 90%);
-    }
-
-    .feed-item[style*='#FEDD01'] .tags-gradient {
-      background: linear-gradient(90deg, rgba(254, 221, 1, 0) 12.26%, #FEDD01 90%);
-    }
-
-    .feed-item[style*='#09D1C7'] .tags-gradient {
-      background: linear-gradient(90deg, rgba(9, 209, 199, 0) 12.26%, #09D1C7 90%);
-    }
-
-    .feed-item[style*='#EFE2D5'] .tags-gradient {
-      background: linear-gradient(90deg, rgba(239, 226, 213, 0) 12.26%, #EFE2D5 90%);
-    }
 
     /* ── Comment Sheet Overlay ── */
     .comment-overlay {
@@ -796,14 +762,15 @@
       <div class="header-area">
         <div class="badge">Playing from: Invite</div>
         <div class="title">Affirmation For Confidence And Magnetism</div>
-        <div class="tags-container">
-          <span class="tag">Negative Thoughts</span>
-          <span class="tag">Emotional Regulation</span>
-          <span class="tag">Mindfulness Tech...</span>
-          <span class="tag">Self Confidence</span>
-          <span class="tag">Inner Strength</span>
+        <div class="tags-wrap">
+          <div class="tags-container">
+            <span class="tag">Negative Thoughts</span>
+            <span class="tag">Emotional Regulation</span>
+            <span class="tag">Mindfulness Tech...</span>
+            <span class="tag">Self Confidence</span>
+            <span class="tag">Inner Strength</span>
+          </div>
         </div>
-        <div class="tags-gradient"></div>
       </div>
 
       <div class="video-area">
@@ -899,12 +866,14 @@
       <div class="header-area">
         <div class="badge">Playing from: Invite</div>
         <div class="title">Affirmation For Confidence And Magnetism</div>
-        <div class="tags-container">
-          <span class="tag">Negative Thoughts</span>
-          <span class="tag">Emotional Regulation</span>
-          <span class="tag">Mindfulness Tech...</span>
-          <span class="tag">Self Confidence</span>
-          <span class="tag">Inner Strength</span>
+        <div class="tags-wrap">
+          <div class="tags-container">
+            <span class="tag">Negative Thoughts</span>
+            <span class="tag">Emotional Regulation</span>
+            <span class="tag">Mindfulness Tech...</span>
+            <span class="tag">Self Confidence</span>
+            <span class="tag">Inner Strength</span>
+          </div>
         </div>
       </div>
 
@@ -1001,12 +970,14 @@
       <div class="header-area">
         <div class="badge">Playing from: Following</div>
         <div class="title">Morning Routine That Changed My Life Completely</div>
-        <div class="tags-container">
-          <span class="tag">Productivity</span>
-          <span class="tag">Mental Health</span>
-          <span class="tag">Daily Habits</span>
-          <span class="tag">Morning Ritual</span>
-          <span class="tag">Focus & Energy</span>
+        <div class="tags-wrap">
+          <div class="tags-container">
+            <span class="tag">Productivity</span>
+            <span class="tag">Mental Health</span>
+            <span class="tag">Daily Habits</span>
+            <span class="tag">Morning Ritual</span>
+            <span class="tag">Focus & Energy</span>
+          </div>
         </div>
       </div>
 
@@ -1103,12 +1074,14 @@
       <div class="header-area">
         <div class="badge">Playing from: For You</div>
         <div class="title">Deep Sleep Meditation for Restful Nights</div>
-        <div class="tags-container">
-          <span class="tag">Sleep</span>
-          <span class="tag">Relaxation</span>
-          <span class="tag">Breathing Techniques</span>
-          <span class="tag">Deep Rest</span>
-          <span class="tag">Stress Relief</span>
+        <div class="tags-wrap">
+          <div class="tags-container">
+            <span class="tag">Sleep</span>
+            <span class="tag">Relaxation</span>
+            <span class="tag">Breathing Techniques</span>
+            <span class="tag">Deep Rest</span>
+            <span class="tag">Stress Relief</span>
+          </div>
         </div>
       </div>
 
