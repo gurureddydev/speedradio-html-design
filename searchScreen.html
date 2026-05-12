@@ -1143,89 +1143,89 @@
             display: none
         }
 
-        /* BOTTOM NAV */
+        /* ── BOTTOM NAV ──────────────────────────────── */
         .nav-bar {
             position: fixed;
             bottom: 0;
             left: 50%;
             transform: translateX(-50%);
             width: 100%;
-            max-width: 480px;
-            background: rgba(26, 26, 26, .92);
+            max-width: 420px;
+            background: rgba(18, 18, 18, 0.97);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255,255,255,0.08);
             display: flex;
-            justify-content: space-around;
             align-items: center;
-            padding: 8px 16px calc(8px + env(safe-area-inset-bottom, 0px));
+            justify-content: space-around;
+            padding: 10px 0 calc(10px + env(safe-area-inset-bottom, 0px));
             z-index: 50;
-            border-top: 1px solid rgba(255,255,255,.06)
         }
 
         .nav-item {
+            flex: 1;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            opacity: 0.5;
             text-decoration: none;
-            padding: 6px 12px;
-            min-width: 48px;
-            min-height: 44px;
-            border-radius: 12px;
-            transition: opacity .2s ease, transform .15s ease
+            padding: 4px 0 2px;
+            gap: 5px;
+            -webkit-tap-highlight-color: transparent;
+            transition: transform 0.15s ease;
+            min-height: 48px;
         }
 
-        .nav-item:active {
-            transform: scale(.9)
+        .nav-item:active { transform: scale(0.88); }
+
+        .nav-item .icon-outline,
+        .nav-item .icon-filled {
+            width: 26px;
+            height: 26px;
+            object-fit: contain;
+            display: block;
         }
 
-        .nav-item.active {
-            opacity: 1;
+        a[href="createScreen.html"] .icon-outline,
+        a[href="createScreen.html"] .icon-filled {
+            width: 36px;
+            height: 36px;
         }
 
-        .nav-item svg {
-            width: 24px;
-            height: 24px;
-            fill: none;
-            stroke: #fff;
-            stroke-width: 1.8;
-        }
+        .nav-item .icon-outline { opacity: 0.4; }
+        .nav-item .icon-filled  { display: none; }
 
-        .nav-item.active svg.icon-fill {
-            fill: #fff;
-            stroke: none;
-        }
-        
-        .nav-item.active svg.icon-stroke {
-            stroke-width: 2.8;
-        }
+        .nav-item.active .icon-outline { display: none; }
+        .nav-item.active .icon-filled  { display: block; }
+
 
         .nav-avatar {
-            width: 28px;
-            height: 28px;
+            width: 26px;
+            height: 26px;
             border-radius: 50%;
             overflow: hidden;
-            border: 2px solid transparent;
-            background: #fff;
-            transition: border-color .2s ease
+            border: 1.5px solid rgba(255,255,255,0.35);
+            opacity: 0.45;
+            transition: opacity 0.2s, border-color 0.2s;
         }
 
         .nav-item.active .nav-avatar {
-            border-color: #EA1C25
+            opacity: 1;
+            border-color: #EA1C25;
         }
 
-        .nav-avatar svg {
+        .nav-avatar img {
             width: 100%;
             height: 100%;
+            object-fit: cover;
             display: block;
         }
 
         /* Nav bar spacer — prevents content from hiding behind nav */
         .nav-spacer {
             flex-shrink: 0;
-            height: calc(64px + env(safe-area-inset-bottom, 0px))
+            height: calc(68px + env(safe-area-inset-bottom, 0px))
         }
 
         /* BOTTOM SHEET */
@@ -2158,33 +2158,26 @@
         <!-- BOTTOM NAV -->
         <div class="nav-bar">
             <a href="homeScreen.html" class="nav-item">
-                <svg viewBox="0 0 24 24">
-                    <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
-                </svg>
+                <img class="icon-outline" src="assets/home_ic.png" alt="Home">
+                <img class="icon-filled" src="assets/home_filled_ic.png" alt="Home">
+
             </a>
             <div class="nav-item active">
-                <svg class="icon-stroke" viewBox="0 0 24 24">
-                    <circle cx="11" cy="11" r="8" />
-                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
-                </svg>
+                <img class="icon-outline" src="assets/search_ic.png" alt="Search">
+                <img class="icon-filled" src="assets/search_filled_ic.png" alt="Search">
+
             </div>
-            <div class="nav-item">
-                <svg viewBox="0 0 24 24">
-                    <rect x="3" y="3" width="18" height="18" rx="4" />
-                    <line x1="12" y1="8" x2="12" y2="16" />
-                    <line x1="8" y1="12" x2="16" y2="12" />
-                </svg>
-            </div>
-            <div class="nav-item">
+            <a href="createScreen.html" class="nav-item">
+                <img class="icon-outline" src="assets/create_ic.png" alt="Create">
+                <img class="icon-filled" src="assets/create_filled_ic.png" alt="Create">
+
+            </a>
+            <a href="userProfileScreen.html" class="nav-item">
                 <div class="nav-avatar">
-                    <svg viewBox="0 0 100 100">
-                        <circle cx="50" cy="50" r="50" fill="#e0e0e0" />
-                        <circle cx="50" cy="40" r="15" fill="#bdbdbd" />
-                        <path d="M25 85 C25 65 75 65 75 85 Z" fill="#bdbdbd" />
-                        <path d="M30 40 C30 20 70 20 70 40 L75 55 C75 40 25 40 25 55 Z" fill="#e2c285" />
-                    </svg>
+                    <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=400" alt="Profile">
                 </div>
-            </div>
+
+            </a>
         </div>
 
         <!-- BOTTOM SHEET -->
