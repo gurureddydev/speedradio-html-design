@@ -128,15 +128,15 @@
       letter-spacing: 0px;
     }
 
-    /* decorative bg shape — anchored to sheet at Figma coordinates */
+    /* decorative bg shape — left side, vertically centered */
     .empty-bg {
       position: absolute;
       width: 183px;
-      height: 495px;
+      height: 395px;
       left: 0;
-      top: 108px;
-      opacity: 0.4;
-      mix-blend-mode: multiply;
+      top: 50%;
+      transform: translateY(-50%);
+      opacity: 0.08;
       pointer-events: none;
       z-index: 0;
       object-fit: contain;
@@ -375,10 +375,22 @@
       color: #242424;
     }
 
-    .prv-item svg {
-      width: 16px;
-      height: 16px;
-      flex-shrink: 0;
+    .prv-item img.ic-white { display: block; flex-shrink: 0; }
+    .prv-item img.ic-black { display: none;  flex-shrink: 0; }
+
+    .prv-item.active img.ic-white { display: none; }
+    .prv-item.active img.ic-black { display: block; }
+
+    /* Globe icon */
+    .prv-item img[src*="gloab"] {
+      width: 13.33px;
+      height: 13.33px;
+    }
+
+    /* Lock icon */
+    .prv-item img[src*="lock"] {
+      width: 10.67px;
+      height: 14px;
     }
 
     /* Action buttons */
@@ -441,21 +453,14 @@
       <div class="prv-slider"></div>
 
       <div class="prv-item active" data-value="PUBLIC">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
-          stroke-linejoin="round">
-          <circle cx="12" cy="12" r="10" />
-          <line x1="2" y1="12" x2="22" y2="12" />
-          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
-        </svg>
+        <img class="ic-black" src="assets/gloab_ic_black.png" alt="" />
+        <img class="ic-white" src="assets/gloab_ic_white.png" alt="" />
         Public
       </div>
 
       <div class="prv-item" data-value="PRIVATE">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
-          stroke-linejoin="round">
-          <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-          <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-        </svg>
+        <img class="ic-black" src="assets/lock_ic_black.png" alt="" />
+        <img class="ic-white" src="assets/lock_ic_white.png" alt="" />
         Private
       </div>
     </div>
@@ -468,18 +473,11 @@
   </div>
 
   <script>
-    /* Globe SVG (PUBLIC badge) */
-    const GLOBE_SVG = `<svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <circle cx="12" cy="12" r="10"/>
-      <line x1="2" y1="12" x2="22" y2="12"/>
-      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-    </svg>`;
+    /* Globe image (PUBLIC badge) */
+    const GLOBE_SVG = `<img src="assets/gloab_ic_white.png" alt="" style="width:13.33px;height:13.33px;flex-shrink:0;" />`;
 
-    /* Lock SVG (PRIVATE badge) */
-    const LOCK_SVG = `<svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-      <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-    </svg>`;
+    /* Lock image (PRIVATE badge) */
+    const LOCK_SVG = `<img src="assets/lock_ic_white.png" alt="" style="width:10.67px;height:14px;flex-shrink:0;" />`;
 
     /* Music note SVG */
     const MUSIC_SVG = `<svg viewBox="0 0 24 24">
@@ -553,9 +551,9 @@
         setEmptyBg(true);
         container.innerHTML = `
           <div class="empty">
-            <img src="/assets/empty_img.png" class="empty-img" alt="" />
+            <img src="assets/message_empty.png" alt="" style="width:64.05px;height:60.83px;opacity:1;flex-shrink:0;" />
             <h2>No playlists</h2>
-            <p>Lorem ipsum dolor sit amet,<br>consectetuer adipiscing elit.</p>
+            <p>Create a new one</p>
           </div>`;
         return;
       }
