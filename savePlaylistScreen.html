@@ -50,7 +50,7 @@
       height: 5px;
       background: #6b6b6b;
       border-radius: 10px;
-      margin: 10px auto;
+      margin: 20px auto;
       flex-shrink: 0;
     }
 
@@ -375,11 +375,23 @@
       color: #242424;
     }
 
-    .prv-item img.ic-white { display: block; flex-shrink: 0; }
-    .prv-item img.ic-black { display: none;  flex-shrink: 0; }
+    .prv-item img.ic-white {
+      display: block;
+      flex-shrink: 0;
+    }
 
-    .prv-item.active img.ic-white { display: none; }
-    .prv-item.active img.ic-black { display: block; }
+    .prv-item img.ic-black {
+      display: none;
+      flex-shrink: 0;
+    }
+
+    .prv-item.active img.ic-white {
+      display: none;
+    }
+
+    .prv-item.active img.ic-black {
+      display: block;
+    }
 
     /* Globe icon */
     .prv-item img[src*="gloab"] {

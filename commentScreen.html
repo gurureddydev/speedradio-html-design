@@ -49,7 +49,7 @@
       max-width: 388px;
       height: 72px;
       left: 50%;
-      top: 24px;
+      top: 54px;
       transform: translateX(-50%);
       z-index: 20;
       overflow: hidden;
@@ -200,6 +200,7 @@
       border-radius: 999px;
       margin: 6px auto 14px;
       flex-shrink: 0;
+      margin-top: 20px;
       cursor: grab;
       transition: opacity 0.2s ease;
     }
@@ -267,7 +268,7 @@
     .empty-state {
       flex: 1;
       margin: 16px;
-      margin-top: 40px;
+      margin-top: 60px;
       background: #1C1C1E;
       border: 1px solid #FFFFFF1A;
       border-radius: 16px;
@@ -293,7 +294,7 @@
     .comment-item {
       display: flex;
       align-items: flex-start;
-      padding: 14px 14px 0;
+      padding: 24px 14px 0;
       gap: 12px;
       position: relative;
     }
@@ -795,7 +796,7 @@
       border: 1px solid #696969;
       border-radius: 15px;
       padding: 8px 4px;
-      min-height: 40px;
+      height: 40px;
       gap: 8px;
     }
 
@@ -835,11 +836,13 @@
     }
 
     .send-btn {
-      width: 36px;
-      height: 36px;
+      width: 32px;
+      height: 32px;
       border: none;
       background: none;
-      padding: 0;
+      padding: 4px;
+      gap: 10px;
+      border-radius: 10px;
       cursor: pointer;
       flex-shrink: 0;
       display: flex;
@@ -940,7 +943,7 @@
           <div id="commentInput" class="editor" contenteditable="true" role="textbox" data-placeholder="Add response..."
             spellcheck="true"></div>
           <button class="send-btn" id="sendBtn" onclick="submitComment()">
-            <img src="assets/comment_send_img.png" alt="Send" />
+            <img id="sendIcon" src="assets/comment_send_img.png" alt="Send" />
           </button>
         </div>
       </div>
@@ -1193,6 +1196,7 @@
       editingTextEl = textEl;
       editor.innerHTML = textEl.innerHTML;
       editor.setAttribute('data-placeholder', 'Edit response...');
+      document.getElementById('sendIcon').src = 'assets/save_ic_edit.png';
       editor.focus();
       const range = document.createRange();
       range.selectNodeContents(editor);
@@ -1216,6 +1220,7 @@
         editingTextEl = null;
         editor.innerHTML = '';
         editor.setAttribute('data-placeholder', 'Add a response...');
+        document.getElementById('sendIcon').src = 'assets/comment_send_img.png';
         syncSendBtn();
         cancelReply();
         return;
