@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+
+    <title>SpeedRadio Splash</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: #000;
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+        }
+
+        /* =========================
+           APP CONTAINER
+        ========================= */
+
+        .app {
+            position: relative;
+
+            width: 100%;
+            max-width: 430px;
+            height: 100dvh;
+
+            overflow: hidden;
+
+            background:
+                radial-gradient(circle at top right,
+                    rgba(234, 28, 37, 0.18),
+                    transparent 35%),
+                linear-gradient(180deg,
+                    #0f0f10 0%,
+                    #070707 100%);
+        }
+
+        /* =========================
+           VIDEO
+        ========================= */
+
+        .video-wrapper {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .video-wrapper::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+
+            background:
+                linear-gradient(to bottom,
+                    rgba(0, 0, 0, 0.02) 0%,
+                    rgba(0, 0, 0, 0.08) 50%,
+                    rgba(0, 0, 0, 0.88) 100%);
+
+            pointer-events: none;
+        }
+
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* =========================
+           AUTH CONTENT
+        ========================= */
+
+        .auth-content {
+            position: absolute;
+
+            left: 0;
+            right: 0;
+            bottom: 0;
+
+            z-index: 10;
+
+            width: 100%;
+
+            padding:
+                0 24px calc(env(safe-area-inset-bottom, 0px) + 34px);
+
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+
+            /* INITIAL HIDDEN */
+            opacity: 0;
+            transform: translateY(120px);
+
+            transition:
+                transform 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+                opacity 0.6s ease;
+        }
+
+        /* SHOW ANIMATION */
+
+        .auth-content.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* =========================
+           GOOGLE BUTTON
+        ========================= */
+
+        .google-btn {
+            width: 100%;
+            max-width: 328px;
+            height: 40px;
+
+            padding:
+                10px 13px 10px 12px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 11px;
+
+            border: none;
+            outline: none;
+
+            border-radius: 4px;
+
+            background: #ffffff;
+            color: #111111;
+
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 700;
+            font-size: 14px;
+
+            cursor: pointer;
+
+            transition:
+                transform 0.2s ease,
+                opacity 0.2s ease;
+        }
+
+        .google-btn:active {
+            transform: scale(0.98);
+        }
+
+        .google-icon {
+            width: 18px;
+            height: 18px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            flex-shrink: 0;
+        }
+
+        .google-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        /* =========================
+           TERMS
+        ========================= */
+
+        .terms {
+            width: 100%;
+            max-width: 328px;
+
+            margin-top: 14px;
+
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 400;
+            font-size: 12px;
+            line-height: 16.8px;
+            letter-spacing: 0;
+
+            text-align: center;
+
+            color: rgba(255, 255, 255, 0.68);
+        }
+
+        .terms span {
+            color: #ffffff;
+            font-weight: 500;
+        }
+
+        /* =========================
+           SMALL MOBILE DEVICES
+        ========================= */
+
+        @media screen and (max-width: 380px) {
+
+            .auth-content {
+                padding-left: 18px;
+                padding-right: 18px;
+            }
+
+            .google-btn,
+            .terms {
+                max-width: 100%;
+            }
+
+            .google-btn {
+                font-size: 13px;
+            }
+
+            .terms {
+                font-size: 11px;
+                line-height: 16px;
+            }
+        }
+
+        /* =========================
+           TABLET / DESKTOP PREVIEW
+        ========================= */
+
+        @media screen and (min-width: 768px) {
+
+            .app {
+                width: 430px;
+                height: 932px;
+
+                border-radius: 36px;
+
+                box-shadow:
+                    0 0 0 10px rgba(255, 255, 255, 0.04),
+                    0 20px 80px rgba(0, 0, 0, 0.6);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="app">
+
+        <!-- VIDEO -->
+        <div class="video-wrapper">
+            <video id="introVideo" autoplay muted playsinline>
+                <source src="/assets/final.mp4" type="video/mp4">
+            </video>
+        </div>
+
+        <!-- AUTH CONTENT -->
+        <div class="auth-content" id="authContent">
+
+            <button class="google-btn">
+
+                <div class="google-icon">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="Google">
+                </div>
+
+                <span>Sign in with Google</span>
+
+            </button>
+
+            <p class="terms">
+                By continuing, you agree to our
+                <span>Terms of Service</span>
+                and acknowledge that you have read our
+                <span>Privacy Policy</span>
+                to learn how we collect, use and share your data.
+            </p>
+
+        </div>
+
+    </div>
+
+    <script>
+
+        const video = document.getElementById('introVideo');
+        const authContent = document.getElementById('authContent');
+
+        // PLAY VIDEO
+        video.play().catch(() => {
+            console.log('Autoplay blocked');
+        });
+
+        // SHOW BUTTON + TERMS AFTER VIDEO ENDS
+        video.addEventListener('ended', () => {
+
+            authContent.classList.add('show');
+
+        });
+
+        // OPTIONAL TEST FALLBACK
+        // REMOVE THIS IN PRODUCTION
+
+        setTimeout(() => {
+
+            if (!authContent.classList.contains('show')) {
+                authContent.classList.add('show');
+            }
+
+        }, 5000);
+
+    </script>
+
+</body>
+
+</html>
