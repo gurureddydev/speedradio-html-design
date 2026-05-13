@@ -4,11 +4,14 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Responsive Mobile Onboarding</title>
 
-    <title>SpeedRadio Splash</title>
-
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap"
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600&display=swap"
         rel="stylesheet">
+    <script src="https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs" type="module"></script>
 
     <style>
         * {
@@ -18,238 +21,791 @@
             -webkit-tap-highlight-color: transparent;
         }
 
+        :root {
+            --bg: #000000;
+            --card: rgba(12, 12, 12, 0.96);
+            --border: rgba(255, 255, 255, 0.08);
+            --soft: rgba(255, 255, 255, 0.6);
+            --primary: #ff003c;
+            --white: #ffffff;
+            --radius: 18px;
+        }
+
         html,
         body {
             width: 100%;
-            height: 100%;
-            overflow: hidden;
+            min-height: 100%;
             background: #000;
-            font-family: 'DM Sans', sans-serif;
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+            color: white;
         }
 
         body {
             display: flex;
             justify-content: center;
-            align-items: center;
-            color: #fff;
+            align-items: flex-start;
         }
-
-        /* =========================
-           APP CONTAINER
-        ========================= */
 
         .app {
-            position: relative;
-
             width: 100%;
             max-width: 430px;
-            height: 100dvh;
-
+            height: 100vh;
+            position: relative;
             overflow: hidden;
-
-            background:
-                radial-gradient(circle at top right,
-                    rgba(234, 28, 37, 0.18),
-                    transparent 35%),
-                linear-gradient(180deg,
-                    #0f0f10 0%,
-                    #070707 100%);
+            background: #202020;
         }
 
-        /* =========================
-           VIDEO
-        ========================= */
-
-        .video-wrapper {
-            position: absolute;
-            inset: 0;
-            overflow: hidden;
-            z-index: 1;
-        }
-
-        .video-wrapper::after {
+        .app::before {
             content: "";
             position: absolute;
             inset: 0;
-
             background:
-                linear-gradient(to bottom,
-                    rgba(0, 0, 0, 0.02) 0%,
-                    rgba(0, 0, 0, 0.08) 50%,
-                    rgba(0, 0, 0, 0.88) 100%);
-
+                radial-gradient(circle at bottom right,
+                    rgba(255, 255, 255, 0.03),
+                    transparent 28%);
+            opacity: 1;
             pointer-events: none;
         }
 
-        video {
+        .dot-pattern {
+            position: absolute;
+            top: 120px;
+            right: -20px;
+            width: 160px;
+            height: 240px;
+            opacity: 0.6;
+            background-image: radial-gradient(rgba(255, 0, 60, 0.8) 1px, transparent 1px);
+            background-size: 12px 12px;
+            mask-image: linear-gradient(to bottom, black, transparent);
+            pointer-events: none;
+        }
+
+        .screen {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            padding:
+                calc(env(safe-area-inset-top) + 18px) 16px calc(env(safe-area-inset-bottom) + 16px);
+            opacity: 0;
+            pointer-events: none;
+            transform: translateX(20px);
+            transition: 0.35s ease;
+        }
+
+        .screen.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateX(0);
+        }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 40px;
+        }
+
+        .back-btn {
+            width: 28px;
+            height: 28px;
+            border: none;
+            background: transparent;
+            color: white;
+            font-size: 22px;
+            cursor: pointer;
+        }
+
+        .progress {
+            flex: 1;
+            display: flex;
+            gap: 6px;
+        }
+
+        .progress div {
+            flex: 1;
+            height: 4px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.18);
+            transition: 0.25s ease;
+        }
+
+        .progress div.active {
+            background: var(--primary);
+        }
+
+        .content {
+            flex: 1;
+            min-height: 0;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: 24px;
+            scrollbar-width: none;
+        }
+
+        .content::-webkit-scrollbar {
+            display: none;
+        }
+
+        h1 {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 16px;
+            font-weight: 900;
+            line-height: 20px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #FFFFFF;
+            margin-bottom: 10px;
+        }
+
+        .sub {
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 500;
+            font-size: 12px;
+            line-height: 16px;
+            letter-spacing: 0px;
+            vertical-align: middle;
+            color: #FFFFFF;
+            margin-bottom: 28px;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option-card {
+            width: 100%;
+            height: 54px;
+            justify-content: space-between;
+            padding-top: 16px;
+            padding-right: 18px;
+            padding-bottom: 16px;
+            padding-left: 18px;
+            opacity: 1;
+            border-width: 1px;
+            border-radius: 12px;
+            border: 1px solid #262626;
+            background: #141414;
+            display: flex;
+            align-items: center;
+            transition: 0.25s ease;
+            cursor: pointer;
+        }
+
+        .option-card:active {
+            transform: scale(0.985);
+        }
+
+        .option-card.selected {
+            background: #EA1C2514;
+            border: 1px solid #EA1C25;
+            box-shadow: 0 0 0 1px rgba(234, 28, 37, 0.12);
+        }
+
+        .option-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .icon {
+            width: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0.95;
+        }
+
+        .option-text {
+            font-size: 16px;
+            font-weight: 500;
+            line-height: 1.3;
+        }
+
+        .radio {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.25s ease;
+        }
+
+        .selected .radio {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .radio svg {
+            width: 12px;
+            display: none;
+        }
+
+        .selected .radio svg {
+            display: block;
+        }
+
+        .topics-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .topic-card {
+            width: 100%;
+            height: 59px;
+            min-height: 50px;
+            gap: 10px;
+            opacity: 1;
+            border-radius: 12px;
+            padding: 14px;
+            background: #141414;
+            border: 1px solid #262626;
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-start;
+            align-items: center;
+            overflow: hidden;
+            transition: 0.25s ease;
+            cursor: pointer;
+        }
+
+        .topic-card.active {
+            background: #EA1C2514;
+            border: 1px solid #EA1C25;
+        }
+
+        .topic-card:active {
+            transform: scale(0.985);
+        }
+
+        .topic-icon {
+            width: 22px;
+            height: 22px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .topic-icon img {
+            width: 22px;
+            height: 22px;
+            object-fit: contain;
+        }
+
+        .topic-title {
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 500;
+            font-size: 12px;
+            line-height: 14.4px;
+            letter-spacing: 0%;
+            vertical-align: middle;
+            color: #FFFFFF;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
+        .bottom {
+            padding-top: 12px;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.95), transparent);
+        }
+
+        .next-btn {
+            width: 100%;
+            height: 38px;
+            padding: 10px;
+            gap: 10px;
+            border: none;
+            border-radius: 5px;
+            background: #E9002E;
+            box-shadow: 0px 4px 7.2px 0px #00000040;
+            color: white;
+            font-size: 16px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 1;
+            transition: none;
+        }
+
+        .next-btn:active {
+            opacity: 0.92;
+            transform: none;
+        }
+
+        .profile-wrapper {
+            position: relative;
+            width: 72px;
+            height: 72px;
+            margin: 16px auto 20px;
+        }
+
+        .profile-image {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            overflow: hidden;
+            position: relative;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .profile-image img {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
 
-        /* =========================
-           AUTH CONTENT
-        ========================= */
-
-        .auth-content {
-            position: absolute;
-
-            left: 0;
-            right: 0;
-            bottom: 0;
-
-            z-index: 10;
-
-            width: 100%;
-
-            padding:
-                0 24px calc(env(safe-area-inset-bottom, 0px) + 34px);
-
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-
-            /* INITIAL HIDDEN */
-            opacity: 0;
-            transform: translateY(120px);
-
-            transition:
-                transform 0.8s cubic-bezier(0.22, 1, 0.36, 1),
-                opacity 0.6s ease;
-        }
-
-        /* SHOW ANIMATION */
-
-        .auth-content.show {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* =========================
-           GOOGLE BUTTON
-        ========================= */
-
-        .google-btn {
-            width: 100%;
-            max-width: 328px;
-            height: 40px;
-
-            padding:
-                10px 13px 10px 12px;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 11px;
-
-            border: none;
-            outline: none;
-
-            border-radius: 4px;
-
-            background: #ffffff;
-            color: #111111;
-
-            font-family: 'DM Sans', sans-serif;
-            font-weight: 700;
-            font-size: 14px;
-
-            cursor: pointer;
-
-            transition:
-                transform 0.2s ease,
-                opacity 0.2s ease;
-        }
-
-        .google-btn:active {
-            transform: scale(0.98);
-        }
-
-        .google-icon {
-            width: 18px;
-            height: 18px;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            flex-shrink: 0;
-        }
-
-        .google-icon img {
-            width: 100%;
-            height: 100%;
+        .camera-btn img {
+            width: 12px;
+            height: 12px;
             object-fit: contain;
         }
 
-        /* =========================
-           TERMS
-        ========================= */
+        .camera-btn {
+            position: absolute;
+            right: -2px;
+            bottom: -2px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #202020;
+            font-size: 14px;
+        }
 
-        .terms {
+        .input-group {
+            margin-bottom: 16px;
+        }
+
+        .label {
+            font-size: 14px;
+            margin-bottom: 8px;
+            display: block;
+            color: rgba(255, 255, 255, 0.92);
+            font-weight: 400;
+        }
+
+        .input-wrap {
+            position: relative;
+        }
+
+        input {
             width: 100%;
-            max-width: 328px;
+            height: 48px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            background: #111111;
+            color: white;
+            padding: 0 44px 0 14px;
+            font-size: 15px;
+            font-family: 'Inter', sans-serif;
+        }
 
-            margin-top: 14px;
+        input:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.3);
+        }
 
+        .input-check {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .char-count {
+            text-align: right;
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.35);
+            margin-top: 5px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .username-status {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 24px;
+            border-radius: 2px;
+            padding: 4px 8px;
+            margin-top: 4px;
+            gap: 8px;
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 600;
+            font-size: 12px;
+            line-height: 16px;
+            letter-spacing: 0%;
+        }
+
+        .username-status.available {
+            background: #0FBD6633;
+            color: #0FBD66;
+        }
+
+        .username-status.taken {
+            background: #E9002E33;
+            color: #E9002E;
+        }
+
+        .username-status .status-count {
+            font-weight: 400;
+            font-size: 11px;
+            color: inherit;
+            opacity: 0.7;
+            flex-shrink: 0;
+        }
+
+        /* input error state */
+        input.error {
+            border-color: #E9002E;
+        }
+
+        .input-check.error-icon {
+            color: #E9002E;
+            font-size: 18px;
+            font-weight: 300;
+        }
+
+        .privacy-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 12px;
+            width: 100%;
+        }
+
+        .privacy-card {
+            height: 126px;
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: #141414;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            gap: 8px;
+            transition: 0.25s ease;
+            cursor: pointer;
+            min-width: 0;
+        }
+
+        .privacy-card.active {
+            border: 1px solid #EA1C25;
+            background: #EA1C2520;
+        }
+
+        .privacy-icon {
+            width: 44px;
+            height: 44px;
+            min-width: 44px;
+            min-height: 44px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.12);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .privacy-icon img {
+            width: 22px;
+            height: 22px;
+            object-fit: contain;
+        }
+
+        .privacy-card.active .privacy-icon {
+            background: #EA1C25;
+        }
+
+        .privacy-title {
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 700;
+            font-size: 14px;
+            line-height: 100%;
+            letter-spacing: 0%;
+            text-align: center;
+            color: #ffffff;
+        }
+
+        .privacy-desc {
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 400;
+            font-size: 10px;
+            line-height: 12px;
+            letter-spacing: 0%;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.45);
+        }
+
+        .creators-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .creator-card {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 16px 18px;
+            height: 71px;
+            background: #141414;
+            border: 1px solid #262626;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: 0.25s ease;
+        }
+
+        .creator-card:active {
+            transform: scale(0.985);
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to   { transform: rotate(360deg); }
+        }
+
+        .creator-avatar {
+            width: 39px;
+            height: 39px;
+            border-radius: 50%;
+            object-fit: cover;
+            flex-shrink: 0;
+            background: #2a2a2a;
+        }
+
+        .creator-avatar {
+            animation: spin 4s linear infinite;
+        }
+
+        .creator-info {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .creator-name {
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 700;
+            font-size: 12px;
+            line-height: 100%;
+            letter-spacing: 0%;
+            color: #ffffff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .creator-handle {
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 500;
+            font-size: 10px;
+            line-height: 14px;
+            letter-spacing: 0%;
+            color: #ffffff;
+        }
+
+        .follow-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 5px;
+            padding: 8px;
+            background: #E9002E;
+            border: none;
+            color: white;
+            font-size: 18px;
+            font-weight: 400;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            flex-shrink: 0;
+            transition: 0.2s ease;
+            line-height: 1;
+        }
+
+        .follow-btn:active {
+            opacity: 0.85;
+            transform: scale(0.95);
+        }
+
+        .follow-btn.following {
+            background: transparent;
+            border: none;
+            padding: 0;
+        }
+
+        .follow-btn img,
+        .input-check img {
+            width: 16px;
+            height: 16px;
+            object-fit: contain;
+            display: block;
+        }
+
+        .follow-btn.following img {
+            width: 32px;
+            height: 32px;
+        }
+
+        /* ── Home Screen Overlay ── */
+        .home-overlay {
+            position: absolute;
+            inset: 0;
+            transform: translateY(100%);
+            z-index: 100;
+            overflow: hidden;
+            will-change: transform;
+        }
+
+        .home-overlay iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+        }
+
+        /* ── Swipe Up Screen ── */
+        .swipe-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+            text-align: center;
+            gap: 0;
+        }
+
+        .swipe-screen h1 {
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 900;
+            font-size: 16px;
+            line-height: 28px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            text-align: center;
+            color: #FFFFFF;
+            margin-bottom: 10px;
+        }
+
+        .swipe-screen .swipe-sub {
             font-family: 'DM Sans', sans-serif;
             font-weight: 400;
             font-size: 12px;
-            line-height: 16.8px;
-            letter-spacing: 0;
-
+            line-height: 100%;
+            letter-spacing: 0%;
             text-align: center;
-
-            color: rgba(255, 255, 255, 0.68);
+            vertical-align: middle;
+            color: rgba(255, 255, 255, 0.55);
+            margin-bottom: 32px;
+            max-width: 260px;
         }
 
-        .terms span {
-            color: #ffffff;
+        .swipe-lottie {
+            width: 200px;
+            height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .swipe-lottie dotlottie-player {
+            width: 200px;
+            height: 150px;
+        }
+
+        /* ── Loading Screen ── */
+        @keyframes msgFade {
+            0%   { opacity: 0; transform: translateY(8px); }
+            15%  { opacity: 1; transform: translateY(0); }
+            80%  { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-8px); }
+        }
+
+
+        .loading-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+            text-align: center;
+        }
+
+        .loading-screen h1 {
+            font-size: 20px;
+            letter-spacing: 3px;
+            margin-bottom: 8px;
+        }
+
+        .loading-screen .sub {
+            margin-bottom: 32px;
+            color: rgba(255, 255, 255, 0.55);
+        }
+
+        .loading-star {
+            width: 160px;
+            height: 160px;
+            margin: 0 auto 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .loading-star dotlottie-player {
+            width: 160px;
+            height: 160px;
+        }
+
+        .loading-message {
+            font-family: 'DM Sans', sans-serif;
             font-weight: 500;
+            font-style: normal;
+            font-size: 16px;
+            line-height: 16px;
+            letter-spacing: 0px;
+            text-align: center;
+            vertical-align: middle;
+            color: #ffffff;
+            animation: msgFade 2.8s ease-in-out infinite;
+            min-height: 16px;
         }
 
-        /* =========================
-           SMALL MOBILE DEVICES
-        ========================= */
 
-        @media screen and (max-width: 380px) {
+        @media (max-width: 360px) {
 
-            .auth-content {
-                padding-left: 18px;
-                padding-right: 18px;
+            .topics-grid {
+                gap: 10px;
             }
 
-            .google-btn,
-            .terms {
-                max-width: 100%;
+            .topic-card {
+                height: 50px;
+                min-height: 44px;
+                padding: 10px;
+                gap: 8px;
             }
 
-            .google-btn {
-                font-size: 13px;
-            }
-
-            .terms {
-                font-size: 11px;
-                line-height: 16px;
-            }
-        }
-
-        /* =========================
-           TABLET / DESKTOP PREVIEW
-        ========================= */
-
-        @media screen and (min-width: 768px) {
-
-            .app {
-                width: 430px;
-                height: 932px;
-
-                border-radius: 36px;
-
-                box-shadow:
-                    0 0 0 10px rgba(255, 255, 255, 0.04),
-                    0 20px 80px rgba(0, 0, 0, 0.6);
-            }
         }
     </style>
 </head>
@@ -258,65 +814,815 @@
 
     <div class="app">
 
-        <!-- VIDEO -->
-        <div class="video-wrapper">
-            <video id="introVideo" autoplay muted playsinline>
-                <source src="/assets/final.mp4" type="video/mp4">
-            </video>
-        </div>
+        <div class="dot-pattern"></div>
 
-        <!-- AUTH CONTENT -->
-        <div class="auth-content" id="authContent">
+        <!-- SCREEN 1 -->
+        <section class="screen active">
 
-            <button class="google-btn">
+            <div class="topbar">
+                <button class="back-btn">‹</button>
 
-                <div class="google-icon">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="Google">
+                <div class="progress">
+                    <div class="active"></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+            </div>
+
+            <div class="content">
+                <h1>How Old Are You?</h1>
+                <p class="sub">This helps us shape your feed.</p>
+
+                <div class="options">
+
+                    <div class="option-card">
+                        <div class="option-text">13–18 years</div>
+                        <div class="radio">
+                            <svg viewBox="0 0 24 24" fill="none">
+                                <path d="M20 6L9 17L4 12" stroke="white" stroke-width="3" stroke-linecap="round"
+                                    stroke-linejoin="round" />
+                            </svg>
+                        </div>
+                    </div>
+
+                    <div class="option-card">
+                        <div class="option-text">19–24 years</div>
+                        <div class="radio">
+                            <svg viewBox="0 0 24 24" fill="none">
+                                <path d="M20 6L9 17L4 12" stroke="white" stroke-width="3" stroke-linecap="round"
+                                    stroke-linejoin="round" />
+                            </svg>
+                        </div>
+                    </div>
+
+                    <div class="option-card">
+                        <div class="option-text">25–34 years</div>
+                        <div class="radio">
+                            <svg viewBox="0 0 24 24" fill="none">
+                                <path d="M20 6L9 17L4 12" stroke="white" stroke-width="3" stroke-linecap="round"
+                                    stroke-linejoin="round" />
+                            </svg>
+                        </div>
+                    </div>
+
+                    <div class="option-card">
+                        <div class="option-text">35–44 years</div>
+                        <div class="radio">
+                            <svg viewBox="0 0 24 24" fill="none">
+                                <path d="M20 6L9 17L4 12" stroke="white" stroke-width="3" stroke-linecap="round"
+                                    stroke-linejoin="round" />
+                            </svg>
+                        </div>
+                    </div>
+
+                    <div class="option-card">
+                        <div class="option-text">45+ years</div>
+                        <div class="radio">
+                            <svg viewBox="0 0 24 24" fill="none">
+                                <path d="M20 6L9 17L4 12" stroke="white" stroke-width="3" stroke-linecap="round"
+                                    stroke-linejoin="round" />
+                            </svg>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="bottom">
+                <button class="next-btn">Next</button>
+            </div>
+
+        </section>
+
+
+        <!-- SCREEN 2 -->
+        <section class="screen">
+
+            <div class="topbar">
+                <button class="back-btn">‹</button>
+
+                <div class="progress">
+                    <div class="active"></div>
+                    <div class="active"></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+            </div>
+
+            <div class="content">
+                <h1>How Do You Lean Politically?</h1>
+                <p class="sub">Helps us balance viewpoints in your feed.</p>
+
+                <div class="options">
+
+                    <div class="option-card">
+                        <div class="option-left">
+                            <div class="icon">≪</div>
+                            <div class="option-text">Left</div>
+                        </div>
+
+                        <div class="radio active">
+                            <svg viewBox="0 0 24 24" fill="none">
+                                <path d="M20 6L9 17L4 12" stroke="white" stroke-width="3" stroke-linecap="round"
+                                    stroke-linejoin="round" />
+                            </svg>
+                        </div>
+                    </div>
+
+                    <div class="option-card">
+                        <div class="option-left">
+                            <div class="icon">‹</div>
+                            <div class="option-text">Leaning Left</div>
+                        </div>
+                        <div class="radio">
+                            <svg viewBox="0 0 24 24" fill="none">
+                                <path d="M20 6L9 17L4 12" stroke="white" stroke-width="3" stroke-linecap="round"
+                                    stroke-linejoin="round" />
+                            </svg>
+                        </div>
+                    </div>
+
+                    <div class="option-card">
+                        <div class="option-left">
+                            <div class="icon">—</div>
+                            <div class="option-text">Center</div>
+                        </div>
+                        <div class="radio">
+                            <svg viewBox="0 0 24 24" fill="none">
+                                <path d="M20 6L9 17L4 12" stroke="white" stroke-width="3" stroke-linecap="round"
+                                    stroke-linejoin="round" />
+                            </svg>
+                        </div>
+                    </div>
+
+                    <div class="option-card">
+                        <div class="option-left">
+                            <div class="icon">›</div>
+                            <div class="option-text">Leaning Right</div>
+                        </div>
+                        <div class="radio">
+                            <svg viewBox="0 0 24 24" fill="none">
+                                <path d="M20 6L9 17L4 12" stroke="white" stroke-width="3" stroke-linecap="round"
+                                    stroke-linejoin="round" />
+                            </svg>
+                        </div>
+                    </div>
+
+                    <div class="option-card">
+                        <div class="option-left">
+                            <div class="icon">≫</div>
+                            <div class="option-text">Right</div>
+                        </div>
+                        <div class="radio">
+                            <svg viewBox="0 0 24 24" fill="none">
+                                <path d="M20 6L9 17L4 12" stroke="white" stroke-width="3" stroke-linecap="round"
+                                    stroke-linejoin="round" />
+                            </svg>
+                        </div>
+                    </div>
+
+                    <div class="option-card">
+                        <div class="option-left">
+                            <div class="icon">○</div>
+                            <div class="option-text">Prefer not to say</div>
+                        </div>
+                        <div class="radio">
+                            <svg viewBox="0 0 24 24" fill="none">
+                                <path d="M20 6L9 17L4 12" stroke="white" stroke-width="3" stroke-linecap="round"
+                                    stroke-linejoin="round" />
+                            </svg>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="bottom">
+                <button class="next-btn">Next</button>
+            </div>
+
+        </section>
+
+
+        <!-- SCREEN 3 -->
+        <section class="screen">
+
+            <div class="topbar">
+                <button class="back-btn">‹</button>
+
+                <div class="progress">
+                    <div class="active"></div>
+                    <div class="active"></div>
+                    <div class="active"></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+            </div>
+
+            <div class="content">
+                <h1>Follow A Few Topics</h1>
+                <p class="sub">Select at least 5 to start your feed.</p>
+
+                <div class="topics-grid">
+
+                    <div class="topic-card">
+                        <div class="topic-icon"><img src="assets/mic_ic.png" alt="mic"></div>
+                        <div class="topic-title">Political Humour</div>
+                    </div>
+
+                    <div class="topic-card">
+                        <div class="topic-icon"><img src="assets/person_ic.png" alt="person"></div>
+                        <div class="topic-title">Parenting Tips</div>
+                    </div>
+
+                    <div class="topic-card">
+                        <div class="topic-icon">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white"
+                                stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <polygon
+                                    points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                            </svg>
+                        </div>
+                        <div class="topic-title">Celeb Gossip</div>
+                    </div>
+
+                    <div class="topic-card">
+                        <div class="topic-icon"><img src="assets/education.png" alt="education"></div>
+                        <div class="topic-title">Education</div>
+                    </div>
+
+                    <div class="topic-card">
+                        <div class="topic-icon"><img src="assets/cock_ic.png" alt="breathing"></div>
+                        <div class="topic-title">Breathing Exercises</div>
+                    </div>
+
+                    <div class="topic-card">
+                        <div class="topic-icon">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white"
+                                stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="4" r="1.5" />
+                                <line x1="12" y1="5.5" x2="12" y2="13" />
+                                <line x1="7" y1="9" x2="17" y2="9" />
+                                <line x1="12" y1="13" x2="8" y2="19" />
+                                <line x1="12" y1="13" x2="16" y2="19" />
+                            </svg>
+                        </div>
+                        <div class="topic-title">Yoga Practice</div>
+                    </div>
+
+                    <div class="topic-card">
+                        <div class="topic-icon"><img src="assets/person_ic.png" alt="person"></div>
+                        <div class="topic-title">Beauty Tips</div>
+                    </div>
+
+                    <div class="topic-card">
+                        <div class="topic-icon"><img src="assets/health_ic.png" alt="healthcare"></div>
+                        <div class="topic-title">Healthcare</div>
+                    </div>
+
+                    <div class="topic-card">
+                        <div class="topic-icon"><img src="assets/news_ic.png" alt="news"></div>
+                        <div class="topic-title">News</div>
+                    </div>
+
+                    <div class="topic-card">
+                        <div class="topic-icon"><img src="assets/mind_ic.png" alt="mindfulness"></div>
+                        <div class="topic-title">Mindfulness Meditation</div>
+                    </div>
+
+                    <div class="topic-card">
+                        <div class="topic-icon"><img src="assets/finance_ic.png" alt="finance"></div>
+                        <div class="topic-title">Finance</div>
+                    </div>
+
+                    <div class="topic-card">
+                        <div class="topic-icon"><img src="assets/excerise.png" alt="exercise"></div>
+                        <div class="topic-title">Deep Breathing Exercises</div>
+                    </div>
+
+                    <div class="topic-card">
+                        <div class="topic-icon"><img src="assets/techni_ic.png" alt="meditation techniques"></div>
+                        <div class="topic-title">Meditation Techniques</div>
+                    </div>
+
+                    <div class="topic-card">
+                        <div class="topic-icon"><img src="assets/sport_ic.png" alt="sports"></div>
+                        <div class="topic-title">Sports</div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="bottom">
+                <button class="next-btn">Next</button>
+            </div>
+
+        </section>
+
+
+        <!-- SCREEN 4 – FOLLOW CREATORS -->
+        <section class="screen">
+
+            <div class="topbar">
+                <button class="back-btn">‹</button>
+
+                <div class="progress">
+                    <div class="active"></div>
+                    <div class="active"></div>
+                    <div class="active"></div>
+                    <div class="active"></div>
+                    <div></div>
+                    <div></div>
+                </div>
+            </div>
+
+            <div class="content">
+                <h1>Follow Creators</h1>
+                <p class="sub">We'll build your feed from there.</p>
+
+                <div class="creators-list">
+
+                    <div class="creator-card">
+                        <img class="creator-avatar" src="assets/logo.png" alt="Speed Radio">
+                        <div class="creator-info">
+                            <div class="creator-name">Speed Radio</div>
+                            <div class="creator-handle">@speedradio</div>
+                        </div>
+                        <button class="follow-btn">+</button>
+                    </div>
+
+                    <div class="creator-card">
+                        <img class="creator-avatar"
+                            src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=88&auto=format&fit=crop"
+                            alt="Emma Thompson">
+                        <div class="creator-info">
+                            <div class="creator-name">Emma Thompson</div>
+                            <div class="creator-handle">@emmathompson</div>
+                        </div>
+                        <button class="follow-btn">+</button>
+                    </div>
+
+                    <div class="creator-card">
+                        <img class="creator-avatar"
+                            src="https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=88&auto=format&fit=crop"
+                            alt="Elon Musk">
+                        <div class="creator-info">
+                            <div class="creator-name">Elon Musk</div>
+                            <div class="creator-handle">@elonmusk</div>
+                        </div>
+                        <button class="follow-btn">+</button>
+                    </div>
+
+                    <div class="creator-card">
+                        <img class="creator-avatar"
+                            src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=88&auto=format&fit=crop"
+                            alt="Barack Obama">
+                        <div class="creator-info">
+                            <div class="creator-name">Barack Obama</div>
+                            <div class="creator-handle">@barackobama</div>
+                        </div>
+                        <button class="follow-btn">+</button>
+                    </div>
+
+                    <div class="creator-card">
+                        <img class="creator-avatar"
+                            src="https://images.unsplash.com/photo-1488716820095-cbe80883c496?q=80&w=88&auto=format&fit=crop"
+                            alt="Taylor Swift">
+                        <div class="creator-info">
+                            <div class="creator-name">Taylor Swift</div>
+                            <div class="creator-handle">@taylorswift</div>
+                        </div>
+                        <button class="follow-btn">+</button>
+                    </div>
+
+                    <div class="creator-card">
+                        <img class="creator-avatar"
+                            src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?q=80&w=88&auto=format&fit=crop"
+                            alt="Michelle Obama">
+                        <div class="creator-info">
+                            <div class="creator-name">Michelle Obama</div>
+                            <div class="creator-handle">@michelleobama</div>
+                        </div>
+                        <button class="follow-btn">+</button>
+                    </div>
+
+                    <div class="creator-card">
+                        <img class="creator-avatar"
+                            src="https://images.unsplash.com/photo-1566492031773-4f4e44671857?q=80&w=88&auto=format&fit=crop"
+                            alt="Leonardo DiCaprio">
+                        <div class="creator-info">
+                            <div class="creator-name">Leonardo DiCaprio</div>
+                            <div class="creator-handle">@leodicaprio</div>
+                        </div>
+                        <button class="follow-btn">+</button>
+                    </div>
+
+                    <div class="creator-card">
+                        <img class="creator-avatar"
+                            src="https://images.unsplash.com/photo-1531727991582-cfd25ce79613?q=80&w=88&auto=format&fit=crop"
+                            alt="Oprah Winfrey">
+                        <div class="creator-info">
+                            <div class="creator-name">Oprah Winfrey</div>
+                            <div class="creator-handle">@oprahwinfrey</div>
+                        </div>
+                        <button class="follow-btn">+</button>
+                    </div>
+
+                    <div class="creator-card">
+                        <img class="creator-avatar"
+                            src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?q=80&w=88&auto=format&fit=crop"
+                            alt="Rihanna">
+                        <div class="creator-info">
+                            <div class="creator-name">Rihanna</div>
+                            <div class="creator-handle">@rihanna</div>
+                        </div>
+                        <button class="follow-btn">+</button>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="bottom">
+                <button class="next-btn">Next</button>
+            </div>
+
+        </section>
+
+
+        <!-- SCREEN 5 -->
+        <section class="screen">
+
+            <div class="topbar">
+                <button class="back-btn">‹</button>
+
+                <div class="progress">
+                    <div class="active"></div>
+                    <div class="active"></div>
+                    <div class="active"></div>
+                    <div class="active"></div>
+                    <div class="active"></div>
+                    <div></div>
+                </div>
+            </div>
+
+            <div class="content">
+
+                <h1>Complete Your Profile</h1>
+                <p class="sub">Your name and username are ready. You can change them anytime.</p>
+
+                <div class="profile-wrapper">
+                    <div class="profile-image">
+                        <img src="/assets/profile123_ic.png" alt="profile">
+                    </div>
+                    <div class="camera-btn"><img src="assets/camera_ic.png" alt="camera"></div>
                 </div>
 
-                <span>Sign in with Google</span>
+                <div class="input-group">
+                    <label class="label">Name</label>
 
-            </button>
+                    <div class="input-wrap">
+                        <input type="text" value="John Smith" maxlength="30" id="nameInput">
+                        <div class="input-check"><img src="assets/save_tick_ic.png" alt="✓"></div>
+                    </div>
+                    <div class="char-count"><span id="nameCount">10</span>/30</div>
+                </div>
 
-            <p class="terms">
-                By continuing, you agree to our
-                <span>Terms of Service</span>
-                and acknowledge that you have read our
-                <span>Privacy Policy</span>
-                to learn how we collect, use and share your data.
-            </p>
+                <div class="input-group">
+                    <label class="label">Username</label>
 
+                    <div class="input-wrap">
+                        <input type="text" value="johnsmith88" maxlength="30" id="usernameInput">
+                        <div class="input-check" id="usernameCheck"><img src="assets/save_tick_ic.png" alt="✓"></div>
+                    </div>
+                    <div class="username-status available" id="usernameStatus">
+                        <span id="usernameStatusText">Username available</span>
+                        <span class="status-count"><span id="usernameCount">11</span>/30</span>
+                    </div>
+                </div>
+
+                <div style="margin-top: 8px;">
+                    <div class="label">Who can hear your clips?</div>
+                    <p class="sub" style="margin-bottom: 12px; margin-top: 2px;">You can change this anytime in
+                        settings.</p>
+
+                    <div class="privacy-grid">
+
+                        <div class="privacy-card active">
+                            <div class="privacy-icon"><img src="assets/gloab_ic_onboard.png" alt="Public"></div>
+                            <div class="privacy-title">Public</div>
+                            <div class="privacy-desc">Anyone can hear your clips</div>
+                        </div>
+
+                        <div class="privacy-card">
+                            <div class="privacy-icon"><img src="assets/lock_ic_onboard.png" alt="Private"></div>
+                            <div class="privacy-title">Private</div>
+                            <div class="privacy-desc">Only people you approve</div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="bottom">
+                <button class="next-btn">Finish</button>
+            </div>
+
+        </section>
+
+
+        <!-- SCREEN 6 – LOADING -->
+        <section class="screen" id="loadingScreen">
+
+            <div class="topbar">
+                <button class="back-btn">‹</button>
+                <div class="progress">
+                    <div class="active"></div>
+                    <div class="active"></div>
+                    <div class="active"></div>
+                    <div class="active"></div>
+                    <div class="active"></div>
+                    <div class="active"></div>
+                </div>
+            </div>
+
+            <div class="loading-screen">
+                <h1>Setting Things Up</h1>
+                <p class="sub">Tuning your feed to your taste</p>
+
+                <div class="loading-star">
+                    <dotlottie-player src="assets/logo_spinner.lottie" background="transparent" speed="1" loop autoplay></dotlottie-player>
+                </div>
+
+                <p class="loading-message" id="loadingMsg">Fetching clips for you…</p>
+
+            </div>
+
+        </section>
+
+
+        <!-- SCREEN 7 – SWIPE UP -->
+        <section class="screen">
+
+            <div class="topbar">
+                <button class="back-btn">‹</button>
+                <div class="progress">
+                    <div class="active"></div>
+                    <div class="active"></div>
+                    <div class="active"></div>
+                    <div class="active"></div>
+                    <div class="active"></div>
+                    <div class="active"></div>
+                </div>
+            </div>
+
+            <div class="swipe-screen">
+                <h1>Swipe Up</h1>
+                <p class="swipe-sub">Let us notify you when new clips drop or something interesting begins.</p>
+
+                <div class="swipe-lottie">
+                    <dotlottie-player src="assets/swipe_up.lottie" background="transparent" speed="1" loop autoplay></dotlottie-player>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- HOME SCREEN OVERLAY -->
+        <div class="home-overlay" id="homeOverlay">
+            <iframe id="homeFrame" src="" title="Home"></iframe>
         </div>
 
     </div>
 
     <script>
 
-        const video = document.getElementById('introVideo');
-        const authContent = document.getElementById('authContent');
+        const screens = document.querySelectorAll('.screen');
+        const nextButtons = document.querySelectorAll('.next-btn');
+        const backButtons = document.querySelectorAll('.back-btn');
 
-        // PLAY VIDEO
-        video.play().catch(() => {
-            console.log('Autoplay blocked');
+        let current = 0;
+
+        function updateScreens() {
+            screens.forEach((screen, index) => {
+                screen.classList.toggle('active', index === current);
+            });
+        }
+
+        const loadingMessages = [
+            'Fetching clips for you…',
+            'Building your feed…',
+            'Finding voices you\'ll like…',
+            'Almost ready...'
+        ];
+        let loadingInterval = null;
+
+        function startLoading() {
+            ensureHomeLoaded();
+            const msgEl = document.getElementById('loadingMsg');
+            let i = 0;
+
+            msgEl.textContent = loadingMessages[0];
+
+            loadingInterval = setInterval(() => {
+                i++;
+                if (i >= loadingMessages.length) {
+                    clearInterval(loadingInterval);
+                    // auto-advance to swipe up screen
+                    current++;
+                    updateScreens();
+                    return;
+                }
+                msgEl.style.animation = 'none';
+                msgEl.offsetHeight;
+                msgEl.style.animation = 'msgFade 2.8s ease-in-out infinite';
+                msgEl.textContent = loadingMessages[i];
+            }, 2800);
+        }
+
+        nextButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                if (current < screens.length - 1) {
+                    current++;
+                    updateScreens();
+                    const loadingScreenIndex = Array.from(screens).indexOf(document.getElementById('loadingScreen'));
+                    if (current === loadingScreenIndex) {
+                        startLoading();
+                    }
+                }
+            });
         });
 
-        // SHOW BUTTON + TERMS AFTER VIDEO ENDS
-        video.addEventListener('ended', () => {
-
-            authContent.classList.add('show');
-
+        backButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                if (current > 0) {
+                    current--;
+                    updateScreens();
+                }
+            });
         });
 
-        // OPTIONAL TEST FALLBACK
-        // REMOVE THIS IN PRODUCTION
 
-        setTimeout(() => {
+        document.querySelectorAll('.option-card').forEach(card => {
+            card.addEventListener('click', () => {
 
-            if (!authContent.classList.contains('show')) {
-                authContent.classList.add('show');
+                const parent = card.parentElement;
+
+                parent.querySelectorAll('.option-card').forEach(c => {
+                    c.classList.remove('selected');
+                });
+
+                card.classList.add('selected');
+            });
+        });
+
+
+        document.querySelectorAll('.topic-card').forEach(card => {
+            card.addEventListener('click', () => {
+                card.classList.toggle('active');
+            });
+        });
+
+
+        document.querySelectorAll('.follow-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const isFollowing = btn.classList.toggle('following');
+                btn.innerHTML = isFollowing ? '<img src="assets/following_ic_onboard.png" alt="following">' : '+';
+            });
+        });
+
+        const nameInput = document.getElementById('nameInput');
+        const usernameInput = document.getElementById('usernameInput');
+        const usernameStatus = document.getElementById('usernameStatus');
+        const usernameStatusText = document.getElementById('usernameStatusText');
+        const usernameCheck = document.getElementById('usernameCheck');
+
+        // Simulated taken usernames
+        const takenUsernames = ['johnsmith88', 'admin', 'speedradio', 'user'];
+
+        nameInput.addEventListener('input', () => {
+            document.getElementById('nameCount').textContent = nameInput.value.length;
+        });
+
+        usernameInput.addEventListener('input', () => {
+            const val = usernameInput.value;
+            document.getElementById('usernameCount').textContent = val.length;
+
+            const isTaken = takenUsernames.includes(val.toLowerCase().trim());
+            usernameInput.classList.toggle('error', isTaken);
+
+            if (isTaken) {
+                usernameStatus.className = 'username-status taken';
+                usernameStatusText.textContent = 'Username already taken';
+                usernameCheck.innerHTML = '<span style="color:#E9002E;font-size:18px;line-height:1;">✕</span>';
+            } else {
+                usernameStatus.className = 'username-status available';
+                usernameStatusText.textContent = 'Username available';
+                usernameCheck.innerHTML = '<img src="assets/save_tick_ic.png" alt="✓">';
             }
+        });
 
-        }, 5000);
+        document.querySelectorAll('.privacy-card').forEach(card => {
+            card.addEventListener('click', () => {
+
+                document.querySelectorAll('.privacy-card').forEach(c => {
+                    c.classList.remove('active');
+                });
+
+                card.classList.add('active');
+            });
+        });
+
+        // ── Swipe Up to Home ──
+        const swipeScreen = screens[screens.length - 1];
+        const homeOverlay = document.getElementById('homeOverlay');
+        const homeFrame   = document.getElementById('homeFrame');
+        const SH = () => window.innerHeight;
+
+        let dragStartY = 0, dragStartTime = 0, lastY = 0, isDragging = false, homeLoaded = false;
+
+        // Preload iframe as soon as loading screen starts (screen 6)
+        function ensureHomeLoaded() {
+            if (!homeLoaded) {
+                homeFrame.src = 'homeScreen.html';
+                homeLoaded = true;
+            }
+            homeOverlay.style.transition = 'none';
+            homeOverlay.style.transform = `translateY(${SH()}px)`;
+        }
+
+        function snapOpen() {
+            homeOverlay.style.transition = 'transform 0.42s cubic-bezier(0.32, 0.72, 0, 1)';
+            homeOverlay.style.transform = 'translateY(0)';
+            homeOverlay.classList.add('visible');
+        }
+
+        function snapClose() {
+            homeOverlay.style.transition = 'transform 0.35s cubic-bezier(0.4, 0, 1, 1)';
+            homeOverlay.style.transform = `translateY(${SH()}px)`;
+            homeOverlay.classList.remove('visible');
+        }
+
+        // Touch events on document so finger tracking never breaks
+        document.addEventListener('touchstart', (e) => {
+            if (current !== screens.length - 1) return;
+            if (homeOverlay.classList.contains('visible')) return;
+            isDragging = true;
+            dragStartY = lastY = e.touches[0].clientY;
+            dragStartTime = Date.now();
+            homeOverlay.style.transition = 'none';
+        }, { passive: true });
+
+        document.addEventListener('touchmove', (e) => {
+            if (!isDragging) return;
+            lastY = e.touches[0].clientY;
+            const deltaUp = dragStartY - lastY;          // positive = finger moved up
+            if (deltaUp < 0) return;                     // ignore downward movement
+            const newY = Math.max(0, SH() - deltaUp);
+            homeOverlay.style.transform = `translateY(${newY}px)`;
+            if (e.cancelable) e.preventDefault();
+        }, { passive: false });
+
+        document.addEventListener('touchend', () => {
+            if (!isDragging) return;
+            isDragging = false;
+            const deltaUp = dragStartY - lastY;
+            const elapsed = Math.max(Date.now() - dragStartTime, 1);
+            const velocity = deltaUp / elapsed;           // px/ms, positive = upward
+            (deltaUp > SH() * 0.25 || velocity > 0.4) ? snapOpen() : snapClose();
+        });
+
+        // Mouse support for desktop preview
+        let mouseDragging = false;
+        swipeScreen.addEventListener('mousedown', (e) => {
+            if (homeOverlay.classList.contains('visible')) return;
+            mouseDragging = true;
+            isDragging = true;
+            dragStartY = lastY = e.clientY;
+            dragStartTime = Date.now();
+            homeOverlay.style.transition = 'none';
+        });
+        document.addEventListener('mousemove', (e) => {
+            if (!mouseDragging || !isDragging) return;
+            lastY = e.clientY;
+            const deltaUp = dragStartY - lastY;
+            if (deltaUp < 0) return;
+            homeOverlay.style.transform = `translateY(${Math.max(0, SH() - deltaUp)}px)`;
+        });
+        document.addEventListener('mouseup', () => {
+            if (!mouseDragging) return;
+            mouseDragging = false;
+            isDragging = false;
+            const deltaUp = dragStartY - lastY;
+            const velocity = deltaUp / Math.max(Date.now() - dragStartTime, 1);
+            (deltaUp > SH() * 0.25 || velocity > 0.4) ? snapOpen() : snapClose();
+        });
 
     </script>
 
