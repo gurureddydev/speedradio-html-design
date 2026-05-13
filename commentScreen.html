@@ -870,6 +870,173 @@
     .send-btn:active {
       transform: scale(0.88);
     }
+
+    /* ── Report overlay (full screen) ─────────────────────────── */
+    .report-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 400;
+      display: none;
+      justify-content: center;
+      background: #242424;
+      transform: translateX(100%);
+      transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .report-overlay.show {
+      transform: translateX(0);
+    }
+
+    .report-screen {
+      width: 100%;
+      max-width: 420px;
+      height: 100%;
+      background: #242424;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .report-top-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 54px 16px 16px;
+      flex-shrink: 0;
+    }
+
+    .report-back-btn {
+      width: 32px;
+      height: 32px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      flex-shrink: 0;
+    }
+
+    .report-back-btn svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .report-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4px;
+      flex-shrink: 0;
+    }
+
+    .report-icon img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .report-title {
+      font-size: 18px;
+      font-weight: 500;
+      line-height: 24px;
+      color: #FFFFFF;
+    }
+
+    .report-divider {
+      height: 1px;
+      background: rgba(255, 255, 255, 0.08);
+      flex-shrink: 0;
+      margin: 0 16px;
+    }
+
+    .report-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 22px 16px 24px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .report-body::-webkit-scrollbar { display: none; }
+
+    .report-label {
+      font-size: 16px;
+      font-weight: 400;
+      line-height: 21px;
+      color: rgba(255, 255, 255, 0.7);
+      margin-bottom: 18px;
+    }
+
+    .report-options {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .report-option {
+      width: 100%;
+      height: 50px;
+      border-radius: 5px;
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #1C1C1E;
+      color: #FFFFFF;
+      font-size: 16px;
+      font-weight: 400;
+      line-height: 22.5px;
+      border: none;
+      cursor: pointer;
+      transition: 0.2s ease;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    .report-option.active {
+      background: #EA1C25;
+    }
+
+    .report-option svg {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+    }
+
+    .report-bottom-actions {
+      display: flex;
+      gap: 10px;
+      padding: 16px 16px calc(24px + env(safe-area-inset-bottom, 0px));
+      flex-shrink: 0;
+    }
+
+    .report-btn {
+      flex: 1;
+      height: 40px;
+      border-radius: 5px;
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 20px;
+      border: none;
+      cursor: pointer;
+      transition: 0.2s ease;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    .report-btn-cancel {
+      background: #0C0C0F;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #FFFFFF;
+    }
+
+    .report-btn-submit {
+      background: #EA1C25;
+      color: #FFFFFF;
+    }
   </style>
 </head>
 
@@ -946,6 +1113,52 @@
             <img id="sendIcon" src="assets/comment_send_img.png" alt="Send" />
           </button>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Report screen (full screen) -->
+  <div class="report-overlay" id="reportOverlay">
+    <div class="report-screen">
+      <div class="report-top-bar">
+        <button class="report-back-btn" onclick="closeReportSheet()">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M15 19l-7-7 7-7" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <div class="report-icon">
+          <img src="assets/ic_report.png" alt="Report" />
+        </div>
+        <div class="report-title">Report</div>
+      </div>
+      <div class="report-divider"></div>
+      <div class="report-body">
+        <div class="report-label">Please select a reason for reporting:</div>
+        <div class="report-options" id="reportOptions">
+          <button class="report-option active" onclick="selectReportOption(this)">
+            <span>Bullying or unwanted contact</span>
+            <svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17L4 12" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <button class="report-option" onclick="selectReportOption(this)">
+            <span>Nudity or sexual activity</span>
+          </button>
+          <button class="report-option" onclick="selectReportOption(this)">
+            <span>Hate speech or symbols</span>
+          </button>
+          <button class="report-option" onclick="selectReportOption(this)">
+            <span>Violence or exploration</span>
+          </button>
+          <button class="report-option" onclick="selectReportOption(this)">
+            <span>Scam, fraud or spam</span>
+          </button>
+          <button class="report-option" onclick="selectReportOption(this)">
+            <span>False information</span>
+          </button>
+        </div>
+      </div>
+      <div class="report-bottom-actions">
+        <button class="report-btn report-btn-cancel" onclick="closeReportSheet()">Cancel</button>
+        <button class="report-btn report-btn-submit" onclick="submitReport()">Submit</button>
       </div>
     </div>
   </div>
@@ -1317,7 +1530,7 @@
       const rep = document.createElement('button');
       rep.className = 'ctx-item';
       rep.innerHTML = `<img src="assets/ic_report.png" width="18" height="18" style="object-fit:contain;flex-shrink:0;" /> <span style="color:#EA1C25">Report</span>`;
-      rep.onclick = () => { closeCtxMenu(); showToast('Response reported'); };
+      rep.onclick = () => { closeCtxMenu(); openReportSheet(); };
       menu.appendChild(rep);
 
       document.body.appendChild(overlay);
@@ -1454,6 +1667,44 @@
     editor.addEventListener('blur', () => setTimeout(hideMentionPopup, 150));
 
     commentList.addEventListener('scroll', closeCtxMenu);
+
+    // ── Report screen ──────────────────────────────────────────────────────────
+    function openReportSheet() {
+      // Reset to first option active
+      const opts = document.querySelectorAll('#reportOptions .report-option');
+      opts.forEach((o, i) => {
+        o.classList.toggle('active', i === 0);
+        const svg = o.querySelector('svg');
+        if (i === 0 && !svg) {
+          o.insertAdjacentHTML('beforeend', `<svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17L4 12" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`);
+        } else if (i !== 0 && svg) {
+          svg.remove();
+        }
+      });
+      const overlay = document.getElementById('reportOverlay');
+      overlay.style.display = 'flex';
+      requestAnimationFrame(() => overlay.classList.add('show'));
+    }
+
+    function closeReportSheet() {
+      const overlay = document.getElementById('reportOverlay');
+      overlay.classList.remove('show');
+      setTimeout(() => { overlay.style.display = 'none'; }, 280);
+    }
+
+    function selectReportOption(btn) {
+      document.querySelectorAll('#reportOptions .report-option').forEach(o => {
+        o.classList.remove('active');
+        o.querySelector('svg')?.remove();
+      });
+      btn.classList.add('active');
+      btn.insertAdjacentHTML('beforeend', `<svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17L4 12" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`);
+    }
+
+    function submitReport() {
+      closeReportSheet();
+      showToast('Response reported');
+    }
 
     // ── Drag handle — snap-back dismiss gesture ────────────────────────────────
     let dragStartY = 0;
