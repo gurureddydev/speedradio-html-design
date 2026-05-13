@@ -1402,6 +1402,13 @@
 
     <script>
 
+        // Guard: if user refreshes or lands here directly, send back to splash
+        if (!sessionStorage.getItem('from_splash')) {
+            window.location.replace('splashScreen.html');
+        } else {
+            sessionStorage.removeItem('from_splash');
+        }
+
         const screens = document.querySelectorAll('.screen');
         const nextButtons = document.querySelectorAll('.next-btn');
         const backButtons = document.querySelectorAll('.back-btn');

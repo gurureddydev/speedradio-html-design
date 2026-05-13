@@ -348,6 +348,7 @@
         googleBtn.addEventListener('click', () => {
             googleBtn.classList.add('loading');
             setTimeout(() => {
+                sessionStorage.setItem('from_splash', '1');
                 window.location.href = 'onboardFlow.html';
             }, 1200);
         });
